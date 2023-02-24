@@ -1,0 +1,35 @@
+version: '3.10'
+
+
+services:
+  db:
+    image: postgres:15-alpine
+    ports:
+      - '5432:5432'
+
+    environment:
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_USER=postgres
+      - POSTGRES_DB=kanban
+
+    volumes:
+      - ./data/db:/var/lib/postgresql/data/
+
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+
+    environment:
+      - POSTGRES_USER:postgres
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_DB=kanban
+
+    ports:
+      - '8000:8000'
+
+    volumes:
+      - ./backend:/app/backend
+
+    depends_on:
+      - db
