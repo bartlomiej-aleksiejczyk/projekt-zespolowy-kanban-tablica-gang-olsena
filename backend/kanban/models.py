@@ -35,6 +35,7 @@ class Card(Timestamp):
     index = models.PositiveSmallIntegerField(default=0)
     board = models.ForeignKey(
         'kanban.Board',
+        related_name='card_board',
         on_delete=models.DO_NOTHING
     )
     description = models.TextField()
