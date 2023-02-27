@@ -25,6 +25,8 @@ services:
 
     volumes:
       - ./frontend:/app/frontend
+      - /app/frontend/node_modules
+
 
     depends_on:
       - backend
@@ -43,7 +45,9 @@ services:
       - '8000:8000'
 
     volumes:
-      - ./backend:/app/backend
+      - ./backend:/app/backend 
+      - /app/frontend/node_modules
+
 
     depends_on:
       - db
