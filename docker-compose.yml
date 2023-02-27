@@ -27,6 +27,7 @@ services:
       - ./frontend:/app/frontend
       - /app/frontend/node_modules
 
+
     depends_on:
       - backend
 
