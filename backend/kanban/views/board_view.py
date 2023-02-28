@@ -18,8 +18,8 @@ class BoardViewSet(viewsets.ViewSet):
         serializer = BoardSerializer(data=data)
         serializer.is_valid(raise_exception=True)
         serializer.save()
-
-        serializer.instance.move(index)
+#Nie wiem czy dodałem tutaj dobry parmaetr None -B. U MNIE DZIAŁA
+        serializer.instance.move(index,None)
 
         return Response(
             dict(
@@ -31,8 +31,9 @@ class BoardViewSet(viewsets.ViewSet):
         )
 
     def get_board(self, request, pk):
-        board = Board.objects.get_by_pk(pk=pk)
-
+        data = request.data.copy()
+        id=int(data['id'])
+        board = Board.objects.get_by_pk(pk=id)
         return Response(
             dict(
                 success=True,
@@ -49,9 +50,11 @@ class BoardViewSet(viewsets.ViewSet):
                 data=BoardSerializer(boards, many=True).data
             )
         )
-
+#Funkcja agreguje karty przynależne dla danej tablicy
     def get_board_cards(self, request, pk):
-        cards = Card.objects.filter(board_id=pk)
+        data = request.data.copy()
+        id = int(data['id'])
+        cards = Card.objects.filter(board_id=id)
 
         return Response(
             dict(

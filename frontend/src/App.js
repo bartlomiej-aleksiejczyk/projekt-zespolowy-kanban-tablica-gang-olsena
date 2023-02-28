@@ -23,7 +23,6 @@ function App() {
       </div>
     );
   };
-
   return (
       boards.map((board) => {
         return (<div className="card xl:flex xl:justify-content-center">

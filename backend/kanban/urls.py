@@ -24,6 +24,7 @@ board_move_viewset = BoardViewSet.as_view(
 
 card_move_viewset = CardViewSet.as_view(
     dict(
+        get="find_highest_index_card",
         post='move_card'
     )
 )
@@ -31,8 +32,9 @@ card_move_viewset = CardViewSet.as_view(
 single_card_viewset = CardViewSet.as_view(
     dict(
         get='get_card',
-        delete='delete_card'
-    )
+        delete='delete_card',
+        post = 'create_card'
+)
 )
 
 board_card_viewset = BoardViewSet.as_view(
