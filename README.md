@@ -1,5 +1,5 @@
 # projekt-zespolowy-billenium-gang-olsena 
-
+Projekt ma na celu realizację tablicy kanban. \
 Role w projekcie: 
 
 Sebastian Celoch - full stack developer \
