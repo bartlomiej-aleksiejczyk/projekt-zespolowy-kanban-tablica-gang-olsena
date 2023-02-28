@@ -30,6 +30,26 @@ class BoardViewSet(viewsets.ViewSet):
             )
         )
 
+    def create_board_card(self, request, pk):
+        data = request.data.copy()
+        index = request.data.get('index', 0)
+
+        Board.objects.get_by_pk(pk=pk)
+        data['board'] = pk
+        data['index'] = index
+        serializer = CardSerializer(data=data)
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+
+        serializer.instance.move(index, pk)
+
+        return Response(
+            dict(
+                success=True,
+                data=serializer.data
+            )
+        )
+
     def get_board(self, request, pk):
         board = Board.objects.get_by_pk(pk=pk)
 
