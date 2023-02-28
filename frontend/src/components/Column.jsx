@@ -26,7 +26,7 @@ function Column(props){
            <TaskList>
            {
                 props.tasks.map((task, index) =>{
-                    (<Task key={task.id} task={task} index={index} columnId={props.column.id}/>)
+                    return <Task key={task.id} task={task} index={index} columnId={props.column.id}/>
                 })
            }
 
