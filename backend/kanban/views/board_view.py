@@ -50,6 +50,15 @@ class BoardViewSet(viewsets.ViewSet):
                 data=BoardSerializer(boards, many=True).data
             )
         )
+    # A tutaj pk musi być nie wiem czemu
+    def get_cards(self, request,pk):
+        cards = Card.objects.all()
+        return Response(
+            dict(
+                success=True,
+                data=CardSerializer(cards, many=True).data
+            )
+        )
 #Funkcja agreguje karty przynależne dla danej tablicy
     def get_board_cards(self, request, pk):
         data = request.data.copy()

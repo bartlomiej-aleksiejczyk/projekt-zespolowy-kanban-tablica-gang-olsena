@@ -28,6 +28,35 @@
 			"response": []
 		},
 		{
+			"name": "Get cards",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8000/api/board/5/move/?",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8000",
+					"path": [
+						"api",
+						"board",
+						"5",
+						"move",
+						""
+					],
+					"query": [
+						{
+							"key": "",
+							"value": null
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
 			"name": "Get board",
 			"protocolProfileBehavior": {
 				"disableBodyPruning": true

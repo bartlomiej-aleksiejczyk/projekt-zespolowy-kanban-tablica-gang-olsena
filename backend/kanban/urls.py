@@ -18,6 +18,7 @@ board_viewset = BoardViewSet.as_view(
 
 board_move_viewset = BoardViewSet.as_view(
     dict(
+        get='get_cards',
         post='move_board'
     )
 )

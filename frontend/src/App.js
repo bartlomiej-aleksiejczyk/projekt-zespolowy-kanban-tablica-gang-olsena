@@ -7,13 +7,22 @@ import "./assets/App.css";
 
 function App() {
   const [boards, setBoards] = useState([]);
+  //const [cards, setCards] = useState([]);
 
-  useEffect(() => {
-    fetch('http://localhost:8000/api/board/', {method: 'GET'})
+
+    useEffect(() => {
+    fetch('http://localhost:8000/api/board/', {method: 'GET'/*, headers: {"Content-Type": "application/json",},body: JSON.stringify(""),
+    */},)
       .then(response => response.json())
       .then(response_data => setBoards(response_data.data));
   }, []);
-
+    /*useEffect(() => {
+        fetch('http://localhost:8000/api/board/', {method: 'GET', headers: {"Content-Type": "application/json",},body: JSON.stringify(""),
+        },)
+            .then(response => response.json())
+            .then(response_data => setBoards(response_data.data));
+    }, []);
+*/
   const itemTemplate = (item) => {
     return (
       <div className="flex flex-wrap p-2 align-items-center gap-3">
