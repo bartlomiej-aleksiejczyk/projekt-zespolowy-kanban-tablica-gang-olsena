@@ -41,7 +41,10 @@ class Board(Dictionary, Timestamp):
     class Meta:
         ordering = ['index']
 
-    def move(self, new_index, old_index):
+    def move(self, new_index, old_index = None):
+        if new_index < 0 or Board.objects.count()  - 1 < new_index:
+            return False, "Wprowadzono nieprawidłowy index."
+
         self.index = new_index
         self.save()
 
@@ -51,13 +54,13 @@ class Board(Dictionary, Timestamp):
                 deleted_at__isnull=True
             ).exclude(id=self.pk).order_by('index')
 
-            changed_index = old_index - 1
+            changed_index = old_index
             for board in old_boards:
-                if changed_index > 0:
+                if changed_index >= 0:
                     board.index = changed_index
                     board.save()
 
-                changed_index -= 1
+                changed_index += 1
 
         new_boards = Board.objects.filter(
             index__gte=new_index,
@@ -69,6 +72,8 @@ class Board(Dictionary, Timestamp):
             card.index = changed_index
             card.save()
             changed_index += 1
+
+        return True, "Tablica została przeniesiona poprawnie."
 
 class Card(Timestamp):
     index = models.PositiveSmallIntegerField(default=0)
@@ -96,13 +101,13 @@ class Card(Timestamp):
                 deleted_at__isnull=True
             ).exclude(id=self.id).order_by('index')
 
-            changed_index = old_index - 1
+            changed_index = old_index
             for card in old_cards:
-                if changed_index > 0:
+                if changed_index >= 0:
                     card.index = changed_index
                     card.save()
 
-                changed_index -= 1
+                changed_index += 1
 
         new_cards = Card.objects.filter(
             board_id=new_board_id,
@@ -112,6 +117,9 @@ class Card(Timestamp):
 
         changed_index = index + 1
         for card in new_cards:
+            print(changed_index)
             card.index = changed_index
             card.save()
             changed_index += 1
+
+        return self

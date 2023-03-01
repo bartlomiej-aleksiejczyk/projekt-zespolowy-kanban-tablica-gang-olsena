@@ -20,8 +20,21 @@ class CardViewSet(viewsets.ViewSet):
 
     def move_card(self, request, pk):
         card = Card.objects.get_by_pk(pk=pk)
-        card.move(request.data.get('index', card.index), request.data.get('board', card.board_id), card.index,
-                  card.board_id)
+
+        is_success, message = card.move(
+            request.data.get('index', card.index),
+            request.data.get('board', card.board_id),
+            card.index,
+            card.board_id
+        )
+
+        if not is_success:
+            return Response(
+                dict(
+                    success=is_success,
+                    message=message
+                )
+            )
 
         return Response(
             dict(
@@ -37,7 +50,16 @@ class CardViewSet(viewsets.ViewSet):
         card = Card.objects.get_by_pk(pk=pk)
         card.deleted_at = datetime.datetime.now()
         card.save()
-        card.move(card.index, card.board_id, card.index, card.board_id)
+
+        is_success, message = card.move(card.index, card.board_id, card.index, card.board_id)
+
+        if not is_success:
+            return Response(
+                dict(
+                    success=is_success,
+                    message=message
+                )
+            )
 
         return Response(
             dict(

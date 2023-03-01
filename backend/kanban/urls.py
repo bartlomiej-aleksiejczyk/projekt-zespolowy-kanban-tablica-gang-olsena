@@ -11,7 +11,7 @@ single_board_viewset = BoardViewSet.as_view(
 
 board_viewset = BoardViewSet.as_view(
     dict(
-        post='create_board',
+        post='update_board',
         get='get_boards'
     )
 )
@@ -37,7 +37,7 @@ single_card_viewset = CardViewSet.as_view(
 
 board_card_viewset = BoardViewSet.as_view(
     dict(
-        post='create_board_card',
+        post='update_board_card',
         get='get_board_cards'
     )
 )

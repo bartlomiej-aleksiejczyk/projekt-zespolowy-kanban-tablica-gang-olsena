@@ -10,16 +10,30 @@ from kanban.serializers.card_serializer import CardSerializer
 
 class BoardViewSet(viewsets.ViewSet):
 
-    def create_board(self, request):
+    def update_board(self, request):
         data = request.data.copy()
+        board_id = data.get('id')
         index = int(data.get('index', 0))
 
-        data['index'] = index
-        serializer = BoardSerializer(data=data)
-        serializer.is_valid(raise_exception=True)
-        serializer.save()
+        board_instance = None
+        if board_id:
+            board_instance = Board.objects.get_by_pk(pk=board_id)
 
-        serializer.instance.move(index)
+        data['index'] = index
+        serializer = BoardSerializer(data=data, instance=board_instance, partial=True)
+        serializer.is_valid(raise_exception=True)
+
+        is_success, message = serializer.instance.move(index)
+
+        if not is_success:
+            return Response(
+                dict(
+                    success=is_success,
+                    message=message
+                )
+            )
+
+        serializer.save()
 
         return Response(
             dict(
@@ -30,18 +44,32 @@ class BoardViewSet(viewsets.ViewSet):
             )
         )
 
-    def create_board_card(self, request, pk):
+    def update_board_card(self, request, pk):
         data = request.data.copy()
-        index = request.data.get('index', 0)
+        card_id = data.get('id')
+        index = int(data.get('index', 0))
+
+        card_instance = None
+        if card_id:
+            card_instance = Card.objects.get_by_pk(pk=card_id)
 
         Board.objects.get_by_pk(pk=pk)
         data['board'] = pk
         data['index'] = index
-        serializer = CardSerializer(data=data)
+        serializer = CardSerializer(data=data, instance=card_instance, partial=True)
         serializer.is_valid(raise_exception=True)
-        serializer.save()
 
-        serializer.instance.move(index, pk)
+        is_success, message = serializer.instance.move(index, pk)
+
+        if not is_success:
+            return Response(
+                dict(
+                    success=is_success,
+                    message=message
+                )
+            )
+
+        serializer.save()
 
         return Response(
             dict(
@@ -82,7 +110,16 @@ class BoardViewSet(viewsets.ViewSet):
 
     def move_board(self, request, pk):
         board = Board.objects.get_by_pk(pk=pk)
-        board.move(request.data.get('index', board.index), board.index)
+
+        is_success, message = board.move(request.data.get('index', board.index), board.index)
+
+        if not is_success:
+            return Response(
+                dict(
+                    success=is_success,
+                    message=message
+                )
+            )
 
         return Response(
             dict(
@@ -98,7 +135,16 @@ class BoardViewSet(viewsets.ViewSet):
         board = Board.objects.get_by_pk(pk=pk)
         board.deleted_at = datetime.datetime.now()
         board.save()
-        board.move(board.index, board.index)
+
+        is_success, message = board.move(board.index, board.index)
+
+        if not is_success:
+            return Response(
+                dict(
+                    success=is_success,
+                    message=message
+                )
+            )
 
         return Response(
             dict(
