@@ -22,7 +22,7 @@ class BoardViewSet(viewsets.ViewSet):
         data['index'] = index
         serializer = BoardSerializer(data=data, instance=board_instance, partial=True)
         serializer.is_valid(raise_exception=True)
-
+        serializer.save()
         is_success, message = serializer.instance.move(index)
 
         if not is_success:
@@ -33,7 +33,6 @@ class BoardViewSet(viewsets.ViewSet):
                 )
             )
 
-        serializer.save()
 
         return Response(
             dict(
@@ -58,6 +57,7 @@ class BoardViewSet(viewsets.ViewSet):
         data['index'] = index
         serializer = CardSerializer(data=data, instance=card_instance, partial=True)
         serializer.is_valid(raise_exception=True)
+        serializer.save()
 
         is_success, message = serializer.instance.move(index, pk)
 
@@ -68,8 +68,6 @@ class BoardViewSet(viewsets.ViewSet):
                     message=message
                 )
             )
-
-        serializer.save()
 
         return Response(
             dict(
