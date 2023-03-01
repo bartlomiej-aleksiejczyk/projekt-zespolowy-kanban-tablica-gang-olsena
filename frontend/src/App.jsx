@@ -3,8 +3,7 @@ import "primereact/resources/primereact.min.css";
 import "primeicons/primeicons.css";
 import styled from 'styled-components';
 import React, {useState, useEffect} from 'react';
-import { OrderList } from 'primereact/orderlist';
-import { DragDropContext, Droppable } from 'react-beautiful-dnd';
+import { DragDropContext } from 'react-beautiful-dnd';
 import Board from "./Board";
 
 //Przerobić
@@ -32,8 +31,8 @@ function App() {
         //console.log("tutaj",parseInt(source.droppableId),(draggableId),parseInt(destination.droppableId)/*((boards[parseInt(destination.droppableId)]).card_data)[parseInt(destination.droppableIndex)]*/ );
         if (!destination) {return;}
         else if (destination.droppableId === source.droppableId && destination.index === source.index) {return;}
-        else if ((boards[parseInt(destination.droppableId)].card_data.indexOf(destination.index) === -1)){
-            moveCard(parseInt(draggableId),(((boards[parseInt(destination.droppableId)]).card_data).length-1), (boards[parseInt(destination.droppableId)]).id)
+        else if ((boards[parseInt(destination.droppableId)].card_data.length - 1 < destination.index)){
+            moveCard(parseInt(draggableId),(((boards[parseInt(destination.droppableId)]).card_data).length), (boards[parseInt(destination.droppableId)]).id)
         }
         else{
             moveCard(parseInt(draggableId),(((boards[parseInt(destination.droppableId)]).card_data)[destination.index]).index, (boards[parseInt(destination.droppableId)]).id)

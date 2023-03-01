@@ -18,6 +18,7 @@ class BoardViewSet(viewsets.ViewSet):
         board_instance = None
         if board_id:
             board_instance = Board.objects.get_by_pk(pk=board_id)
+            index = board_instance.index
 
         data['index'] = index
         serializer = BoardSerializer(data=data, instance=board_instance, partial=True)
@@ -51,6 +52,7 @@ class BoardViewSet(viewsets.ViewSet):
         card_instance = None
         if card_id:
             card_instance = Card.objects.get_by_pk(pk=card_id)
+            index = card_instance.index
 
         Board.objects.get_by_pk(pk=pk)
         data['board'] = pk
