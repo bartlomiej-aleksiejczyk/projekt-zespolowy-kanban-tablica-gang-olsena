@@ -98,7 +98,7 @@ class Card(Timestamp):
 
             changed_index = old_index - 1
             for card in old_cards:
-                if card.index > 0:
+                if changed_index > 0:
                     card.index = changed_index
                     card.save()
 
