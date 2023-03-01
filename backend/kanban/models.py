@@ -90,6 +90,9 @@ class Card(Timestamp):
         ordering = ['index']
 
     def move(self, index, new_board_id, old_index = None, old_board_id = None):
+        if index < 0 or Card.objects.count()  - 1 < index:
+            return False, "Wprowadzono nieprawidłowy index."
+
         self.board_id = new_board_id
         self.index = index
         self.save()
@@ -122,4 +125,4 @@ class Card(Timestamp):
             card.save()
             changed_index += 1
 
-        return self
+        return True, "Wpis został przeniesiony poprawnie."
