@@ -1,15 +1,29 @@
 import React, {useState} from 'react'
 import styled from "styled-components";
 import {Draggable} from "react-beautiful-dnd";
+import ContentEditable from 'react-contenteditable';
 
 const CardStyle = styled.div`
   //zmienic
+  max-width: inherit;
+  min-width: inherit;
   border: 1px solid lightgrey;
   border-radius: 2px;
   padding: 8px;
   margin-bottom: 8px;
+  display: flex;
+  flex-direction:column;
+  flex-wrap: wrap;
 `;
-
+const Description = styled.div`
+  flex-direction: column;
+  max-width: 120px;
+  min-width: 120px;
+  word-wrap: break-word;
+  flex-wrap: wrap;
+  padding-left: 15px;
+  padding-right:15px;
+`;
 function Card(props)
 {
     function editCard(boardId, id, description) {
@@ -27,7 +41,7 @@ function Card(props)
     const [isEditing, setIsEditing] = useState(false)
     const handleInputChange = (e)=> {
         console.log("wykonuje sie", (props.backId));
-        editCard(props.board, props.backId, e.target.value);
+        editCard(props.board, props.backId, e.target.innerHTML);
     }
 
     function removeCard(taskId) {
@@ -45,9 +59,10 @@ function Card(props)
         <CardStyle{...provided.draggableProps}
                   {...provided.dragHandleProps}
                   ref={provided.innerRef}
-                  onDoubleClicl={console.log(props.dragId,props.indexDrag,props.backId)}
-        >
-            <div className = 'tasks-container'>
+                  onDoubleClick={console.log(props.dragId,props.indexDrag,props.backId)}>
+            <Description className='tasks-container'><ContentEditable className="Description" html={props.description}
+                                                              disabled={false} onBlur={handleInputChange}/></Description>
+            {/*<div className = 'tasks-container'>
                 {
                     isEditing ?
                         <form>
@@ -56,8 +71,9 @@ function Card(props)
                         : <p onDoubleClick ={()=> setIsEditing(true)}>{props.description}</p>
                 }
             </div>
-            <button onClick={() => removeCard((props.backId))} type="button">Usuń zadanie</button>
+           */}
 
+            <button onClick={() => removeCard((props.backId))} type="button">Usuń zadanie</button>
         </CardStyle>
                 )}
             </Draggable>

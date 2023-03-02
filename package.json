@@ -1,0 +1,5 @@
+{
+  "dependencies": {
+    "react-contenteditable": "^3.3.7"
+  }
+}

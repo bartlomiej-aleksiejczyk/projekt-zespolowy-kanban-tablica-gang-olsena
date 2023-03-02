@@ -45,6 +45,7 @@ function Board(props) {
             <BoardStyle boardOverflow={(props.limit<(props.cards).length)&&(props.limit!=null)}>
                 <Title> {props.name} : {props.frontId}</Title>
                 <Limit>Limit: {props.limit}</Limit>
+                <button onClick={() => newCard(props.backId,"Temporary","Click on this text to edit")} type="button">Dodaj zadanie</button>
                 <Droppable droppableId={props.dragId}
                            type="column">
                     {(provided) => (
@@ -57,7 +58,6 @@ function Board(props) {
                                     <Card backId={card.id} dragId={(card.id).toString()}   description={card.description} fetchDb={props.fetchDb} indexDrag={indexDrag}  newCard={newCard} name={card.name} board={card.board}/>
                                 )
                             }
-                            <button onClick={() => newCard(props.backId,"Temporary","Click on this text to edit")} type="button">Dodaj zadanie</button>
                             {provided.placeholder}
                         </CardsStyle>
                     )}
