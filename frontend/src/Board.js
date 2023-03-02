@@ -12,6 +12,9 @@ const BoardStyle = styled.div`
   flex-direction: column;
   align-items: center;
   padding-bottom: 10px;
+  transition: background-color 2s ease;
+  background-color: ${props =>
+    props.boardOverflow ? 'red' : 'inherit'};
 `;
 const Limit = styled.p`
   padding: 4px;
@@ -22,13 +25,9 @@ const Title = styled.h3`
 const CardsStyle = styled.div`
   //zmienic
   padding: 7px;
-  transition: background-color 2s ease;
-  background-color: ${props =>
-    props.boardOverflow ? 'red' : 'inherit'};
   flex-grow: 2;
   min-height: 134px;
 `;
-
 
 function Board(props) {
     function newCard(boardId, name, description) {
@@ -43,7 +42,7 @@ function Board(props) {
             .then(() => props.fetchDb());
     }
     return (
-            <BoardStyle>
+            <BoardStyle boardOverflow={(props.limit<(props.cards).length)&&(props.limit!=null)}>
                 <Title> {props.name} : {props.frontId}</Title>
                 <Limit>Limit: {props.limit}</Limit>
                 <Droppable droppableId={props.dragId}
@@ -52,7 +51,6 @@ function Board(props) {
                         <CardsStyle
                             ref={provided.innerRef}
                             {...provided.droppableId}
-                            boardOverflow={(props.limit<(props.cards).length)&&(props.limit!=null)}
                         >
                             {
                                 (props.cards).map((card, indexDrag) =>
