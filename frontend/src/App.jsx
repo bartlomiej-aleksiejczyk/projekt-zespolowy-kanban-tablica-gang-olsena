@@ -28,7 +28,7 @@ function App() {
     function onDragStart(result) {
         console.log(result.draggableId)
     }
-    function onDragEnd(result) {
+    function onDragUpdate(result) {
         const {destination, source, draggableId}=result
         //console.log("resuult",(((boards[parseInt(destination.droppableId)]).card_data)[destination.index]).index)
         //console.log("tutaj",parseInt(source.droppableId),(draggableId),parseInt(destination.droppableId)/*((boards[parseInt(destination.droppableId)]).card_data)[parseInt(destination.droppableIndex)]*/ );
@@ -45,6 +45,7 @@ function App() {
         console.log(result.draggableId)
 
     }
+    function onDragEnd(result) {}
 
 
     useEffect(() => {
@@ -63,7 +64,11 @@ function App() {
     }
 
   return (
-      <DragDropContext onDragEnd={onDragEnd} onDragStart={onDragStart}>
+      //Naprawiłem bug#1 w ten sposób że żądanie do API zamiast na końcu przenoszenia (onDragEnd) wysyłane są podczas działania (onDragUpdate)
+      //jeśli problem będzie występował w przyszłości można wydłużyć animacje,
+      //Jedyny efekt uboczny jest taki że biblioteka wysyła w konsoli wiadomości, że nie można usuwac i dodawać elenetów do list podczas przenoszenia
+      //Ale zupełnie nie wplywa to na funkcjonowanie
+      <DragDropContext onDragEnd={onDragEnd} onDragUpdate={onDragUpdate}>
 {/*
           <Droppable droppableId="all-columns" direction="horizontal" type="column">
 */}
