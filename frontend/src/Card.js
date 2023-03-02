@@ -41,9 +41,13 @@ function Card(props)
             .then(() => props.fetchDb());
     }
         return (
-            <Draggable draggableId={props.dragId} index={props.indexDrag}>
+            <Draggable  key={props.backId} draggableId={props.dragId} index={props.indexDrag}>
                 {(provided) => (
-        <CardStyle{...provided.draggableProps} {...provided.dragHandleProps} ref={provided.innerRef}>
+        <CardStyle{...provided.draggableProps}
+                  {...provided.dragHandleProps}
+                  ref={provided.innerRef}
+                  onDoubleClicl={console.log(props.dragId,props.indexDrag,props.backId)}
+        >
             <div className = 'tasks-container'>
                 {
                     isEditing ?

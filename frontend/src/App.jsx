@@ -25,6 +25,9 @@ function App() {
             },)
             .then(() => fetchDb());
     }
+    function onDragStart(result) {
+        console.log(result.draggableId)
+    }
     function onDragEnd(result) {
         const {destination, source, draggableId}=result
         //console.log("resuult",(((boards[parseInt(destination.droppableId)]).card_data)[destination.index]).index)
@@ -39,7 +42,9 @@ function App() {
             //moveCard(parseInt(draggableId),(((boards[parseInt(destination.droppableId)]).card_data)[destination.index]).index)
         }
     console.log(result);
-  }
+        console.log(result.draggableId)
+
+    }
 
 
     useEffect(() => {
@@ -58,7 +63,7 @@ function App() {
     }
 
   return (
-      <DragDropContext onDragEnd={onDragEnd}>
+      <DragDropContext onDragEnd={onDragEnd} onDragStart={onDragStart}>
 {/*
           <Droppable droppableId="all-columns" direction="horizontal" type="column">
 */}
@@ -70,19 +75,7 @@ function App() {
           return <Board backId={board.id} dragId={(boards.indexOf(board)).toString()} droppableId={boards.indexOf(board)} column={board} cards={board.card_data} name={board.name} limit={board.max_card} fetchDb={fetchDb} />;
         })}
         </BoardOfBoards>
-          {/*</Droppable>*/}
-      </DragDropContext>/*
-      boards.map((board) => {
-        console.log(boards);
-        return (<div className="card xl:flex xl:justify-content-center">
-          <OrderList value={boards}
-                     onChange={(e) => setBoards(e.value)}
-                     itemTemplate={itemTemplate}
-                     dragdrop={true}
-                     header={board.name}></OrderList>
-        </div>)
-        }
-      )*/
+      </DragDropContext>
   )
 }
 
