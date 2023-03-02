@@ -86,7 +86,7 @@ function App() {
 {/*
           <Droppable droppableId="all-columns" direction="horizontal" type="column">
 */}
-        <NewBoardButton><button onClick={() => newBoard()} type="button">Dodaj zadanie</button></NewBoardButton>
+        <NewBoardButton><button onClick={() => newBoard()} type="button">Add board</button></NewBoardButton>
         <BoardOfBoards>
         {boards.map(board => {
             console.log(board)
