@@ -67,6 +67,14 @@ function App() {
     }
     function newBoard() {
 
+        fetch(`http://localhost:8000/api/board/`,
+            {  method: 'POST',
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({"name":"Your board name"}),
+            },)
+            .then(() => fetchDb());
     }
 
   return (
