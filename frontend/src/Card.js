@@ -2,7 +2,6 @@ import React, {useState, useRef} from 'react'
 import styled from "styled-components";
 import {Draggable} from "react-beautiful-dnd";
 import {ConfirmDialog} from 'primereact/confirmdialog';
-import { Button } from 'primereact/button';
 import { Toast } from 'primereact/toast';
 const CardStyle = styled.div`
   //zmienic
@@ -11,7 +10,10 @@ const CardStyle = styled.div`
   padding: 8px;
   margin-bottom: 8px;
 `;
-
+const Button = styled.button`
+    background-color:transparent;
+    border:none;
+`;
 function Card(props)
 {
     function editCard(boardId, id, description) {
@@ -74,7 +76,7 @@ function Card(props)
             <ConfirmDialog visible={visible} onHide={() => setVisible(false)} message="Czy na pewno chcesz usunąć zadanie?"
                 header="Confirmation" icon="pi pi-exclamation-triangle" accept={accept} reject={reject} />
              <div>
-            <Button onClick={() => setVisible(true)} severity="danger" icon="pi pi-trash" size="sm" />
+            <Button onClick={() => setVisible(true)} style={{ color: 'red' }}><i className="pi pi-times" style={{ fontSize: '1rem' }}></i></Button>
             </div>
 
         </CardStyle>
