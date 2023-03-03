@@ -3,27 +3,36 @@ import styled from 'styled-components';
 import { Droppable } from 'react-beautiful-dnd';
 import Card from "./Card";
 import ContentEditable from 'react-contenteditable';
+import 'primeicons/primeicons.css';
+import { Button } from 'primereact/button';
 
 
 const BoardStyle = styled.div`
-  margin: 7px;
-  border: 1px solid #868686;
-  border-radius: 3px;
-  width: 220px;
+  margin: auto;
+  margin-top: 50px;
+  border: 2px solid #868686;
+  border-radius: 12px;
+  min-width: 200px;
+  min-height: 300px;
   display: flex;
   flex-direction: column;
   align-items: center;
   padding-bottom: 10px;
   transition: background-color 2s ease;
   background-color: ${props =>
-    props.boardOverflow ? 'red' : 'inherit'};
+    props.boardOverflow ? '#800000' : 'inherit'};
+  color: ${props =>
+    props.boardOverflow ? 'white' : 'inherit'};
 `;
+
 const Limit = styled.p`
   padding: 4px;
 `;
+
 const Title = styled.h3`
   padding: 6px;
 `;
+
 const CardsStyle = styled.div`
   //zmienic
   padding: 7px;
@@ -41,7 +50,6 @@ function Board(props) {
         changeId(props.backId,parseInt( e.target.innerHTML));
     }
     function newCard(boardId, name, description) {
-
         fetch(`http://localhost:8000/api/board/${boardId}/card/`,
             {  method: 'POST',
                 headers: {
@@ -69,41 +77,39 @@ function Board(props) {
             },)
             .then(() => props.fetchDb());
     }
-        function changeId(boardId,limit) {
-            fetch(`http://localhost:8000/api/board/`,
-                {  method: 'POST',
-                    headers: {
-                        "Content-Type": "application/json",
-                    },
-                    body: JSON.stringify({ "id":boardId,"max_card":limit}),
-                },)
-                .then(() => props.fetchDb());
-}
+    function changeId(boardId,limit) {
+        fetch(`http://localhost:8000/api/board/`,
+            {  method: 'POST',
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({ "id":boardId,"max_card":limit}),
+            },)
+            .then(() => props.fetchDb());
+    }
+    
     return (
-            <BoardStyle boardOverflow={(props.limit<(props.cards).length)&&(props.limit!=null)} >
-
-                <Title> {props.name} :<ContentEditable className="Title" html={(props.name)} disabled={false} onBlur={handleInputChangeName}/></Title>
-                <Limit>Limit:  <ContentEditable className="Limit" html={String(props.limit)} disabled={false} onBlur={handleInputChangeLimit}/></Limit>
-                <button onClick={() => newCard(props.backId,"Temporary","Click on this text to edit")} type="button">Dodaj zadanie</button>
-                <button onClick={() => removeBoard(props.backId)} type="button">Remove board</button>
-                <Droppable droppableId={props.dragId}
-                           type="column">
-                    {(provided) => (
-                        <CardsStyle
-                            ref={provided.innerRef}
-                            {...provided.droppableId}
-                        >
-                            {
-                                (props.cards).map((card, indexDrag) =>
-                                    <Card backId={card.id} dragId={(card.id).toString()}   description={card.description} fetchDb={props.fetchDb} indexDrag={indexDrag}  newCard={newCard} name={card.name} board={card.board}/>
-                                )
-                            }
-                            {provided.placeholder}
-                        </CardsStyle>
-                    )}
-                </Droppable>
-            </BoardStyle>
-)
+      <BoardStyle boardOverflow={(props.limit<(props.cards).length)&&(props.limit!=null)} >
+        <Title><ContentEditable className="Title" html={(props.name)} disabled={false} onBlur={handleInputChangeName}/></Title>
+        <Limit>Limit: <ContentEditable className="Limit" html={String(props.limit)} disabled={false} onBlur={handleInputChangeLimit}/></Limit>
+        <p>
+        <Button style={{ marginRight: "30px" }} icon="pi pi-plus" rounded text aria-label="Filter" onClick={() => newCard(props.backId, "Temporary","Click on this text to edit")} /> 
+        <Button style={{ marginLeft: "30px" }} icon="pi pi-trash" rounded text aria-label="Filter" onClick={() => removeBoard(props.backId)}/>
+        </p>
+        <Droppable droppableId={props.dragId} type="column">
+          {(provided) => (
+           <CardsStyle ref={provided.innerRef} {...provided.droppableId}>
+             {
+             (props.cards).map((card, indexDrag) =>
+              <Card backId={card.id} dragId={(card.id).toString()}   description={card.description} fetchDb={props.fetchDb} indexDrag={indexDrag}  newCard={newCard} name={card.name} board={card.board}/>
+             )
+             }
+             {provided.placeholder}
+           </CardsStyle>
+          )}
+        </Droppable>
+      </BoardStyle>   
+    )
 }
 export default Board;
 

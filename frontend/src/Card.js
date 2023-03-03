@@ -2,32 +2,35 @@ import React, {useState} from 'react'
 import styled from "styled-components";
 import {Draggable} from "react-beautiful-dnd";
 import ContentEditable from 'react-contenteditable';
+import 'primeicons/primeicons.css';
+import { Button } from 'primereact/button';
 
 const CardStyle = styled.div`
   //zmienic
-  max-width: inherit;
+  max-width: auto;
   min-width: inherit;
   border: 1px solid lightgrey;
-  border-radius: 2px;
-  padding: 8px;
+  border-radius: 6px;
+  padding: 4px;
   margin-bottom: 8px;
   display: flex;
   flex-direction:column;
   flex-wrap: wrap;
 `;
+
 const Description = styled.div`
   flex-direction: column;
-  max-width: 120px;
-  min-width: 120px;
+  max-width: 300px;
+  min-width: inherit;
   word-wrap: break-word;
   flex-wrap: wrap;
   padding-left: 15px;
   padding-right:15px;
 `;
+
 function Card(props)
 {
     function editCard(boardId, id, description) {
-
         fetch(`http://localhost:8000/api/board/${boardId}/card/`,
             {
                 method: 'POST',
@@ -43,7 +46,6 @@ function Card(props)
         console.log("wykonuje sie", (props.backId));
         editCard(props.board, props.backId, e.target.innerHTML);
     }
-
     function removeCard(taskId) {
         console.log(JSON.stringify({pk: taskId}))
 
@@ -56,11 +58,11 @@ function Card(props)
         return (
             <Draggable  key={props.backId} draggableId={props.dragId} index={props.indexDrag}>
                 {(provided) => (
-        <CardStyle{...provided.draggableProps}
+              <CardStyle{...provided.draggableProps}
                   {...provided.dragHandleProps}
                   ref={provided.innerRef}
                   onDoubleClick={console.log(props.dragId,props.indexDrag,props.backId)}>
-            <Description className='tasks-container'><ContentEditable className="Description" html={props.description}
+                <Description className='tasks-container'><ContentEditable className="Description" html={props.description}
                                                               disabled={false} onBlur={handleInputChange}/></Description>
             {/*<div className = 'tasks-container'>
                 {
@@ -72,9 +74,8 @@ function Card(props)
                 }
             </div>
            */}
-
-            <button onClick={() => removeCard((props.backId))} type="button">Usuń zadanie</button>
-        </CardStyle>
+               <Button style={{ marginLeft: "auto" }} onClick={() => removeCard((props.backId))} icon="pi pi-times" rounded text severity="danger" aria-label="Cancel"/>
+             </CardStyle>
                 )}
             </Draggable>
     )
