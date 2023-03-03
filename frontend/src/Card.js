@@ -2,6 +2,7 @@ import React, {useState, useRef} from 'react'
 import styled from "styled-components";
 import {Draggable} from "react-beautiful-dnd";
 import {ConfirmDialog} from 'primereact/confirmdialog';
+import { Button } from 'primereact/button';
 import { Toast } from 'primereact/toast';
 const CardStyle = styled.div`
   //zmienic
@@ -73,7 +74,7 @@ function Card(props)
             <ConfirmDialog visible={visible} onHide={() => setVisible(false)} message="Czy na pewno chcesz usunąć zadanie?"
                 header="Confirmation" icon="pi pi-exclamation-triangle" accept={accept} reject={reject} />
              <div>
-            <button onClick={() => setVisible(true)} icon="pi pi-check" type="button">Usuń zadanie</button>
+            <Button onClick={() => setVisible(true)} severity="danger" icon="pi pi-trash" size="sm" />
             </div>
 
         </CardStyle>

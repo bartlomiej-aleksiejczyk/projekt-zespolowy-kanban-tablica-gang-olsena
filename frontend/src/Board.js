@@ -6,7 +6,7 @@ import Card from "./Card";
 const BoardStyle = styled.div`
   margin: 7px;
   border: 1px solid #868686;
-  border-radius: 3px;
+  border-radius: 10px;
   width: 220px;
   display: flex;
   flex-direction: column;
