@@ -1,6 +1,6 @@
 import React from 'react';
 import styled from 'styled-components';
-import { Droppable } from 'react-beautiful-dnd';
+import { Droppable, Draggable } from 'react-beautiful-dnd';
 import Card from "./Card";
 import ContentEditable from 'react-contenteditable';
 
@@ -80,14 +80,20 @@ function Board(props) {
                 .then(() => props.fetchDb());
 }
     return (
-            <BoardStyle boardOverflow={(props.limit<(props.cards).length)&&(props.limit!=null)} >
+        <Draggable key={props.backId} draggableId={props.dragId} index={props.index}>
+            {provided => (
+            <BoardStyle
+                boardOverflow={(props.limit<(props.cards).length)&&(props.limit!=null)}
+                {...provided.draggableProps}
+                ref={provided.innerRef}
+            >
 
-                <Title> {props.name} :<ContentEditable className="Title" html={(props.name)} disabled={false} onBlur={handleInputChangeName}/></Title>
-                <Limit>Limit:  <ContentEditable className="Limit" html={String(props.limit)} disabled={false} onBlur={handleInputChangeLimit}/></Limit>
+                <Title  > {props.name} :<ContentEditable className="Title" html={(props.name)} disabled={false} onBlur={handleInputChangeName}/></Title>
+                <Limit{...provided.dragHandleProps}>Limit:  <ContentEditable className="Limit" html={String(props.limit)} disabled={false} onBlur={handleInputChangeLimit}/></Limit>
                 <button onClick={() => newCard(props.backId,"Temporary","Click on this text to edit")} type="button">Dodaj zadanie</button>
                 <button onClick={() => removeBoard(props.backId)} type="button">Remove board</button>
                 <Droppable droppableId={props.dragId}
-                           type="column">
+                           type="card">
                     {(provided) => (
                         <CardsStyle
                             ref={provided.innerRef}
@@ -103,7 +109,9 @@ function Board(props) {
                     )}
                 </Droppable>
             </BoardStyle>
-)
+            )}
+        </Draggable>
+    )
 }
 export default Board;
 
