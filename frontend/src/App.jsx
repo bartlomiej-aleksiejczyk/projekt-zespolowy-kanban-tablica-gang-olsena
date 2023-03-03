@@ -92,7 +92,7 @@ function App() {
             console.log(board)
           //const tasks = column.taskIds.map(taskId => this.state.tasks[taskId]);
 
-          return <Board backId={board.id} dragId={(boards.indexOf(board)).toString()} droppableId={boards.indexOf(board)} column={board} cards={board.card_data} name={board.name} limit={board.max_card} fetchDb={fetchDb} />;
+          return <Board backId={board.id} dragId={(boards.indexOf(board)).toString()} droppableId={boards.indexOf(board)} column={board} cards={board.card_data} name={board.name} limit={board.max_card} fetchDb={fetchDb} index={board.index}/>;
         })}
         </BoardOfBoards>
       </DragDropContext>

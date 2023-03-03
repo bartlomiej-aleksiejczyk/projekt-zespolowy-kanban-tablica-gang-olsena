@@ -2,6 +2,8 @@ import React from 'react';
 import styled from 'styled-components';
 import { Droppable } from 'react-beautiful-dnd';
 import Card from "./Card";
+import ContentEditable from 'react-contenteditable';
+
 
 const BoardStyle = styled.div`
   margin: 7px;
@@ -30,6 +32,14 @@ const CardsStyle = styled.div`
 `;
 
 function Board(props) {
+    const handleInputChangeName = (e)=> {
+        console.log("wykonuje sie", (props.backId));
+        renameBoard(props.backId, e.target.innerHTML);
+    }
+    const handleInputChangeLimit = (e)=> {
+        console.log("wykonuje sie", (props.backId));
+        changeId(props.backId,parseInt( e.target.innerHTML));
+    }
     function newCard(boardId, name, description) {
 
         fetch(`http://localhost:8000/api/board/${boardId}/card/`,
@@ -41,11 +51,41 @@ function Board(props) {
             },)
             .then(() => props.fetchDb());
     }
+    function removeBoard(taskId) {
+        fetch(`http://localhost:8000/api/board/${taskId}/`,
+            {  method: 'DELETE'
+                ,
+            })
+            .then(() => props.fetchDb());
+    }
+    function renameBoard(boardId,boardName) {
+        fetch(`http://localhost:8000/api/board/`,
+            {
+                method: 'POST',
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({"id": boardId, "name": boardName}),
+            },)
+            .then(() => props.fetchDb());
+    }
+        function changeId(boardId,limit) {
+            fetch(`http://localhost:8000/api/board/`,
+                {  method: 'POST',
+                    headers: {
+                        "Content-Type": "application/json",
+                    },
+                    body: JSON.stringify({ "id":boardId,"max_card":limit}),
+                },)
+                .then(() => props.fetchDb());
+}
     return (
-            <BoardStyle boardOverflow={(props.limit<(props.cards).length)&&(props.limit!=null)}>
-                <Title> {props.name} : {props.frontId}</Title>
-                <Limit>Limit: {props.limit}</Limit>
+            <BoardStyle boardOverflow={(props.limit<(props.cards).length)&&(props.limit!=null)} >
+
+                <Title> {props.name} :<ContentEditable className="Title" html={(props.name)} disabled={false} onBlur={handleInputChangeName}/></Title>
+                <Limit>Limit:  <ContentEditable className="Limit" html={String(props.limit)} disabled={false} onBlur={handleInputChangeLimit}/></Limit>
                 <button onClick={() => newCard(props.backId,"Temporary","Click on this text to edit")} type="button">Dodaj zadanie</button>
+                <button onClick={() => removeBoard(props.backId)} type="button">Remove board</button>
                 <Droppable droppableId={props.dragId}
                            type="column">
                     {(provided) => (
