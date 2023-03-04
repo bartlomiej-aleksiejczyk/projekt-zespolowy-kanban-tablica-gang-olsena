@@ -31,9 +31,10 @@ const Description = styled.div`
 
 function Card(props)
 {
-    let edit=false
     function editCard(boardId, id, description) {
-
+/*
+        setEditSet(!editSet)
+*/
         fetch(`http://localhost:8000/api/board/${boardId}/card/`,
             {
                 method: 'POST',
@@ -44,15 +45,16 @@ function Card(props)
             },)
             .then(() => props.fetchDb());
     }
-    const [editSet, setEditSet] = useState(false)
+/*
+    const [editSet, setEditSet] = useState(true)
+*/
     const handleInputChange = (e)=> {
-        edytujOpisPomoc();
         editCard(props.board, props.backId, e.target.innerHTML);
     }
 
-    function edytujOpisPomoc (){
+/*    async function edytujOpisPomoc (){
         setEditSet(!editSet)
-    };
+    };*/
     function removeCard(taskId) {
         console.log(JSON.stringify({pk: taskId}))
 
@@ -68,12 +70,9 @@ function Card(props)
                 {(provided) => (
         <CardStyle{...provided.draggableProps}
                   {...provided.dragHandleProps}
-                  ref={provided.innerRef}
-                  onDoubleClick={console.log(props.dragId,props.indexDrag,props.backId)}>
-                  onClick={console.log(props.dragId,props.indexDrag,props.backId)}>
-
-            <Description className='tasks-container'  onDoubleClick={edytujOpisPomoc} ><ContentEditable className="Description" html={props.description}
-                                                              disabled={editSet} onBlur={handleInputChange}/></Description>
+                  ref={provided.innerRef}>
+            <Description className='tasks-container'><ContentEditable className="Description" html={props.description} onFocus={console.log("fokus")}
+                                                              disabled={false} onBlur={handleInputChange}/></Description>
             {/*<div className = 'tasks-container'>
                 {
                     isEditing ?
@@ -84,7 +83,9 @@ function Card(props)
                 }
             </div>
            */}
-
+{/*
+            <button onClick={() => edytujOpisPomoc()} type="button">edytuj</button>
+*/}
             <button onClick={() => removeCard((props.backId))} type="button">Usuń zadanie</button>
         </CardStyle>
                 )}

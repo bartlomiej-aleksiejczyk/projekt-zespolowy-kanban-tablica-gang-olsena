@@ -30,48 +30,48 @@ function App() {
             },)
             .then(() => fetchDb());
     }
-    function moveBoard(pk, index, board) {
-        console.log(JSON.stringify({"index":index}))
+    function moveBoard(pk, index) {
+        console.log(JSON.stringify({"index":index}),"test2",pk, index)
         fetch(`http://localhost:8000/api/board/${pk}/move/`,
             {
                 method: 'POST',
                 headers: {
                     "Content-Type": "application/json",
                 },
-                body: JSON.stringify({"index":index, "board":board}),
+                body: JSON.stringify({"index":index}),
             },)
             .then(() => fetchDb());
     }
     function onDragStart(result) {
-        console.log(result.draggableId)
+        console.log(result,"rezult")
     }
     function onDragUpdate(result) {
         if (result.type == "board") {
-            const {destination, source, draggableId} = result
+            const {destination, source, draggableId} = result;
             //console.log("resuult",(((boards[parseInt(destination.droppableId)]).card_data)[destination.index]).index)
             //console.log("tutaj",parseInt(source.droppableId),(draggableId),parseInt(destination.droppableId)/*((boards[parseInt(destination.droppableId)]).card_data)[parseInt(destination.droppableIndex)]*/ );
             if (!destination) {
                 return;
             } else if (destination.droppableId === source.droppableId && destination.index === source.index) {
                 return;
-            } else if ((boards.card_data.length - 1 < destination.index)) {
-                moveCard(parseInt(draggableId), (((boards[parseInt(destination.droppableId)]).card_data).length), (boards[parseInt(destination.droppableId)]).id)
             } else {
-                moveCard(parseInt(draggableId), (((boards[parseInt(destination.droppableId)]).card_data)[destination.index]).index, (boards[parseInt(destination.droppableId)]).id)
+                console.log("TEST",draggableId,destination.index);
+                moveBoard((parseInt(draggableId)),(destination.index));
+                //moveCard(parseInt(draggableId), (((boards[parseInt(destination.droppableId)]).card_data)[destination.index]).index)
                 //moveCard(parseInt(draggableId),(((boards[parseInt(destination.droppableId)]).card_data)[destination.index]).index)
             }
-        } else {
+        }
+        else if (result.type == "card") {
             const {destination, source, draggableId} = result
-            //console.log("resuult",(((boards[parseInt(destination.droppableId)]).card_data)[destination.index]).index)
+            console.log("resuult",boards)
             //console.log("tutaj",parseInt(source.droppableId),(draggableId),parseInt(destination.droppableId)/*((boards[parseInt(destination.droppableId)]).card_data)[parseInt(destination.droppableIndex)]*/ );
-            if (!destination) {
-                return;
-            } else if (destination.droppableId === source.droppableId && destination.index === source.index) {
-                return;
-            } else if ((boards[parseInt(destination.droppableId)].card_data.length - 1 < destination.index)) {
-                moveCard(parseInt(draggableId), (((boards[parseInt(destination.droppableId)]).card_data).length), (boards[parseInt(destination.droppableId)]).id)
-            } else {
-                moveCard(parseInt(draggableId), (((boards[parseInt(destination.droppableId)]).card_data)[destination.index]).index, (boards[parseInt(destination.droppableId)]).id)
+            if (!destination) {return;}
+            else if (destination.droppableId === source.droppableId && destination.index === source.index) {return;}
+            else if ((boards[parseInt(destination.droppableId)].card_data.length - 1 < destination.index)){
+                moveCard(parseInt(draggableId),(((boards[parseInt(destination.droppableId)]).card_data).length), (boards[parseInt(destination.droppableId)]).id)
+            }
+            else{
+                moveCard(parseInt(draggableId),(((boards[parseInt(destination.droppableId)]).card_data)[destination.index]).index, (boards[parseInt(destination.droppableId)]).id)
                 //moveCard(parseInt(draggableId),(((boards[parseInt(destination.droppableId)]).card_data)[destination.index]).index)
             }
         }
@@ -103,25 +103,15 @@ function App() {
             },)
             .then(() => fetchDb());
     }
-    function moveBoard() {
-
-        fetch(`http://localhost:8000/api/board/`,
-            {  method: 'POST',
-                headers: {
-                    "Content-Type": "application/json",
-                },
-                body: JSON.stringify({"name":"Your board name"}),
-            },)
-            .then(() => fetchDb());
-    }
 
   return (
       //Naprawiłem bug#1 w ten sposób że żądanie do API zamiast na końcu przenoszenia (onDragEnd) wysyłane są podczas działania (onDragUpdate)
       //jeśli problem będzie występował w przyszłości można wydłużyć animacje,
       //Jedyny efekt uboczny jest taki że biblioteka wysyła w konsoli wiadomości, że nie można usuwac i dodawać elenetów do list podczas przenoszenia
       //Ale zupełnie nie wplywa to na funkcjonowanie
-    <DragDropContext onDragEnd={onDragEnd}>
-        <button onClick={() => newBoard()} type="button">Dodaj zadanie</button>
+      <div>
+          <button onClick={() => newBoard()} type="button">Dodaj zadanie</button>
+          <DragDropContext onDragEnd={onDragUpdate} onDragUpdate={onDragUpdate}>
         <Droppable
             droppableId="all-columns"
             direction="horizontal"
@@ -135,13 +125,14 @@ function App() {
             {console.log("provident",provided)}
         {boards.map((board, index) => {
           //const tasks = column.taskIds.map(taskId => this.state.tasks[taskId]);
-          return <Board backId={board.id} dragId={(boards.indexOf(board)).toString()} droppableId={boards.indexOf(board)} column={board} cards={board.card_data} name={board.name} limit={board.max_card} fetchDb={fetchDb} index={index}/>
+          return <Board backId={board.id} dragId={(board.id).toString()} droppableId={(boards.indexOf(board)).toString()} column={board} cards={board.card_data} name={board.name} limit={board.max_card} fetchDb={fetchDb} index={index}/>
         })}
             {provided.placeholder}
         </BoardOfBoards>
             )}
         </Droppable>
       </DragDropContext>
+      </div>
   )
 }
 

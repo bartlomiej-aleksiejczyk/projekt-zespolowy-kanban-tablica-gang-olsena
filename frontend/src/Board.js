@@ -97,7 +97,7 @@ function Board(props) {
                 {/*<i className="pi pi-times" style={{ fontSize: '1.0rem' }} onClick={() => removeBoard(props.backId)}></i>*/}
                 {/*<button onClick={() => removeBoard(props.backId)} type="button">Remove board</button>*/}
                 <Button label="Remove board" severity="secondary"onClick={() => removeBoard(props.backId)}  />
-                <Droppable droppableId={props.dragId}
+                <Droppable droppableId={props.droppableId}
                            type="card">
                     {(provided) => (
                         <CardsStyle
