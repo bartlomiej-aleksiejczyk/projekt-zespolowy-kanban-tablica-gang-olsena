@@ -10,7 +10,8 @@ from kanban.serializers.card_serializer import CardSerializer
 
 class BoardViewSet(viewsets.ViewSet):
 
-    def update_board(self, request):
+    def update_board(self, request):# usunąłem pk z końca bo zapytania nie były ła
+
         data = request.data.copy()
         board_id = data.get('id')
         index = int(data.get('index', 0))
@@ -116,6 +117,7 @@ class BoardViewSet(viewsets.ViewSet):
         if not is_success:
             return Response(
                 dict(
+                    test=Board.objects.count()  - 1,
                     success=is_success,
                     message=message
                 )

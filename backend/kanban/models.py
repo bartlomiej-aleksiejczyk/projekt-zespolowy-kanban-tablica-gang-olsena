@@ -42,7 +42,13 @@ class Board(Dictionary, Timestamp):
         ordering = ['index']
 
     def move(self, new_index, old_index = None):
-        if new_index < 0 or Board.objects.count()  - 1 < new_index:
+        #Wykomentowałem powyniższą i inaczej napisałem bo nie dało się przesuwać tablic,
+        # co ciekawe instrukcja warunkowa (Board.objects.count()  - 1 < new_index) działa w przypadku Card
+        #bo w przypadku Card onosi się do całkowitej liczby utworzonych kiedykolwiek card
+        #w przypadku board podaje aktualna ilość boardów istniejacych w obecnym momencie
+        #Jak to czytasz to daj znać czemu służyła ta instrukcja, bo w sumie wydaje się do czegoś potrzebna
+        #if new_index < 0 or Board.objects.count()  - 1 < new_index:
+        if new_index < 0:
             return False, "Wprowadzono nieprawidłowy index."
 
         self.index = new_index
