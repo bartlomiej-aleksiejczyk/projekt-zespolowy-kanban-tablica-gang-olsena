@@ -39,7 +39,6 @@ class CardViewSet(viewsets.ViewSet):
         return Response(
             dict(
                 success=True,
-                test=Card.objects.count() - 1,
                 data=CardSerializer(
                     Card.objects.filter(board_id=card.board_id),
                     many=True
