@@ -5,16 +5,13 @@ import styled from 'styled-components';
 import React, {useState, useEffect} from 'react';
 import { DragDropContext } from 'react-beautiful-dnd';
 import Board from "./Board";
+import { Button } from 'primereact/button';
 
-const NewBoardButton = styled.div`
-  align-items: center;
-  text-align: center;
-`;
 //Przerobić
 const BoardOfBoards = styled.div`
   display: flex;
+  gap: 5px;
 `;
-
 function App() {
 
     const [boards, setBoards] = useState([]);
@@ -88,7 +85,7 @@ function App() {
 {/*
           <Droppable droppableId="all-columns" direction="horizontal" type="column">
 */}
-      <NewBoardButton><button onClick={() => newBoard()} type="button">Add board</button></NewBoardButton>
+      <Button style={{ position: 'absolute', left: '50%', transform: 'translate(-50%, -50%)', marginTop: "30px"}} onClick={() => newBoard()} label="Dodaj kartę" icon="pi pi-plus" />
       <BoardOfBoards>
         {boards.map(board => {
             console.log(board)

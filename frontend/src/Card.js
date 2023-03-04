@@ -1,9 +1,12 @@
-import React, {useState} from 'react'
+import React, {useState, useRef} from 'react'
 import styled from "styled-components";
 import {Draggable} from "react-beautiful-dnd";
 import ContentEditable from 'react-contenteditable';
 import 'primeicons/primeicons.css';
 import { Button } from 'primereact/button';
+import {ConfirmDialog} from 'primereact/confirmdialog';
+import { Toast } from 'primereact/toast';
+
 
 const CardStyle = styled.div`
   //zmienic
@@ -55,6 +58,15 @@ function Card(props)
                     })
             .then(() => props.fetchDb());
     }
+    const toast = useRef(null);
+    const accept = () => {
+        removeCard((props.backId));
+    }
+
+    const reject = () => {
+
+    }
+    const [visible, setVisible] = useState(false);
         return (
             <Draggable  key={props.backId} draggableId={props.dragId} index={props.indexDrag}>
                 {(provided) => (
@@ -74,7 +86,10 @@ function Card(props)
                 }
             </div>
            */}
-               <Button style={{ marginLeft: "auto" }} onClick={() => removeCard((props.backId))} icon="pi pi-times" rounded text severity="danger" aria-label="Cancel"/>
+           <Toast ref={toast} />
+            <ConfirmDialog visible={visible} onHide={() => setVisible(false)} message="Czy na pewno chcesz usunąć zadanie?"
+                header="Confirmation" icon="pi pi-exclamation-triangle" accept={accept} reject={reject} />
+               <Button style={{ marginLeft: "auto" }} onClick={() => setVisible(true)}  icon="pi pi-times" rounded text severity="danger" aria-label="Cancel"/>
              </CardStyle>
                 )}
             </Draggable>

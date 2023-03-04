@@ -1,18 +1,20 @@
-import React from 'react';
+import React, {useState, useRef} from 'react'
 import styled from 'styled-components';
 import { Droppable } from 'react-beautiful-dnd';
 import Card from "./Card";
 import ContentEditable from 'react-contenteditable';
 import 'primeicons/primeicons.css';
 import { Button } from 'primereact/button';
+import {ConfirmDialog} from 'primereact/confirmdialog';
+import { Toast } from 'primereact/toast';
 
 
 const BoardStyle = styled.div`
   margin: auto;
-  margin-top: 50px;
+  margin-top: 70px;
   border: 2px solid #868686;
   border-radius: 12px;
-  min-width: 200px;
+  min-width: 230px;
   min-height: 300px;
   display: flex;
   flex-direction: column;
@@ -24,7 +26,6 @@ const BoardStyle = styled.div`
   color: ${props =>
     props.boardOverflow ? 'white' : 'inherit'};
 `;
-
 const Limit = styled.p`
   padding: 4px;
 `;
@@ -87,14 +88,26 @@ function Board(props) {
             },)
             .then(() => props.fetchDb());
     }
-    
+    const toast = useRef(null);
+    const accept = () => {
+        removeBoard((props.backId));
+    }
+
+    const reject = () => {
+
+    }
+    const [visible, setVisible] = useState(false);
     return (
+    
       <BoardStyle boardOverflow={(props.limit<(props.cards).length)&&(props.limit!=null)} >
         <Title><ContentEditable className="Title" html={(props.name)} disabled={false} onBlur={handleInputChangeName}/></Title>
         <Limit>Limit: <ContentEditable className="Limit" html={String(props.limit)} disabled={false} onBlur={handleInputChangeLimit}/></Limit>
         <p>
-        <Button style={{ marginRight: "30px" }} icon="pi pi-plus" rounded text aria-label="Filter" onClick={() => newCard(props.backId, "Temporary","Click on this text to edit")} /> 
-        <Button style={{ marginLeft: "30px" }} icon="pi pi-trash" rounded text aria-label="Filter" onClick={() => removeBoard(props.backId)}/>
+          <Button style={{ marginRight: "30px" }} icon="pi pi-plus" rounded text aria-label="Filter" onClick={() => newCard(props.backId, "Temporary","Click on this text to edit")} /> 
+          <Toast ref={toast} />
+          <ConfirmDialog visible={visible} onHide={() => setVisible(false)} message="Czy na pewno chcesz usunąć kolumnę?"
+              header="Confirmation" icon="pi pi-exclamation-triangle" accept={accept} reject={reject} />
+          <Button style={{ marginLeft: "30px" }} icon="pi pi-trash" rounded text aria-label="Filter" onClick={() => setVisible(true)}/>
         </p>
         <Droppable droppableId={props.dragId} type="column">
           {(provided) => (
@@ -109,6 +122,7 @@ function Board(props) {
           )}
         </Droppable>
       </BoardStyle>   
+    
     )
 }
 export default Board;
