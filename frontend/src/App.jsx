@@ -54,7 +54,7 @@ function App() {
                 return;
             } else if (destination.droppableId === source.droppableId && destination.index === source.index) {
                 return;
-            } else if ((boards[parseInt(destination.droppableId)].card_data.length - 1 < destination.index)) {
+            } else if ((boards.card_data.length - 1 < destination.index)) {
                 moveCard(parseInt(draggableId), (((boards[parseInt(destination.droppableId)]).card_data).length), (boards[parseInt(destination.droppableId)]).id)
             } else {
                 moveCard(parseInt(draggableId), (((boards[parseInt(destination.droppableId)]).card_data)[destination.index]).index, (boards[parseInt(destination.droppableId)]).id)
@@ -121,6 +121,7 @@ function App() {
       //Jedyny efekt uboczny jest taki że biblioteka wysyła w konsoli wiadomości, że nie można usuwac i dodawać elenetów do list podczas przenoszenia
       //Ale zupełnie nie wplywa to na funkcjonowanie
     <DragDropContext onDragEnd={onDragEnd}>
+        <button onClick={() => newBoard()} type="button">Dodaj zadanie</button>
         <Droppable
             droppableId="all-columns"
             direction="horizontal"
@@ -131,7 +132,7 @@ function App() {
             {...provided.droppableProps}
             ref={provided.innerRef}
         >
-            ${console.log("provident",provided)}
+            {console.log("provident",provided)}
         {boards.map((board, index) => {
           //const tasks = column.taskIds.map(taskId => this.state.tasks[taskId]);
           return <Board backId={board.id} dragId={(boards.indexOf(board)).toString()} droppableId={boards.indexOf(board)} column={board} cards={board.card_data} name={board.name} limit={board.max_card} fetchDb={fetchDb} index={index}/>

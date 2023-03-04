@@ -117,6 +117,7 @@ class BoardViewSet(viewsets.ViewSet):
         if not is_success:
             return Response(
                 dict(
+                    test=Board.objects.count()  - 1,
                     success=is_success,
                     message=message
                 )

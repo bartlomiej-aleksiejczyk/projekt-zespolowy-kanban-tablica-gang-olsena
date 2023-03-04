@@ -3,6 +3,9 @@ import styled from 'styled-components';
 import { Droppable, Draggable } from 'react-beautiful-dnd';
 import Card from "./Card";
 import ContentEditable from 'react-contenteditable';
+import 'primeicons/primeicons.css';
+import { useCounter } from 'primereact/hooks';
+import {Button} from "primereact/button";
 
 
 const BoardStyle = styled.div`
@@ -87,11 +90,13 @@ function Board(props) {
                 {...provided.draggableProps}
                 ref={provided.innerRef}
             >
-
                 <Title  > {props.name} :<ContentEditable className="Title" html={(props.name)} disabled={false} onBlur={handleInputChangeName}/></Title>
                 <Limit{...provided.dragHandleProps}>Limit:  <ContentEditable className="Limit" html={String(props.limit)} disabled={false} onBlur={handleInputChangeLimit}/></Limit>
-                <button onClick={() => newCard(props.backId,"Temporary","Click on this text to edit")} type="button">Dodaj zadanie</button>
-                <button onClick={() => removeBoard(props.backId)} type="button">Remove board</button>
+                {/*<button onClick={() => newCard(props.backId,"Temporary","Click on this text to edit")} type="button">Dodaj zadanie</button>*/}
+                <Button label="Add board" severity="secondary"onClick={() => newCard(props.backId,"Temporary","Click on this text to edit")}  />
+                {/*<i className="pi pi-times" style={{ fontSize: '1.0rem' }} onClick={() => removeBoard(props.backId)}></i>*/}
+                {/*<button onClick={() => removeBoard(props.backId)} type="button">Remove board</button>*/}
+                <Button label="Remove board" severity="secondary"onClick={() => removeBoard(props.backId)}  />
                 <Droppable droppableId={props.dragId}
                            type="card">
                     {(provided) => (

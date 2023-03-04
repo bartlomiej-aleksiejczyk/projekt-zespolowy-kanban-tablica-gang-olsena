@@ -24,8 +24,14 @@ const Description = styled.div`
   padding-left: 15px;
   padding-right:15px;
 `;
+
+
+
+
+
 function Card(props)
 {
+    let edit=false
     function editCard(boardId, id, description) {
 
         fetch(`http://localhost:8000/api/board/${boardId}/card/`,
@@ -38,12 +44,15 @@ function Card(props)
             },)
             .then(() => props.fetchDb());
     }
-    const [isEditing, setIsEditing] = useState(false)
+    const [editSet, setEditSet] = useState(false)
     const handleInputChange = (e)=> {
-        console.log("wykonuje sie", (props.backId));
+        edytujOpisPomoc();
         editCard(props.board, props.backId, e.target.innerHTML);
     }
 
+    function edytujOpisPomoc (){
+        setEditSet(!editSet)
+    };
     function removeCard(taskId) {
         console.log(JSON.stringify({pk: taskId}))
 
@@ -53,15 +62,18 @@ function Card(props)
                     })
             .then(() => props.fetchDb());
     }
-        return (
+
+    return (
             <Draggable  key={props.backId} draggableId={props.dragId} index={props.indexDrag}>
                 {(provided) => (
         <CardStyle{...provided.draggableProps}
                   {...provided.dragHandleProps}
                   ref={provided.innerRef}
                   onDoubleClick={console.log(props.dragId,props.indexDrag,props.backId)}>
-            <Description className='tasks-container'><ContentEditable className="Description" html={props.description}
-                                                              disabled={false} onBlur={handleInputChange}/></Description>
+                  onClick={console.log(props.dragId,props.indexDrag,props.backId)}>
+
+            <Description className='tasks-container'  onDoubleClick={edytujOpisPomoc} ><ContentEditable className="Description" html={props.description}
+                                                              disabled={editSet} onBlur={handleInputChange}/></Description>
             {/*<div className = 'tasks-container'>
                 {
                     isEditing ?
