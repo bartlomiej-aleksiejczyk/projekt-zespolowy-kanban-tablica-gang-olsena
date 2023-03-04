@@ -1,40 +1,40 @@
-import React, {useState} from 'react'
+import React, {useState, useRef} from 'react'
 import styled from "styled-components";
 import {Draggable} from "react-beautiful-dnd";
 import ContentEditable from 'react-contenteditable';
+import 'primeicons/primeicons.css';
+import { Button } from 'primereact/button';
+import {ConfirmDialog} from 'primereact/confirmdialog';
+import { Toast } from 'primereact/toast';
+
 
 const CardStyle = styled.div`
   //zmienic
   max-width: inherit;
   min-width: inherit;
   border: 1px solid lightgrey;
-  border-radius: 2px;
-  padding: 8px;
+  border-radius: 6px;
+  padding: 4px;
   margin-bottom: 8px;
   display: flex;
   flex-direction:column;
   flex-wrap: wrap;
 `;
+
 const Description = styled.div`
   flex-direction: column;
-  max-width: 120px;
-  min-width: 120px;
+  max-width: 300px;
+  min-width: inherit;
   word-wrap: break-word;
   flex-wrap: wrap;
   padding-left: 15px;
   padding-right:15px;
 `;
 
-
-
-
-
 function Card(props)
 {
     function editCard(boardId, id, description) {
-/*
-        setEditSet(!editSet)
-*/
+
         fetch(`http://localhost:8000/api/board/${boardId}/card/`,
             {
                 method: 'POST',
@@ -45,16 +45,12 @@ function Card(props)
             },)
             .then(() => props.fetchDb());
     }
-/*
-    const [editSet, setEditSet] = useState(true)
-*/
+    const [isEditing, setIsEditing] = useState(false)
     const handleInputChange = (e)=> {
+        console.log("wykonuje sie", (props.backId));
         editCard(props.board, props.backId, e.target.innerHTML);
     }
 
-/*    async function edytujOpisPomoc (){
-        setEditSet(!editSet)
-    };*/
     function removeCard(taskId) {
         console.log(JSON.stringify({pk: taskId}))
 
@@ -64,14 +60,22 @@ function Card(props)
                     })
             .then(() => props.fetchDb());
     }
+    const toast = useRef(null);
+    const accept = () => {
+        removeCard((props.backId));
+    }
 
-    return (
+    const reject = () => {
+
+    }
+    const [visible, setVisible] = useState(false);
+        return (
             <Draggable  key={props.backId} draggableId={props.dragId} index={props.indexDrag}>
                 {(provided) => (
-        <CardStyle{...provided.draggableProps}
+              <CardStyle{...provided.draggableProps}
                   {...provided.dragHandleProps}
                   ref={provided.innerRef}>
-            <Description className='tasks-container'><ContentEditable className="Description" html={props.description} onFocus={console.log("fokus")}
+              <Description className='tasks-container'><ContentEditable className="Description" html={props.description}
                                                               disabled={false} onBlur={handleInputChange}/></Description>
             {/*<div className = 'tasks-container'>
                 {
@@ -83,11 +87,11 @@ function Card(props)
                 }
             </div>
            */}
-{/*
-            <button onClick={() => edytujOpisPomoc()} type="button">edytuj</button>
-*/}
-            <button onClick={() => removeCard((props.backId))} type="button">Usuń zadanie</button>
-        </CardStyle>
+           <Toast ref={toast} />
+            <ConfirmDialog visible={visible} onHide={() => setVisible(false)} message="Czy na pewno chcesz usunąć zadanie?"
+                header="Confirmation" icon="pi pi-exclamation-triangle" accept={accept} reject={reject} />
+               <Button style={{ marginLeft: "auto" }} onClick={() => setVisible(true)}  icon="pi pi-times" rounded text severity="danger" aria-label="Cancel"/>
+             </CardStyle>
                 )}
             </Draggable>
     )
