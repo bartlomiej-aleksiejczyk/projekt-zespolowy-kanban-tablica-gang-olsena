@@ -10,33 +10,49 @@ import { Toast } from 'primereact/toast';
 
 
 const BoardStyle = styled.div`
-  margin: auto;
-  margin-top: 70px;
-  border: 2px solid #868686;
-  border-radius: 12px;
+  box-shadow: 0px 1px 7px rgba(0, 0, 0, 0.1), 0px 4px 5px -2px rgba(0, 0, 0, 0.12), 0px 10px 15px -5px rgba(0, 0, 0, 0.2);
+  max-width: 230px;
   min-width: 230px;
-  min-height: 300px;
+  margin-right: 12px;
+  margin-top: 70px;
+  margin-bottom: auto;
+  border: 4px solid #a09bf5;
+  border-radius: 12px;
   display: flex;
+  flex-wrap: wrap;
   flex-direction: column;
   align-items: center;
-  padding-bottom: 10px;
   transition: background-color 2s ease;
   background-color: ${props =>
-    props.boardOverflow ? '#800000' : 'inherit'};
+          props.boardOverflow ? '#800000' : 'white'};
   color: ${props =>
-    props.boardOverflow ? 'white' : 'inherit'};
-`;
-const Limit = styled.p`
-  padding: 4px;
-`;
+          props.boardOverflow ? 'white' : 'inherit'};
 
-const Title = styled.h3`
-  padding: 6px;
+`;
+const Label = styled.label`
+  align-items: center;
+  font-weight: bold;
+  display: flex;
+  gap: 8px;
+  margin-bottom: -10px;
+`
+
+const Title = styled.h2`
+  text-align: center;
+  max-width: 210px;
+  min-width: 210px;
+  padding: 0px;
+  margin-bottom: 10px;
+  flex-direction: column;
+  max-width: 192px;
+  min-width: 192px;
+  word-wrap: break-word;
+  flex-wrap: wrap;
 `;
 
 const CardsStyle = styled.div`
   //zmienic
-  padding: 7px;
+  margin-top: -8px;
   flex-grow: 2;
   min-height: 134px;
 `;
@@ -101,22 +117,24 @@ function Board(props) {
         <Draggable key={props.backId} draggableId={props.dragId} index={props.index}>
             {provided => (
             <BoardStyle
+                {...provided.dragHandleProps}
                 boardOverflow={(props.limit<(props.cards).length)&&(props.limit!=null)}
                 {...provided.draggableProps}
                 ref={provided.innerRef}
             >
-                <Title><ContentEditable className="Title" html={(props.name)} disabled={false} onBlur={handleInputChangeName}/></Title>
-                <Limit{...provided.dragHandleProps}>Limit:  <ContentEditable className="Limit" html={String(props.limit)} disabled={false} onBlur={handleInputChangeLimit}/></Limit>
+                <Title><ContentEditable spellcheck="false"  className="Title" html={(props.name)} disabled={false} onBlur={handleInputChangeName}/></Title>
+                <Label  for="Limit">Limit:<ContentEditable className="Limit"  spellcheck="false" html={String(props.limit)} disabled={false} onBlur={handleInputChangeLimit}  /></Label>
                 <p>
-                <Button style={{ marginRight: "30px" }} icon="pi pi-plus" rounded text aria-label="Filter" onClick={() => newCard(props.backId, "Temporary","Click on this text to edit")} />
+                <Button style={{ marginRight: "25px" }} icon="pi pi-plus" size="lg" rounded text aria-label="Filter" onClick={() => newCard(props.backId, "Temporary","Click on this text to edit")} />
                 <Toast ref={toast} />
                 <ConfirmDialog visible={visible} onHide={() => setVisible(false)} message="Czy na pewno chcesz usunąć kolumnę?"
                                header="Confirmation" icon="pi pi-exclamation-triangle" accept={accept} reject={reject} />
-                <Button style={{ marginLeft: "30px" }} icon="pi pi-trash" rounded text aria-label="Filter" onClick={() => setVisible(true)}/>
+                <Button style={{ marginLeft: "25px"}} icon="pi pi-trash" size="lg" rounded text aria-label="Filter" onClick={() => setVisible(true)}/>
                  </p>
                 <Droppable droppableId={props.droppableId}
                            type="card">
                     {(provided) => (
+
                         <CardsStyle
                             ref={provided.innerRef}
                             {...provided.droppableId}

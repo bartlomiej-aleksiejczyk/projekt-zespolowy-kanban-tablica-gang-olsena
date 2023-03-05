@@ -9,28 +9,30 @@ import { Toast } from 'primereact/toast';
 
 
 const CardStyle = styled.div`
-  //zmienic
-  max-width: inherit;
-  min-width: inherit;
-  border: 1px solid lightgrey;
-  border-radius: 6px;
+  box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.03), 0px 0px 2px rgba(0, 0, 0, 0.06), 0px 2px 6px rgba(0, 0, 0, 0.12);
+  max-width: 210px;
+  min-width: 210px;
+  border: 3px solid #b7b3ea;
+  border-radius: 12px;
   padding: 4px;
+  margin-top: -5px;
+  margin-outside: 1px;
   margin-bottom: 8px;
   display: flex;
-  flex-direction:column;
+  flex-direction: column;
   flex-wrap: wrap;
+  background-color: inherit;
 `;
 
 const Description = styled.div`
   flex-direction: column;
-  max-width: 300px;
-  min-width: inherit;
+  max-width: 192px;
+  min-width: 192px;
   word-wrap: break-word;
   flex-wrap: wrap;
-  padding-left: 15px;
-  padding-right:15px;
+  padding-left: 5px;
+  padding-right:5px;
 `;
-
 function Card(props)
 {
     function editCard(boardId, id, description) {
@@ -70,27 +72,18 @@ function Card(props)
     }
     const [visible, setVisible] = useState(false);
         return (
+
             <Draggable  key={props.backId} draggableId={props.dragId} index={props.indexDrag}>
                 {(provided) => (
               <CardStyle{...provided.draggableProps}
                   {...provided.dragHandleProps}
                   ref={provided.innerRef}>
-              <Description className='tasks-container'><ContentEditable className="Description" html={props.description}
+              <Description className='tasks-container'><ContentEditable spellcheck="false" className="Description" html={props.description}
                                                               disabled={false} onBlur={handleInputChange}/></Description>
-            {/*<div className = 'tasks-container'>
-                {
-                    isEditing ?
-                        <form>
-                            <input name={props.backId} type = 'text' onChange={handleInputChange} defaultValue = {props.description}/>
-                        </form>
-                        : <p onDoubleClick ={()=> setIsEditing(true)}>{props.description}</p>
-                }
-            </div>
-           */}
            <Toast ref={toast} />
             <ConfirmDialog visible={visible} onHide={() => setVisible(false)} message="Czy na pewno chcesz usunąć zadanie?"
                 header="Confirmation" icon="pi pi-exclamation-triangle" accept={accept} reject={reject} />
-               <Button style={{ marginLeft: "auto" }} onClick={() => setVisible(true)}  icon="pi pi-times" rounded text severity="danger" aria-label="Cancel"/>
+               <Button style={{ marginLeft: "80px" }} onClick={() => setVisible(true)}  icon="pi pi-times" rounded text severity="danger" aria-label="Cancel"/>
              </CardStyle>
                 )}
             </Draggable>

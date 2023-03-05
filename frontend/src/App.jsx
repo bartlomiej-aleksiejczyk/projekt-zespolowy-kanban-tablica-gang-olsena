@@ -1,16 +1,52 @@
 import "primereact/resources/themes/lara-light-indigo/theme.css";
 import "primereact/resources/primereact.min.css";
 import "primeicons/primeicons.css";
-import styled from 'styled-components';
+import styled, {createGlobalStyle} from 'styled-components';
 import React, {useState, useEffect} from 'react';
 import { DragDropContext, Droppable } from 'react-beautiful-dnd';
 import Board from "./Board";
 import { Button } from 'primereact/button';
+import 'primeflex/primeflex.css';
 
-//Przerobić
+const GlobalStyle = createGlobalStyle`
+
+  body {
+    box-sizing: border-box;
+    font-family: Lato;
+    color: #232323;
+    background-color: #e55326;
+    scroll-margin-left: 0;
+    //background-color: #f1c743;
+    //background-color: DodgerBlue;
+    //background-color: #f8fcff;
+
+    //display: flex ;
+
+  }
+`
+
 const BoardOfBoards = styled.div`
   display: flex;
-  gap: 5px;
+  //justify-content: space-around;
+  //flex-grow: 1;
+  flex-flow: row nowrap;
+  justify-content: center;
+  //align-items: center;
+  position: static;
+`;
+const Header = styled.h1`
+  text-shadow: 4px 4px #944dce;
+  margin-top: 30px;
+  margin-bottom: -30px;
+  font-size: 250%;
+  text-align: center;
+  width: 100%;
+  position: center;
+  text-transform: uppercase;
+  padding: 5px;
+  color: #ffffff;
+`;
+const WholeWebpage = styled.div`
 `;
 function App() {
 
@@ -101,9 +137,13 @@ function App() {
       //jeśli problem będzie występował w przyszłości można wydłużyć animacje,
       //Jedyny efekt uboczny jest taki że biblioteka wysyła w konsoli wiadomości, że nie można usuwac i dodawać elenetów do list podczas przenoszenia
       //Ale zupełnie nie wplywa to na funkcjonowanie
-      <div>
+      <WholeWebpage>
+          <Header>Kanban Board</Header>
+          <Button style={{ position: "fixed",top: "1rem",right:" 1.5rem",  boxShadow: "0px 1px 7px rgba(0, 0, 0, 0.1), 0px 4px 5px -2px rgba(0, 0, 0, 0.12), 0px 10px 15px -5px rgba(0, 0, 0, 0.2)"
+          }} size="lg" onClick={() => newBoard()} label="New board" icon="pi pi-plus" />
+          <GlobalStyle whiteColor />
           <DragDropContext onDragEnd={onDragUpdate} onDragUpdate={onDragUpdate}>
-              <Button style={{ position: 'absolute', left: '50%', transform: 'translate(-50%, -50%)', marginTop: "30px"}} onClick={() => newBoard()} label="Dodaj kartę" icon="pi pi-plus" />
+              {/*<Button style={{ position: 'absolute', left: '50%', transform: 'translate(-50%, -50%)', marginTop: "30px"}} onClick={() => newBoard()} label="Dodaj kartę" icon="pi pi-plus" />*/}
               <Droppable
                 droppableId="all-columns"
                 direction="horizontal"
@@ -114,7 +154,6 @@ function App() {
             {...provided.droppableProps}
             ref={provided.innerRef}
         >
-            {console.log("provident",provided)}
         {boards.map((board, index) => {
           //const tasks = column.taskIds.map(taskId => this.state.tasks[taskId]);
           return <Board backId={board.id} dragId={(board.id).toString()} droppableId={(boards.indexOf(board)).toString()} column={board} cards={board.card_data} name={board.name} limit={board.max_card} fetchDb={fetchDb} index={index}/>
@@ -124,7 +163,7 @@ function App() {
             )}
         </Droppable>
       </DragDropContext>
-      </div>
+      </WholeWebpage>
   )
 }
 
