@@ -1,7 +1,0 @@
-{
-  "dependencies": {
-    "primeicons": "^6.0.1",
-    "primereact": "^9.2.0",
-    "react-contenteditable": "^3.3.7"
-  }
-}
