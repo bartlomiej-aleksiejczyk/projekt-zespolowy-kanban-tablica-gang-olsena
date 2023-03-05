@@ -45,7 +45,7 @@ function Card(props)
             },)
             .then(() => props.fetchDb());
     }
-    const [isEditing, setIsEditing] = useState(false)
+    // const [isEditing, setIsEditing] = useState(false)
     const handleInputChange = (e)=> {
         console.log("wykonuje sie", (props.backId));
         editCard(props.board, props.backId, e.target.innerHTML);

@@ -39,11 +39,8 @@ function App() {
             },)
             .then(() => fetchDb());
     }
-    function onDragStart(result) {
-        console.log(result,"rezult")
-    }
     function onDragUpdate(result) {
-        if (result.type == "board") {
+        if (result.type === "board") {
             const {destination, source, draggableId} = result;
             if (!destination) {
                 return;
@@ -54,7 +51,7 @@ function App() {
                 moveBoard((parseInt(draggableId)),(destination.index));
             }
         }
-        else if (result.type == "card") {
+        else if (result.type === "card") {
             const {destination, source, draggableId} = result
             console.log("resuult",boards)
             //console.log("tutaj",parseInt(source.droppableId),(draggableId),parseInt(destination.droppableId)/*((boards[parseInt(destination.droppableId)]).card_data)[parseInt(destination.droppableIndex)]*/ );
