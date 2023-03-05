@@ -29,10 +29,10 @@ const BoardOfBoards = styled.div`
   display: flex;
   //justify-content: space-around;
   //flex-grow: 1;
-  flex-flow: row nowrap;
-  justify-content: center;
+  //flex-flow: row nowrap;
+  //justify-content: center;
   //align-items: center;
-  position: static;
+  //position: static;
 `;
 const Header = styled.h1`
   text-shadow: 4px 4px #944dce;
@@ -41,7 +41,7 @@ const Header = styled.h1`
   font-size: 250%;
   text-align: center;
   width: 100%;
-  position: center;
+  position: fixed;
   text-transform: uppercase;
   padding: 5px;
   color: #ffffff;
