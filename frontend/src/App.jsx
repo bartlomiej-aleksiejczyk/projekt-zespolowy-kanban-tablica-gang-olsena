@@ -27,19 +27,21 @@ const GlobalStyle = createGlobalStyle`
 
 const BoardOfBoards = styled.div`
   display: flex;
-  //justify-content: space-around;
+  margin-left:35px;
+  justify-content: space-around;
   //flex-grow: 1;
   //flex-flow: row nowrap;
   //justify-content: center;
   //align-items: center;
-  //position: static;
+  position: absolute;
 `;
 const Header = styled.h1`
   text-shadow: 4px 4px #944dce;
-  margin-top: 30px;
-  margin-bottom: -30px;
-  font-size: 250%;
-  text-align: center;
+  margin-left:35px;
+  margin-top: 25px;
+  //margin-bottom: -30px;
+  font-size: 350%;
+  //text-align: center;
   width: 100%;
   position: fixed;
   text-transform: uppercase;
@@ -136,7 +138,7 @@ function App() {
       //Ale zupełnie nie wplywa to na funkcjonowanie
       <WholeWebpage>
           <Header>Kanban Board</Header>
-          <Button style={{ position: "fixed",top: "1rem",right:" 1.5rem",  boxShadow: "0px 1px 7px rgba(0, 0, 0, 0.1), 0px 4px 5px -2px rgba(0, 0, 0, 0.12), 0px 10px 15px -5px rgba(0, 0, 0, 0.2)"
+          <Button style={{ position: "fixed", zIndex : "1",top: "30px",right:"30px", boxShadow: "0px 1px 7px rgba(0, 0, 0, 0.1), 0px 4px 5px -2px rgba(0, 0, 0, 0.12), 0px 10px 15px -5px rgba(0, 0, 0, 0.2)"
           }} size="lg" onClick={() => newBoard()} label="New board" icon="pi pi-plus" />
           <GlobalStyle whiteColor />
           <DragDropContext onDragEnd={onDragUpdate} onDragUpdate={onDragUpdate}>

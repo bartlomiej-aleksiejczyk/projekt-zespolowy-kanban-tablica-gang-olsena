@@ -13,8 +13,10 @@ const BoardStyle = styled.div`
   box-shadow: 0px 1px 7px rgba(0, 0, 0, 0.1), 0px 4px 5px -2px rgba(0, 0, 0, 0.12), 0px 10px 15px -5px rgba(0, 0, 0, 0.2);
   max-width: 230px;
   min-width: 230px;
-  margin: auto;
-  margin-top: 115px;
+  //margin: auto;
+  zIndex : 1;
+  margin-right: 20px;
+  margin-top: 125px;
   margin-bottom: auto;
   border: 4px solid #a09bf5;
   border-radius: 12px;

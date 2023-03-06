@@ -83,7 +83,7 @@ function Card(props)
            <Toast ref={toast} />
             <ConfirmDialog visible={visible} onHide={() => setVisible(false)} message="Czy na pewno chcesz usunąć zadanie?"
                 header="Confirmation" icon="pi pi-exclamation-triangle" accept={accept} reject={reject} />
-               <Button style={{ marginLeft: "80px" }} onClick={() => setVisible(true)}  icon="pi pi-times" rounded text severity="danger" aria-label="Cancel"/>
+               <Button style={{marginLeft: "154px", marginBottom:"-7px"  }} onClick={() => setVisible(true)}  icon="pi pi-times" rounded text severity="danger" aria-label="Cancel"/>
              </CardStyle>
                 )}
             </Draggable>
