@@ -42,9 +42,20 @@ class Board(Dictionary, Timestamp):
         ordering = ['index']
 
     def move(self, new_index, old_index = None):
+        boards_count = Board.objects.count()
 
-        if new_index < 0 or Board.objects.count()  - 1 < new_index:
+        if new_index < 0 or boards_count  - 1 < new_index:
             return False, "Wprowadzono nieprawidłowy index."
+
+        if old_index == 0 or new_index == 0 or old_index == boards_count - 1:
+            return False, "Nie możesz przenosić tej tablicy"
+
+        if old_index is not None:
+            if new_index == 0:
+                new_index += 1
+
+            if new_index == boards_count - 1:
+                new_index -= 1
 
         self.index = new_index
         self.save()

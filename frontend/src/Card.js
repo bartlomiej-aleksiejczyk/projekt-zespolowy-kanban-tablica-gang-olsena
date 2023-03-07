@@ -3,9 +3,9 @@ import styled from "styled-components";
 import {Draggable} from "react-beautiful-dnd";
 import ContentEditable from 'react-contenteditable';
 import 'primeicons/primeicons.css';
-import { Button } from 'primereact/button';
+import {Button} from 'primereact/button';
 import {ConfirmDialog} from 'primereact/confirmdialog';
-import { Toast } from 'primereact/toast';
+import {Toast} from 'primereact/toast';
 
 
 const CardStyle = styled.div`
@@ -33,60 +33,75 @@ const Description = styled.div`
   padding-left: 5px;
   padding-right:5px;
 `;
-function Card(props)
-{
-    function editCard(boardId, id, description) {
 
+function Card(props) {
+    function editCard(boardId, id, description) {
         fetch(`http://localhost:8000/api/board/${boardId}/card/`,
             {
-                method: 'POST',
+                method : 'POST',
                 headers: {
                     "Content-Type": "application/json",
                 },
-                body: JSON.stringify({"id": id, "description": description}),
+                body   : JSON.stringify({"id": id, "description": description}),
             },)
             .then(() => props.fetchDb());
     }
-    // const [isEditing, setIsEditing] = useState(false)
-    const handleInputChange = (e)=> {
-        console.log("wykonuje sie", (props.backId));
+
+    const handleInputChange = (e) => {
         editCard(props.board, props.backId, e.target.innerHTML);
     }
 
     function removeCard(taskId) {
-        console.log(JSON.stringify({pk: taskId}))
-
-        fetch(`http://localhost:8000/api/card/${taskId}/`,
-            {  method: 'DELETE'
-                , body: JSON.stringify({pk: taskId}),
-                    })
-            .then(() => props.fetchDb());
+        fetch(`http://localhost:8000/api/card/${taskId}/`, {
+            method: 'DELETE',
+            body  : JSON.stringify({pk: taskId}),
+        }).then(() => props.fetchDb());
     }
+
     const toast = useRef(null);
     const accept = () => {
         removeCard((props.backId));
     }
 
-    const reject = () => {
-
-    }
+    const reject = () => {}
     const [visible, setVisible] = useState(false);
-        return (
+    return (
 
-            <Draggable  key={props.backId} draggableId={props.dragId} index={props.indexDrag}>
-                {(provided) => (
-              <CardStyle{...provided.draggableProps}
-                  {...provided.dragHandleProps}
-                  ref={provided.innerRef}>
-              <Description className='tasks-container'><ContentEditable spellcheck="false" className="Description" html={props.description}
-                                                              disabled={false} onBlur={handleInputChange}/></Description>
-           <Toast ref={toast} />
-            <ConfirmDialog visible={visible} onHide={() => setVisible(false)} message="Czy na pewno chcesz usunąć zadanie?"
-                header="Confirmation" icon="pi pi-exclamation-triangle" accept={accept} reject={reject} />
-               <Button style={{marginLeft: "154px", marginBottom:"-7px"  }} onClick={() => setVisible(true)}  icon="pi pi-times" rounded text severity="danger" aria-label="Cancel"/>
-             </CardStyle>
-                )}
-            </Draggable>
+        <Draggable
+            key={props.backId}
+            draggableId={props.dragId}
+            index={props.indexDrag}>
+            {(provided) => (
+                <CardStyle{...provided.draggableProps}
+                          {...provided.dragHandleProps}
+                          ref={provided.innerRef}>
+                    <Description
+                        className='tasks-container'>
+                        <ContentEditable spellcheck="false"
+                                         className="Description"
+                                         html={props.description}
+                                         disabled={false}
+                                         onBlur={handleInputChange}/>
+                    </Description>
+                    <Toast ref={toast}/>
+                    <ConfirmDialog visible={visible}
+                                   onHide={() => setVisible(false)}
+                                   message="Czy na pewno chcesz usunąć zadanie?"
+                                   header="Confirmation"
+                                   icon="pi pi-exclamation-triangle"
+                                   accept={accept}
+                                   reject={reject}/>
+                    <Button style={{marginLeft: "154px", marginBottom: "-7px"}}
+                            onClick={() => setVisible(true)}
+                            icon="pi pi-times"
+                            rounded
+                            text
+                            severity="danger"
+                            aria-label="Cancel"/>
+                </CardStyle>
+            )}
+        </Draggable>
     )
 }
+
 export default Card

@@ -11,10 +11,9 @@ from kanban.serializers.card_serializer import CardSerializer
 class BoardViewSet(viewsets.ViewSet):
 
     def update_board(self, request):# usunąłem pk z końca bo zapytania nie były ła
-
         data = request.data.copy()
         board_id = data.get('id')
-        index = int(data.get('index', 0))
+        index = int(data.get('index', 1))
 
         board_instance = None
         if board_id:
