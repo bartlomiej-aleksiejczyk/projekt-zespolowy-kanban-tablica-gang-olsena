@@ -69,6 +69,7 @@ function App() {
 
     function onDragEnd(result) {
         const {destination, source, draggableId} = result;
+        const draggableIde=draggableId.slice(0, -1)
         if(!destination) return;
         if(destination.droppableId === source.droppableId && destination.index === source.index) return;
 
@@ -76,16 +77,16 @@ function App() {
             let board = {...boards[source.index]};
             boards.splice(source.index, 1);
             boards.splice(destination.index, 0, board);
-            moveBoard(draggableId, destination.index);
+            moveBoard(draggableIde, destination.index);
         } else if(result.type === "card") {
             let board = boards[destination.droppableId];
             let cards = board.card_data;
             let source_card = {...boards[source.droppableId].card_data[source.index]};
 
             if(cards.length - 1 < destination.index) {
-                moveCard(draggableId, cards.length, board.id);
+                moveCard(draggableIde, cards.length, board.id);
             } else {
-                moveCard(draggableId, cards[destination.index].index, board.id)
+                moveCard(draggableIde, cards[destination.index].index, board.id)
             }
 
             boards[source.droppableId].card_data.splice(source.index, 1);
@@ -157,7 +158,7 @@ function App() {
                             {boards.map((board, index) => {
                                 return <Board key={board.id}
                                               backId={board.id}
-                                              dragId={(board.id).toString()}
+                                              dragId={(board.id).toString()+"b"}
                                               droppableId={(boards.indexOf(board)).toString()}
                                               column={board}
                                               cards={board.card_data}

@@ -190,7 +190,7 @@ function Board(props) {
                                 {(props.cards).map((card, indexDrag) =>
                                     <Card key={card.id}
                                           backId={card.id}
-                                          dragId={(card.id).toString()}
+                                          dragId={(card.id).toString()+"c"}
                                           description={card.description}
                                           fetchDb={props.fetchDb}
                                           indexDrag={indexDrag}
