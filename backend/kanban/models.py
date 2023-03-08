@@ -42,7 +42,13 @@ class Board(Dictionary, Timestamp):
 
     @property
     def is_static(self):
-        return self.index in [0, len(Board.objects.all()) - 1]
+        last_index = 0
+        last_board = Board.objects.all().order_by('-index').first()
+
+        if isinstance(last_board, Board):
+            last_index = last_board.index
+
+        return self.index in [0,  last_index]
 
     def move(self, new_index, old_index = None):
         boards_count = Board.objects.count()
