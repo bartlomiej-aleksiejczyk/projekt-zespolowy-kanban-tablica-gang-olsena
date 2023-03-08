@@ -6,7 +6,7 @@ import 'primeicons/primeicons.css';
 import {Button} from 'primereact/button';
 import {ConfirmDialog} from 'primereact/confirmdialog';
 import {Toast} from 'primereact/toast';
-
+import { InputText } from 'primereact/inputtext';
 
 const CardStyle = styled.div`
   box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.03), 0px 0px 2px rgba(0, 0, 0, 0.06), 0px 2px 6px rgba(0, 0, 0, 0.12);
@@ -63,8 +63,23 @@ function Card(props) {
         removeCard((props.backId));
     }
 
-    const reject = () => {}
+    const reject = () => {
+    }
+    const acceptEditCard = () => {
+        editCard(props.board, props.backId,value);
+        setValue('');
+    }
+
+    const rejectEditCard = () => {
+        setValue('');
+    }
+    const [visi, setVisi] = useState(false);
     const [visible, setVisible] = useState(false);
+    const [value, setValue] = useState('');
+    const onOpen = (callback,setCallback,setValue) => {
+        callback(true);
+        setCallback(setValue);
+    }
     return (
 
         <Draggable
@@ -84,11 +99,28 @@ function Card(props) {
                                          onBlur={handleInputChange}/>
                     </Description>
                     <Toast ref={toast}/>
+                    <ConfirmDialog visible={visi}
+                                   onHide={() => setVisi(false)}
+                                   message=<InputText value={value} onChange={(e) => setValue(e.target.value)} />
+                                   header="Potwierdzenie edycji"
+                                   icon="pi pi-pencil"
+                                   acceptLabel="Akceptuj"
+                                   rejectLabel="Odrzuć"
+                                   accept={acceptEditCard}
+                                   reject={rejectEditCard}/>
+                    <Button style={{marginLeft: "120px", marginBottom: "-47px"}}
+                            onClick={() => onOpen(setVisi,setValue,'')}
+                            icon="pi pi-pencil"
+                            rounded
+                            text
+                            aria-label="Cancel"/>
                     <ConfirmDialog visible={visible}
                                    onHide={() => setVisible(false)}
                                    message="Czy na pewno chcesz usunąć zadanie?"
-                                   header="Confirmation"
-                                   icon="pi pi-exclamation-triangle"
+                                   header="Potwierdzenie usunięcia"
+                                   icon="pi pi-trash"
+                                   acceptLabel="Tak"
+                                   rejectLabel="Nie"
                                    accept={accept}
                                    reject={reject}/>
                     <Button style={{marginLeft: "154px", marginBottom: "-7px"}}

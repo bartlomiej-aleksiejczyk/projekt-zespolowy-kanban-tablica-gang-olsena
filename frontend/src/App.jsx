@@ -7,6 +7,8 @@ import {DragDropContext, Droppable} from 'react-beautiful-dnd';
 import Board from "./components/Board";
 import {Button} from 'primereact/button';
 import 'primeflex/primeflex.css';
+import {ConfirmDialog} from 'primereact/confirmdialog';
+import { InputText } from 'primereact/inputtext';
 
 const GlobalStyle = createGlobalStyle`
 
@@ -80,14 +82,15 @@ function App() {
             setBoards(boards);
             await moveBoard(draggableIde, destination.index);
         } else if(result.type === "card") {
-            let board = boards[(destination.droppableId).slice(0, -2)];
+            let board = boards[destination.droppableId];
             let cards = board.card_data;
-            let source_card = {...boards[(source.droppableId).slice(0, -2)].card_data[source.index]};
-            let destination_card = {...boards[(destination.droppableId).slice(0, -2)]};
-            boards[(source.droppableId).slice(0, -2)].card_data.splice(source.index, 1);
-            boards[(destination.droppableId).slice(0, -2)].card_data.splice(destination.index, 0, source_card);
-            boards[(destination.droppableId).slice(0, -2)].card_data[destination.index].board = destination_card.id;
+            let source_card = {...boards[source.droppableId].card_data[source.index]};
+            let destination_card = {...boards[destination.droppableId]};
+            boards[source.droppableId].card_data.splice(source.index, 1);
+            boards[destination.droppableId].card_data.splice(destination.index, 0, source_card);
+            boards[destination.droppableId].card_data[destination.index].board = destination_card.id;
             setBoards(boards);
+
 
             if(cards.length - 1 < destination.index) {
                 await moveCard(draggableIde, cards.length, board.id);
@@ -122,15 +125,36 @@ function App() {
                 headers: {
                     "Content-Type": "application/json",
                 },
-                body   : JSON.stringify({"name": "Your board name"}),
+                body   : JSON.stringify({"name": value}),
             },)
             .then(() => fetchDb());
     }
-
+    const acceptAddBoard = () => {
+        newBoard(value);
+        setValue('');
+    }
+    const rejectAddBoard = () => {
+        setValue('');
+    }
+    const [visible, setVisible] = useState(false);
+    const [value, setValue] = useState('');
+    const onOpen = (callback,setCallback,setValue) => {
+        callback(true);
+        setCallback(setValue);
+    }
     return (
 
         <WholeWebpage>
             <Header>Kanban Board</Header>
+            <ConfirmDialog visible={visible} onHide={() => setVisible(false)}
+                     message= <InputText value={value} onChange={(e) => setValue(e.target.value)} />
+                     header="Wpisz nazwe tablicy:"
+                     icon="pi pi-table"
+                     acceptLabel="Akceptuj"
+                     rejectLabel="Odrzuć"
+                     accept={acceptAddBoard}
+                     reject={rejectAddBoard}
+                />
             <Button style={{
                 position : "fixed",
                 zIndex   : "1",
@@ -139,8 +163,8 @@ function App() {
                 boxShadow: "0px 1px 7px rgba(0, 0, 0, 0.1), 0px 4px 5px -2px rgba(0, 0, 0, 0.12), 0px 10px 15px -5px rgba(0, 0, 0, 0.2)"
             }}
                     size="lg"
-                    onClick={() => newBoard()}
-                    label="New board"
+                    onClick={() => onOpen(setVisible,setValue,'')}/*{() => newBoard()}*/
+                    label="Nowa tablica"
                     icon="pi pi-plus"/>
             <GlobalStyle whiteColor/>
             <DragDropContext
@@ -160,7 +184,7 @@ function App() {
                                 return <Board key={board.id}
                                               backId={board.id}
                                               dragId={(board.id).toString()+"b"}
-                                              droppableId={(boards.indexOf(board)).toString()+"db"}
+                                              droppableId={(boards.indexOf(board)).toString()}
                                               column={board}
                                               cards={board.card_data}
                                               board={board}

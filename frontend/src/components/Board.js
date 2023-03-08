@@ -7,6 +7,8 @@ import 'primeicons/primeicons.css';
 import {Button} from 'primereact/button';
 import {ConfirmDialog} from 'primereact/confirmdialog';
 import {Toast} from 'primereact/toast';
+import { InputText } from 'primereact/inputtext';
+import { InputNumber } from 'primereact/inputnumber';
 
 
 const BoardStyle = styled.div`
@@ -68,17 +70,18 @@ function Board(props) {
         renameBoard(props.backId, e.target.innerHTML);
     }
     const handleInputChangeLimit = (e) => {
-        changeId(props.backId, parseInt(e.target.innerHTML));
+        setValue2(e.value);
+        changeId(props.backId, e.value);
     }
 
-    function newCard(boardId, name, description) {
+    function newCard(boardId, description) {
         fetch(`http://localhost:8000/api/board/${boardId}/card/`,
             {
                 method : 'POST',
                 headers: {
                     "Content-Type": "application/json",
                 },
-                body   : JSON.stringify({"name": name, "description": description}),
+                body   : JSON.stringify({"description": description}),
             },)
             .then(() => props.fetchDb());
     }
@@ -124,7 +127,29 @@ function Board(props) {
     const reject = () => {
 
     }
+    const acceptAddCard = () => {
+        newCard(props.backId, value);
+        setValue('');
+    }
+    const rejectAddCard = () => {
+        setValue('');
+    }
+    const acceptEditBoard = () => {
+        renameBoard(props.backId, value3);
+    }
+    const rejectEditBoard = () => {
+        setValue3(props.name);
+    }
     const [visible, setVisible] = useState(false);
+    const [visible2, setVisible2] = useState(false);
+    const [visi, setVisi] = useState(false);
+    const [value, setValue] = useState('');
+    const [value2, setValue2] = useState(props.limit);
+    const [value3, setValue3] = useState(props.name);
+    const onOpen = (callback,setCallback,setValue) => {
+        callback(true);
+        setCallback(setValue);
+    }
     return (
         <Draggable key={props.backId}
                    draggableId={props.dragId}
@@ -139,19 +164,31 @@ function Board(props) {
                     <Title>
                         <ContentEditable spellCheck="false"
                                          className="Title"
-                                         html={(props.name)}
+                                         html={props.name}
                                          disabled={false}
                                          onBlur={handleInputChangeName}/>
                     </Title>
-                    <Label>
-                        Limit:
-                        <ContentEditable
-                            className="Limit"
-                            spellCheck="false"
-                            html={String(props.limit)}
-                            disabled={false}
-                            onBlur={handleInputChangeLimit}/>
+                    {!props.is_static &&
+                    <Label for="Limit">
+                        Limit: <InputNumber inputId="minmax-buttons" value={value2} onValueChange={(e) => handleInputChangeLimit(e)}
+
+                         mode="decimal"
+                          showButtons min={0}
+                           max={100}
+                           size="1"
+                           style={{height:'2em',width:'100%'}}
+                            />
                     </Label>
+                    }
+                    <ConfirmDialog visible={visi} onHide={() => setVisi(false)}
+                     message=<InputText value={value} onChange={(e) => setValue(e.target.value) } />
+                     header="Wpisz zadanie:"
+                     icon="pi pi-check-square"
+                     acceptLabel="Akceptuj"
+                     rejectLabel="Odrzuć"
+                     accept={acceptAddCard}
+                     reject={rejectAddCard}
+                     />
                     <CardButtons>
                         <Button style={{marginRight: "25px"}}
                                 icon="pi pi-plus"
@@ -159,18 +196,36 @@ function Board(props) {
                                 rounded
                                 text
                                 aria-label="Filter"
-                                onClick={() => newCard(props.backId, "Temporary", "Click on this text to edit")}/>
+                                onClick={() => onOpen(setVisi,setValue,'')}/>
+                        <ConfirmDialog visible={visible2} onHide={() => setVisible2(false)}
+                         message=<InputText value={value3} onChange={(e) => setValue3(e.target.value)} />
+                         header="Edytuj kolumne:"
+                         icon="pi pi-pencil"
+                         acceptLabel="Akceptuj"
+                         rejectLabel="Odrzuć"
+                         accept={acceptEditBoard}
+                         reject={rejectEditBoard}
+                         />
+                        <Button style={{}}
+                                icon="pi pi-pencil"
+                                size="lg"
+                                rounded
+                                text
+                                aria-label="Filter"
+                                onClick={() => onOpen(setVisible2,setValue3,props.name)}/>
                         {!props.is_static &&
-                        <span>
+                            <span>
                             <Toast ref={toast}/>
                             <ConfirmDialog visible={visible}
                                            onHide={() => setVisible(false)}
                                            message="Czy na pewno chcesz usunąć kolumnę?"
-                                           header="Confirmation"
+                                           header="Potwierdzenie usunięcia"
                                            icon="pi pi-exclamation-triangle"
+                                           acceptLabel="Tak"
+                                           rejectLabel="Nie"
                                            accept={accept}
                                            reject={reject}/>
-                            <Button style={{marginLeft: "25px"}}
+                            <Button style={{}}
                                     icon="pi pi-trash"
                                     size="lg"
                                     rounded
