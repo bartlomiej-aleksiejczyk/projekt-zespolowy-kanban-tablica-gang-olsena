@@ -13,7 +13,6 @@ import ApiService from "../services/ApiService";
 import CommonService from "../services/CommonService";
 
 const GlobalStyle = createGlobalStyle`
-
   body {
     box-sizing: border-box;
     font-family: Lato;
@@ -32,7 +31,7 @@ const BoardOfBoards = styled.div`
 const Header = styled.h1`
   text-shadow: 4px 4px #944dce;
   margin-left:35px;
-  margin-top: 25px;
+  margin-top: 35px;
   font-size: 350%;
   width: 100%;
   position: fixed;
@@ -120,8 +119,8 @@ function Main() {
             <Button style={{
                 position : "fixed",
                 zIndex   : "1",
-                top      : "30px",
                 right    : "30px",
+                top      : "41px",
                 boxShadow: "0px 1px 7px rgba(0, 0, 0, 0.1), 0px 4px 5px -2px rgba(0, 0, 0, 0.12), 0px 10px 15px -5px rgba(0, 0, 0, 0.2)"
             }}
                     size="lg"
@@ -136,6 +135,7 @@ function Main() {
                     droppableId="all-columns"
                     direction="horizontal"
                     type="board"
+                    disabledDroppable={true}
                 >
                     {provided => (
                         <BoardOfBoards

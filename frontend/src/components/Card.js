@@ -80,7 +80,8 @@ function Card(props) {
                           ref={provided.innerRef}>
                     <Description
                         className='tasks-container'>
-                        <ContentEditable spellCheck="false"
+                        <ContentEditable
+                                         spellCheck="false"
                                          className="Description"
                                          html={props.description}
                                          disabled={false}
@@ -115,6 +116,7 @@ function Card(props) {
                             icon="pi pi-times"
                             rounded
                             text
+                            //size="small"
                             severity="danger"
                             aria-label="Cancel"/>
                 </CardStyle>
