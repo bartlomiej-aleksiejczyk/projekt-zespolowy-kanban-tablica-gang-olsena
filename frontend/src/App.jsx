@@ -130,8 +130,10 @@ function App() {
     }
     const acceptAddBoard = () => {
         newBoard(value);
+        setValue('');
     }
     const rejectAddBoard = () => {
+        setValue('');
     }
     const [visible, setVisible] = useState(false);
     const [value, setValue] = useState('');

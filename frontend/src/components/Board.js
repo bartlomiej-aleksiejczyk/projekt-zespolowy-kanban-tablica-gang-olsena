@@ -122,8 +122,10 @@ function Board(props) {
     }
     const acceptAddCard = () => {
         newCard(props.backId, value);
+        setValue('');
     }
     const rejectAddCard = () => {
+        setValue('');
     }
     const [visible, setVisible] = useState(false);
     const [visi, setVisi] = useState(false);
