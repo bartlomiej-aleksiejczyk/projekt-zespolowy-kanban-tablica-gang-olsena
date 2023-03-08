@@ -52,10 +52,15 @@ const Title = styled.h2`
 `;
 
 const CardsStyle = styled.div`
-  //zmienic
   margin-top: -8px;
   flex-grow: 2;
   min-height: 134px;
+`;
+const CardButtons = styled.div`
+  margin-top: 20px;
+  margin-bottom: 20px;
+
+
 `;
 
 function Board(props) {
@@ -132,22 +137,22 @@ function Board(props) {
                     {...provided.draggableProps}
                     ref={provided.innerRef}>
                     <Title>
-                        <ContentEditable spellcheck="false"
+                        <ContentEditable spellCheck="false"
                                          className="Title"
                                          html={(props.name)}
                                          disabled={false}
                                          onBlur={handleInputChangeName}/>
                     </Title>
-                    <Label for="Limit">
+                    <Label>
                         Limit:
                         <ContentEditable
                             className="Limit"
-                            spellcheck="false"
+                            spellCheck="false"
                             html={String(props.limit)}
                             disabled={false}
                             onBlur={handleInputChangeLimit}/>
                     </Label>
-                    <p>
+                    <CardButtons>
                         <Button style={{marginRight: "25px"}}
                                 icon="pi pi-plus"
                                 size="lg"
@@ -174,7 +179,7 @@ function Board(props) {
                                     onClick={() => setVisible(true)}/>
                         </span>
                         }
-                    </p>
+                    </CardButtons>
                     <Droppable droppableId={props.droppableId}
                                type="card">
                         {(provided) => (
@@ -183,7 +188,8 @@ function Board(props) {
                                 ref={provided.innerRef}
                                 {...provided.droppableId}>
                                 {(props.cards).map((card, indexDrag) =>
-                                    <Card backId={card.id}
+                                    <Card key={card.id}
+                                          backId={card.id}
                                           dragId={(card.id).toString()}
                                           description={card.description}
                                           fetchDb={props.fetchDb}

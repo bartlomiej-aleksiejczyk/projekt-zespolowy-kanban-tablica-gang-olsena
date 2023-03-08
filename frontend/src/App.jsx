@@ -126,10 +126,7 @@ function App() {
     }
 
     return (
-        //Naprawiłem bug#1 w ten sposób że żądanie do API zamiast na końcu przenoszenia (onDragEnd) wysyłane są podczas
-        // działania (onDragUpdate) jeśli problem będzie występował w przyszłości można wydłużyć animacje, Jedyny efekt
-        // uboczny jest taki że biblioteka wysyła w konsoli wiadomości, że nie można usuwac i dodawać elenetów do list
-        // podczas przenoszenia Ale zupełnie nie wplywa to na funkcjonowanie
+
         <WholeWebpage>
             <Header>Kanban Board</Header>
             <Button style={{
@@ -147,6 +144,7 @@ function App() {
             <DragDropContext
                 onDragEnd={onDragEnd}>
                 <Droppable
+                    key="unikalnyKlucz1"
                     droppableId="all-columns"
                     direction="horizontal"
                     type="board"
@@ -157,7 +155,8 @@ function App() {
                             ref={provided.innerRef}
                         >
                             {boards.map((board, index) => {
-                                return <Board backId={board.id}
+                                return <Board key={board.id}
+                                              backId={board.id}
                                               dragId={(board.id).toString()}
                                               droppableId={(boards.indexOf(board)).toString()}
                                               column={board}

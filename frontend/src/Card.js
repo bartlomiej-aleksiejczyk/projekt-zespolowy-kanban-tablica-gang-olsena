@@ -77,7 +77,7 @@ function Card(props) {
                           ref={provided.innerRef}>
                     <Description
                         className='tasks-container'>
-                        <ContentEditable spellcheck="false"
+                        <ContentEditable spellCheck="false"
                                          className="Description"
                                          html={props.description}
                                          disabled={false}
