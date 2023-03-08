@@ -47,12 +47,11 @@ class Board(Dictionary, Timestamp):
     def move(self, new_index, old_index = None):
         boards_count = Board.objects.count()
 
-        print(new_index, old_index)
         if new_index < 0 or boards_count  - 1 < new_index:
             return False, "Wprowadzono nieprawidłowy index."
 
-        if old_index == 0 or new_index == 0 or old_index == boards_count - 1:
-            return False, "Nie możesz przenosić tej tablicy"
+        if old_index == 0 or new_index == 0 or new_index == boards_count - 1 or old_index == boards_count - 1:
+            return False, "Nie możesz przenieść tej tablicy w te miejsce."
 
         if old_index is not None:
             if new_index == 0:
@@ -136,7 +135,6 @@ class Card(Timestamp):
 
         changed_index = index + 1
         for card in new_cards:
-            print(changed_index)
             card.index = changed_index
             card.save()
             changed_index += 1

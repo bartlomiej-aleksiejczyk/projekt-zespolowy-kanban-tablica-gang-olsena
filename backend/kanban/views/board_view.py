@@ -10,14 +10,13 @@ from kanban.serializers.card_serializer import CardSerializer
 
 class BoardViewSet(viewsets.ViewSet):
 
-    def update_board(self, request):# usunąłem pk z końca bo zapytania nie były ła
+    def update_board(self, request, pk=None):
         data = request.data.copy()
-        board_id = data.get('id')
         index = int(data.get('index', 1))
 
         board_instance = None
-        if board_id:
-            board_instance = Board.objects.get_by_pk(pk=board_id)
+        if pk:
+            board_instance = Board.objects.get_by_pk(pk=pk)
             index = board_instance.index
 
         data['index'] = index
@@ -33,7 +32,6 @@ class BoardViewSet(viewsets.ViewSet):
                     message=message
                 )
             )
-
 
         return Response(
             dict(
@@ -115,6 +113,7 @@ class BoardViewSet(viewsets.ViewSet):
             return Response(
                 dict(
                     success=is_success,
+                    data=BoardSerializer(Board.objects.all(), many=True).data,
                     message=message
                 )
             )

@@ -9,7 +9,8 @@ import {Button} from 'primereact/button';
 import 'primeflex/primeflex.css';
 import {ConfirmDialog} from 'primereact/confirmdialog';
 import {InputText} from 'primereact/inputtext';
-import toastCallback from "../services/CommonService";
+import ApiService from "../services/ApiService";
+import CommonService from "../services/CommonService";
 
 const GlobalStyle = createGlobalStyle`
 
@@ -53,34 +54,9 @@ function Main() {
             .then(response_data => setBoards(response_data.data));
     }, []);
 
-    function moveCard(pk, index, board) {
-        fetch(`http://localhost:8000/api/card/${pk}/move/`,
-            {
-                method : 'POST',
-                headers: {
-                    "Content-Type": "application/json",
-                },
-                body   : JSON.stringify({"index": index, "board": board}),
-            },)
-            .then(response => response.json())
-            .then((response_data) => toastCallback(response_data, setBoards));
-    }
-
-    function moveBoard(pk, index) {
-        fetch(`http://localhost:8000/api/board/${pk}/move/`,
-            {
-                method : 'POST',
-                headers: {
-                    "Content-Type": "application/json",
-                },
-                body   : JSON.stringify({"index": index}),
-            },)
-            .then(response => response.json())
-            .then((response_data) => toastCallback(response_data, setBoards));
-    }
-
     async function onDragEnd(result) {
         const {destination, source, draggableId} = result;
+        const draggableIde = draggableId.slice(0, -1)
         if(!destination) return;
         if(destination.droppableId === source.droppableId && destination.index === source.index) return;
 
@@ -89,72 +65,57 @@ function Main() {
             boards.splice(source.index, 1);
             boards.splice(destination.index, 0, board);
             setBoards(boards);
-            await moveBoard(draggableId, destination.index);
+            await ApiService.moveBoard(draggableIde, destination.index).then((response_data) => {
+                CommonService.toastCallback(response_data, setBoards)
+            });
+            ;
         } else if(result.type === "card") {
             let board = boards[destination.droppableId];
             let cards = board.card_data;
             let source_card = {...boards[source.droppableId].card_data[source.index]};
             let destination_card = {...boards[destination.droppableId]};
-
             boards[source.droppableId].card_data.splice(source.index, 1);
             boards[destination.droppableId].card_data.splice(destination.index, 0, source_card);
             boards[destination.droppableId].card_data[destination.index].board = destination_card.id;
             setBoards(boards);
 
+
             if(cards.length - 1 < destination.index) {
-                await moveCard(draggableId, cards.length, board.id);
+                await ApiService.moveCard(draggableIde, cards.length, board.id).then((response_data) => {
+                    CommonService.toastCallback(response_data, setBoards)
+                });
             } else {
-                await moveCard(draggableId, destination.index, board.id)
+                await ApiService.moveCard(draggableIde, destination.index, board.id).then((response_data) => {
+                    CommonService.toastCallback(response_data, setBoards)
+                });
             }
         }
     }
 
-    function fetchDb() {
-        fetch('http://localhost:8000/api/board/',
-            {
-                method: 'GET'
-            },)
-            .then(response => response.json())
-            .then(response_data => setBoards(response_data.data));
-    }
-
-    function newBoard() {
-        fetch(`http://localhost:8000/api/board/`,
-            {
-                method : 'POST',
-                headers: {
-                    "Content-Type": "application/json",
-                },
-                body   : JSON.stringify({"name": value}),
-            },)
-            .then(response => response.json())
-            .then((response_data) => toastCallback(response_data, setBoards));
-    }
-
     const acceptAddBoard = () => {
-        newBoard(value);
-        setValue('');
+        ApiService.newBoard(value).then((response_data) => {
+            CommonService.toastCallback(response_data, setBoards);
+            setValue('');
+        });
     }
     const rejectAddBoard = () => {
         setValue('');
     }
     const [visible, setVisible] = useState(false);
     const [value, setValue] = useState('');
-    const onOpen = (callback, setCallback, setValue) => {
-        callback(true);
-        setCallback(setValue);
-    }
     return (
         <WholeWebpage>
             <Header>Kanban Board</Header>
-            <ConfirmDialog visible={visible} onHide={() => setVisible(false)}
-                           message=<InputText value={value} onChange={(e) => setValue(e.target.value)}/>
-            header = "Wpisz nazwe tablicy:"
-            icon = "pi pi-table"
-            acceptLabel = "Akceptuj"
-            rejectLabel = "Odrzuć"
-            accept = {acceptAddBoard}
-            reject = {rejectAddBoard}
+            <ConfirmDialog
+                visible={visible}
+                onHide={() => setVisible(false)}
+                message={<InputText value={value} onChange={(e) => setValue(e.target.value)}/>}
+                header="Wpisz nazwe tablicy:"
+                icon="pi pi-table"
+                acceptLabel="Akceptuj"
+                rejectLabel="Odrzuć"
+                accept={acceptAddBoard}
+                reject={rejectAddBoard}
             />
             <Button style={{
                 position : "fixed",
@@ -164,13 +125,14 @@ function Main() {
                 boxShadow: "0px 1px 7px rgba(0, 0, 0, 0.1), 0px 4px 5px -2px rgba(0, 0, 0, 0.12), 0px 10px 15px -5px rgba(0, 0, 0, 0.2)"
             }}
                     size="lg"
-                    onClick={() => onOpen(setVisible, setValue, '')}/*{() => newBoard()}*/
+                    onClick={() => CommonService.onOpenDialog(setVisible, setValue, '')}
                     label="Nowa tablica"
                     icon="pi pi-plus"/>
             <GlobalStyle whiteColor/>
             <DragDropContext
                 onDragEnd={onDragEnd}>
                 <Droppable
+                    key="unikalnyKlucz1"
                     droppableId="all-columns"
                     direction="horizontal"
                     type="board"
@@ -181,14 +143,16 @@ function Main() {
                             ref={provided.innerRef}
                         >
                             {boards.map((board, index) => {
-                                return <Board backId={board.id}
-                                              dragId={(board.id).toString()}
+                                return <Board key={board.id}
+                                              backId={board.id}
+                                              dragId={(board.id).toString() + "b"}
                                               droppableId={(boards.indexOf(board)).toString()}
                                               column={board}
                                               cards={board.card_data}
+                                              board={board}
                                               name={board.name}
                                               limit={board.max_card}
-                                              is_static={[0, boards.length - 1].indexOf(index) !== -1}
+                                              is_static={board.is_static}
                                               setBoards={setBoards}
                                               index={index}/>
                             })}

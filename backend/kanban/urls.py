@@ -5,6 +5,7 @@ from kanban.views.card_view import CardViewSet
 single_board_viewset = BoardViewSet.as_view(
     dict(
         get='get_board',
+        post='update_board',
         delete='delete_board'
     )
 )
