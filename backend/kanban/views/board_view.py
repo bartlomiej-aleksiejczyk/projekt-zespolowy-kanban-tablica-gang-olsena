@@ -23,15 +23,17 @@ class BoardViewSet(viewsets.ViewSet):
         serializer = BoardSerializer(data=data, instance=board_instance, partial=True)
         serializer.is_valid(raise_exception=True)
         serializer.save()
-        is_success, message = serializer.instance.move(index)
 
-        if not is_success:
-            return Response(
-                dict(
-                    success=is_success,
-                    message=message
+        if not board_instance:
+            is_success, message = serializer.instance.move(index)
+
+            if not is_success:
+                return Response(
+                    dict(
+                        success=is_success,
+                        message=message
+                    )
                 )
-            )
 
         return Response(
             dict(
