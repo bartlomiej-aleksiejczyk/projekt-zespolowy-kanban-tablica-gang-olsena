@@ -132,7 +132,7 @@ function Board(props) {
                                             onValueChange={(e) => handleInputChangeLimit(e)}
 
                                             mode="decimal"
-                                            showButtons min={0}
+                                            showButtons min={1}
                                             max={100}
                                             size="1"
                                             style={{height: '2em', width: '100%'}}
