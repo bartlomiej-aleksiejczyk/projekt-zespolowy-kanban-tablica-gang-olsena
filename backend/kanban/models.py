@@ -1,5 +1,6 @@
 from django.db import models
 
+
 class CoreModelManager(models.Manager):
     def get_queryset(self):
         return super(CoreModelManager, self).get_queryset().filter(deleted_at__isnull=True)
@@ -51,13 +52,18 @@ class Board(Dictionary, Timestamp):
     @property
     def is_static(self):
         last_index = self.get_last_index()
-        return self.index in [0,  last_index]
+        return self.index in [0, last_index]
 
-    def move(self, new_index, old_index = None):
+    def move(self, new_index, old_index=None):
         if new_index < 0 or self.get_last_index() < new_index:
             return False, "Wprowadzono nieprawidłowy index."
 
-        if old_index == 0 or new_index == 0 or new_index == self.get_last_index() or old_index == self.get_last_index():
+        print(new_index)
+        if old_index == 0 \
+            or new_index == 0 \
+            or old_index == None and new_index == self.get_last_index() + 1 \
+            or old_index and new_index == self.get_last_index() \
+            or old_index == self.get_last_index():
             return False, "Nie możesz przenieść tej tablicy w te miejsce."
 
         if old_index is not None:
@@ -97,6 +103,7 @@ class Board(Dictionary, Timestamp):
 
         return True, "Tablica została przeniesiona poprawnie."
 
+
 class Card(Timestamp):
     index = models.PositiveSmallIntegerField(default=0)
     board = models.ForeignKey(
@@ -111,8 +118,8 @@ class Card(Timestamp):
     class Meta:
         ordering = ['index']
 
-    def move(self, index, new_board_id, old_index = None, old_board_id = None):
-        if index < 0 or Card.objects.count()  - 1 < index:
+    def move(self, index, new_board_id, old_index=None, old_board_id=None):
+        if index < 0 or Card.objects.count() - 1 < index:
             return False, "Wprowadzono nieprawidłowy index."
 
         self.board_id = new_board_id
