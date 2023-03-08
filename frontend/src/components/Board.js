@@ -1,4 +1,4 @@
-import React, {useState, useRef} from 'react'
+import React, {useState} from 'react'
 import styled from 'styled-components';
 import {Droppable, Draggable} from 'react-beautiful-dnd';
 import Card from "./Card";
@@ -6,7 +6,10 @@ import ContentEditable from 'react-contenteditable';
 import 'primeicons/primeicons.css';
 import {Button} from 'primereact/button';
 import {ConfirmDialog} from 'primereact/confirmdialog';
-import {Toast} from 'primereact/toast';
+import {InputText} from 'primereact/inputtext';
+import {InputNumber} from 'primereact/inputnumber';
+import ApiService from "../services/ApiService";
+import CommonService from "../services/CommonService";
 
 
 const BoardStyle = styled.div`
@@ -15,7 +18,7 @@ const BoardStyle = styled.div`
   min-width: 230px;
   zIndex : 1;
   margin-right: 20px;
-  margin-top: 125px;
+  margin-top: 140px;
   margin-bottom: auto;
   border: 4px solid #a09bf5;
   border-radius: 12px;
@@ -34,8 +37,9 @@ const Label = styled.label`
   align-items: center;
   font-weight: bold;
   display: flex;
+  margin-left: 2px;
   gap: 8px;
-  margin-bottom: -10px;
+  margin-bottom: -5px;
 `
 
 const Title = styled.h2`
@@ -43,83 +47,67 @@ const Title = styled.h2`
   max-width: 210px;
   min-width: 210px;
   padding: 0px;
-  margin-bottom: 10px;
+  margin-bottom: 20px;
   flex-direction: column;
-  max-width: 192px;
-  min-width: 192px;
   word-wrap: break-word;
   flex-wrap: wrap;
 `;
 
 const CardsStyle = styled.div`
-  //zmienic
   margin-top: -8px;
   flex-grow: 2;
   min-height: 134px;
 `;
+const CardButtons = styled.div`
+  margin-top: 22px;
+  margin-bottom: 25px;
+
+
+`;
 
 function Board(props) {
     const handleInputChangeName = (e) => {
-        renameBoard(props.backId, e.target.innerHTML);
+        ApiService.updateBoard(props.backId, {"name": e.target.innerHTML}).then((response_data) => {
+            CommonService.toastCallback(response_data, props.setBoards)
+        });
     }
     const handleInputChangeLimit = (e) => {
-        changeId(props.backId, parseInt(e.target.innerHTML));
+        setValue2(e.value);
+        ApiService.updateBoard(props.backId, {"max_card": e.value}).then((response_data) => {
+            CommonService.toastCallback(response_data, props.setBoards)
+        });
     }
 
-    function newCard(boardId, name, description) {
-        fetch(`http://localhost:8000/api/board/${boardId}/card/`,
-            {
-                method : 'POST',
-                headers: {
-                    "Content-Type": "application/json",
-                },
-                body   : JSON.stringify({"name": name, "description": description}),
-            },)
-            .then(() => props.fetchDb());
-    }
-
-    function removeBoard(taskId) {
-        fetch(`http://localhost:8000/api/board/${taskId}/`,
-            {
-                method: 'DELETE'
-                ,
-            })
-            .then(() => props.fetchDb());
-    }
-
-    function renameBoard(boardId, boardName) {
-        fetch(`http://localhost:8000/api/board/`,
-            {
-                method : 'POST',
-                headers: {
-                    "Content-Type": "application/json",
-                },
-                body   : JSON.stringify({"id": boardId, "name": boardName}),
-            },)
-            .then(() => props.fetchDb());
-    }
-
-    function changeId(boardId, limit) {
-        fetch(`http://localhost:8000/api/board/`,
-            {
-                method : 'POST',
-                headers: {
-                    "Content-Type": "application/json",
-                },
-                body   : JSON.stringify({"id": boardId, "max_card": limit}),
-            },)
-            .then(() => props.fetchDb());
-    }
-
-    const toast = useRef(null);
     const accept = () => {
-        removeBoard((props.backId));
+        ApiService.removeBoard((props.backId)).then((response_data) => {
+            CommonService.toastCallback(response_data, props.setBoards)
+        });
     }
 
-    const reject = () => {
+    const acceptAddCard = () => {
+        ApiService.newCard(props.backId, value).then((response_data) => {
+            CommonService.toastCallback(response_data, props.setBoards)
+            setValue('');
+        });
+    }
+    const rejectAddCard = () => {
+        setValue('');
+    }
+    const acceptEditBoard = () => {
+        ApiService.updateBoard(props.backId, {"name": value3}).then((response_data) => {
+            CommonService.toastCallback(response_data, props.setBoards)
+        });
 
+    }
+    const rejectEditBoard = () => {
+        setValue3(props.name);
     }
     const [visible, setVisible] = useState(false);
+    const [visible2, setVisible2] = useState(false);
+    const [visi, setVisi] = useState(false);
+    const [value, setValue] = useState('');
+    const [value2, setValue2] = useState(props.limit);
+    const [value3, setValue3] = useState(props.name);
     return (
         <Draggable key={props.backId}
                    draggableId={props.dragId}
@@ -132,40 +120,70 @@ function Board(props) {
                     {...provided.draggableProps}
                     ref={provided.innerRef}>
                     <Title>
-                        <ContentEditable spellcheck="false"
+                        <ContentEditable spellCheck="false"
                                          className="Title"
-                                         html={(props.name)}
-                                         disabled={false}
+                                         html={props.name}
+                                         disabled={true}
                                          onBlur={handleInputChangeName}/>
                     </Title>
-                    <Label for="Limit">
-                        Limit:
-                        <ContentEditable
-                            className="Limit"
-                            spellcheck="false"
-                            html={String(props.limit)}
-                            disabled={false}
-                            onBlur={handleInputChangeLimit}/>
+                    {!props.is_static &&
+                    <Label>
+                        Limit: <InputNumber inputId="minmax-buttons" value={value2}
+                                            onValueChange={(e) => handleInputChangeLimit(e)}
+
+                                            mode="decimal"
+                                            showButtons min={1}
+                                            max={100}
+                                            size="1"
+                                            style={{height: '2em', width: '100%'}}
+                    />
                     </Label>
-                    <p>
-                        <Button style={{marginRight: "25px"}}
+                    }
+                    <ConfirmDialog visible={visi} onHide={() => setVisi(false)}
+                                   message=<InputText value={value} onChange={(e) => setValue(e.target.value)}/>
+                    header="Wpisz zadanie:"
+                    icon="pi pi-check-square"
+                    acceptLabel="Akceptuj"
+                    rejectLabel="Odrzuć"
+                    accept={acceptAddCard}
+                    reject={rejectAddCard}
+                    />
+                    <CardButtons>
+                        <Button style={{marginRight: "20px"}}
+                                icon="pi pi-pencil"
+                                size="lg"
+                                rounded
+                                text
+                                aria-label="Filter"
+                                onClick={() => CommonService.onOpenDialog(setVisible2,setValue3,props.name)}/>
+                        <Button style={{}}
                                 icon="pi pi-plus"
                                 size="lg"
                                 rounded
                                 text
                                 aria-label="Filter"
-                                onClick={() => newCard(props.backId, "Temporary", "Click on this text to edit")}/>
+                                onClick={() => CommonService.onOpenDialog(setVisi, setValue, '')}/>
+                        <ConfirmDialog visible={visible2} onHide={() => setVisible2(false)}
+                                       message=<InputText value={value3} onChange={(e) => setValue3(e.target.value)} />
+                        header="Edytuj kolumne:"
+                        icon="pi pi-pencil"
+                        acceptLabel="Akceptuj"
+                        rejectLabel="Odrzuć"
+                        accept={acceptEditBoard}
+                        reject={rejectEditBoard}
+                        />
                         {!props.is_static &&
                         <span>
-                            <Toast ref={toast}/>
                             <ConfirmDialog visible={visible}
                                            onHide={() => setVisible(false)}
                                            message="Czy na pewno chcesz usunąć kolumnę?"
-                                           header="Confirmation"
-                                           icon="pi pi-exclamation-triangle"
+                                           header="Potwierdzenie usunięcia"
+                                           icon="pi pi-trash"
+                                           acceptLabel="Tak"
+                                           rejectLabel="Nie"
                                            accept={accept}
-                                           reject={reject}/>
-                            <Button style={{marginLeft: "25px"}}
+                                           reject={() => {}}/>
+                            <Button style={{marginLeft: "20px"}}
                                     icon="pi pi-trash"
                                     size="lg"
                                     rounded
@@ -174,7 +192,7 @@ function Board(props) {
                                     onClick={() => setVisible(true)}/>
                         </span>
                         }
-                    </p>
+                    </CardButtons>
                     <Droppable droppableId={props.droppableId}
                                type="card">
                         {(provided) => (
@@ -183,12 +201,12 @@ function Board(props) {
                                 ref={provided.innerRef}
                                 {...provided.droppableId}>
                                 {(props.cards).map((card, indexDrag) =>
-                                    <Card backId={card.id}
-                                          dragId={(card.id).toString()}
+                                    <Card key={card.id}
+                                          backId={card.id}
+                                          dragId={(card.id).toString() + "c"}
                                           description={card.description}
-                                          fetchDb={props.fetchDb}
+                                          setBoards={props.setBoards}
                                           indexDrag={indexDrag}
-                                          newCard={newCard}
                                           name={card.name}
                                           board={card.board}/>
                                 )}

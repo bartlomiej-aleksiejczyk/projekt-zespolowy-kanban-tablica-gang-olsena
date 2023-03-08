@@ -10,37 +10,36 @@ from kanban.serializers.card_serializer import CardSerializer
 
 class BoardViewSet(viewsets.ViewSet):
 
-    def update_board(self, request):# usunąłem pk z końca bo zapytania nie były ła
+    def update_board(self, request, pk=None):
         data = request.data.copy()
-        board_id = data.get('id')
         index = int(data.get('index', 1))
 
         board_instance = None
-        if board_id:
-            board_instance = Board.objects.get_by_pk(pk=board_id)
+        if pk:
+            board_instance = Board.objects.get_by_pk(pk=pk)
             index = board_instance.index
 
         data['index'] = index
         serializer = BoardSerializer(data=data, instance=board_instance, partial=True)
         serializer.is_valid(raise_exception=True)
         serializer.save()
-        is_success, message = serializer.instance.move(index)
 
-        if not is_success:
-            return Response(
-                dict(
-                    success=is_success,
-                    message=message
+        if not board_instance:
+            is_success, message = serializer.instance.move(index)
+
+            if not is_success:
+                return Response(
+                    dict(
+                        success=is_success,
+                        message=message
+                    )
                 )
-            )
-
 
         return Response(
             dict(
-                sucess=True,
-                data=BoardSerializer(
-                    Board.objects.get_by_pk(pk=serializer.instance.id)
-                ).data
+                success=True,
+                message="Kolumna została {}.".format(board_instance and "zaktualizowana" or "dodana"),
+                data=BoardSerializer(Board.objects.all(), many=True).data
             )
         )
 
@@ -61,7 +60,6 @@ class BoardViewSet(viewsets.ViewSet):
         serializer.is_valid(raise_exception=True)
         serializer.save()
 
-        print(index, pk)
         is_success, message = serializer.instance.move(index, pk)
 
         if not is_success:
@@ -75,7 +73,8 @@ class BoardViewSet(viewsets.ViewSet):
         return Response(
             dict(
                 success=True,
-                data=serializer.data
+                message="Zadanie zostało {}.".format(card_instance and "zaktualizowane" or "dodane"),
+                data=BoardSerializer(Board.objects.all(), many=True).data
             )
         )
 
@@ -90,12 +89,10 @@ class BoardViewSet(viewsets.ViewSet):
         )
 
     def get_boards(self, request):
-        boards = Board.objects.all()
-
         return Response(
             dict(
                 success=True,
-                data=BoardSerializer(boards, many=True).data
+                data=BoardSerializer(Board.objects.all(), many=True).data
             )
         )
 
@@ -118,6 +115,7 @@ class BoardViewSet(viewsets.ViewSet):
             return Response(
                 dict(
                     success=is_success,
+                    data=BoardSerializer(Board.objects.all(), many=True).data,
                     message=message
                 )
             )
@@ -125,34 +123,39 @@ class BoardViewSet(viewsets.ViewSet):
         return Response(
             dict(
                 success=True,
-                data=BoardSerializer(
-                    Board.objects.all(),
-                    many=True
-                ).data
+                data=BoardSerializer(Board.objects.all(), many=True).data
             )
         )
 
     def delete_board(self, request, pk):
-        board = Board.objects.get_by_pk(pk=pk)
+        board = Board.objects.get_by_pk(pk=pk, raise_exception=True)
+
+        if board.is_static:
+            return Response(
+                dict(
+                    success=False,
+                    message="Nie możesz usunąć tej tablicy."
+                )
+            )
+
         board.deleted_at = datetime.datetime.now()
         board.save()
 
-        is_success, message = board.move(board.index, board.index)
+        boards = Board.objects.filter(
+            index__gte=board.index,
+            deleted_at__isnull=True
+        ).order_by('index')
 
-        if not is_success:
-            return Response(
-                dict(
-                    success=is_success,
-                    message=message
-                )
-            )
+        changed_index = board.index
+        for board in boards:
+            board.index = changed_index
+            board.save()
+            changed_index += 1
 
         return Response(
             dict(
                 success=True,
-                data=BoardSerializer(
-                    Board.objects.all(),
-                    many=True
-                ).data
+                message="Kolumna została usunięta.",
+                data=BoardSerializer(Board.objects.all(), many=True).data,
             )
         )

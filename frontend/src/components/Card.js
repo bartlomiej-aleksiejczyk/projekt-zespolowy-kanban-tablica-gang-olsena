@@ -1,12 +1,13 @@
-import React, {useState, useRef} from 'react'
+import React, {useState} from 'react'
 import styled from "styled-components";
 import {Draggable} from "react-beautiful-dnd";
 import ContentEditable from 'react-contenteditable';
 import 'primeicons/primeicons.css';
 import {Button} from 'primereact/button';
 import {ConfirmDialog} from 'primereact/confirmdialog';
-import {Toast} from 'primereact/toast';
-
+import {InputText} from 'primereact/inputtext';
+import ApiService from "../services/ApiService";
+import CommonService from "../services/CommonService";
 
 const CardStyle = styled.div`
   box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.03), 0px 0px 2px rgba(0, 0, 0, 0.06), 0px 2px 6px rgba(0, 0, 0, 0.12);
@@ -35,36 +36,38 @@ const Description = styled.div`
 `;
 
 function Card(props) {
-    function editCard(boardId, id, description) {
-        fetch(`http://localhost:8000/api/board/${boardId}/card/`,
-            {
-                method : 'POST',
-                headers: {
-                    "Content-Type": "application/json",
-                },
-                body   : JSON.stringify({"id": id, "description": description}),
-            },)
-            .then(() => props.fetchDb());
-    }
-
     const handleInputChange = (e) => {
-        editCard(props.board, props.backId, e.target.innerHTML);
+        ApiService.updateCard(props.board, {
+            "id"         : props.backId,
+            "description": e.target.innerHTML
+        }).then((response_data) => {
+            CommonService.toastCallback(response_data, props.setBoards)
+        });
     }
 
-    function removeCard(taskId) {
-        fetch(`http://localhost:8000/api/card/${taskId}/`, {
-            method: 'DELETE',
-            body  : JSON.stringify({pk: taskId}),
-        }).then(() => props.fetchDb());
-    }
-
-    const toast = useRef(null);
     const accept = () => {
-        removeCard((props.backId));
+        ApiService.removeCard((props.backId)).then((response_data) => {
+            CommonService.toastCallback(response_data, props.setBoards)
+        });
     }
 
-    const reject = () => {}
+    const reject = () => {
+    }
+    const acceptEditCard = () => {
+        ApiService.updateCard(props.board, {
+            "id"         : props.backId,
+            "description": value
+        }).then((response_data) => {
+            CommonService.toastCallback(response_data, props.setBoards);
+        });
+    }
+
+    const rejectEditCard = () => {
+        setValue('');
+    }
+    const [visi, setVisi] = useState(false);
     const [visible, setVisible] = useState(false);
+    const [value, setValue] = useState('');
     return (
 
         <Draggable
@@ -77,18 +80,35 @@ function Card(props) {
                           ref={provided.innerRef}>
                     <Description
                         className='tasks-container'>
-                        <ContentEditable spellcheck="false"
+                        <ContentEditable
+                                         spellCheck="false"
                                          className="Description"
                                          html={props.description}
                                          disabled={false}
                                          onBlur={handleInputChange}/>
                     </Description>
-                    <Toast ref={toast}/>
+                    <ConfirmDialog visible={visi}
+                                   onHide={() => setVisi(false)}
+                                   message=<InputText value={value} onChange={(e) => setValue(e.target.value)}/>
+                    header="Potwierdzenie edycji"
+                    icon="pi pi-pencil"
+                    acceptLabel="Akceptuj"
+                    rejectLabel="Odrzuć"
+                    accept={acceptEditCard}
+                    reject={rejectEditCard}/>
+                    <Button style={{marginLeft: "120px", marginBottom: "-47px"}}
+                            onClick={() => CommonService.onOpenDialog(setVisi, setValue, props.description)}
+                            icon="pi pi-pencil"
+                            rounded
+                            text
+                            aria-label="Cancel"/>
                     <ConfirmDialog visible={visible}
                                    onHide={() => setVisible(false)}
                                    message="Czy na pewno chcesz usunąć zadanie?"
-                                   header="Confirmation"
-                                   icon="pi pi-exclamation-triangle"
+                                   header="Potwierdzenie usunięcia"
+                                   icon="pi pi-trash"
+                                   acceptLabel="Tak"
+                                   rejectLabel="Nie"
                                    accept={accept}
                                    reject={reject}/>
                     <Button style={{marginLeft: "154px", marginBottom: "-7px"}}
@@ -96,6 +116,7 @@ function Card(props) {
                             icon="pi pi-times"
                             rounded
                             text
+                            //size="small"
                             severity="danger"
                             aria-label="Cancel"/>
                 </CardStyle>

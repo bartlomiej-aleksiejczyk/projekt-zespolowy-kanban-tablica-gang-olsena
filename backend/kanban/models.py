@@ -1,5 +1,6 @@
 from django.db import models
 
+
 class CoreModelManager(models.Manager):
     def get_queryset(self):
         return super(CoreModelManager, self).get_queryset().filter(deleted_at__isnull=True)
@@ -33,7 +34,6 @@ class Dictionary(models.Model):
 
 class Board(Dictionary, Timestamp):
     index = models.PositiveSmallIntegerField(default=0)
-    is_static = models.BooleanField(default=False)
     max_card = models.PositiveSmallIntegerField(default=None, null=True, blank=True)
 
     objects = CoreModelManager()
@@ -41,20 +41,36 @@ class Board(Dictionary, Timestamp):
     class Meta:
         ordering = ['index']
 
-    def move(self, new_index, old_index = None):
-        boards_count = Board.objects.count()
+    def get_last_index(self):
+        last_board = Board.objects.all().order_by('-index').first()
 
-        if new_index < 0 or boards_count  - 1 < new_index:
+        if isinstance(last_board, Board):
+            return last_board.index
+
+        return Board.objects.count()
+
+    @property
+    def is_static(self):
+        last_index = self.get_last_index()
+        return self.index in [0, last_index]
+
+    def move(self, new_index, old_index=None):
+        if new_index < 0 or self.get_last_index() < new_index:
             return False, "Wprowadzono nieprawidłowy index."
 
-        if old_index == 0 or new_index == 0 or old_index == boards_count - 1:
-            return False, "Nie możesz przenosić tej tablicy"
+        print(new_index)
+        if old_index == 0 \
+            or new_index == 0 \
+            or old_index == None and new_index == self.get_last_index() + 1 \
+            or old_index and new_index == self.get_last_index() \
+            or old_index == self.get_last_index():
+            return False, "Nie możesz przenieść tej tablicy w te miejsce."
 
         if old_index is not None:
             if new_index == 0:
                 new_index += 1
 
-            if new_index == boards_count - 1:
+            if new_index == self.get_last_index():
                 new_index -= 1
 
         self.index = new_index
@@ -80,12 +96,13 @@ class Board(Dictionary, Timestamp):
         ).exclude(id=self.pk).order_by('index')
 
         changed_index = new_index + 1
-        for card in new_boards:
-            card.index = changed_index
-            card.save()
+        for board in new_boards:
+            board.index = changed_index
+            board.save()
             changed_index += 1
 
         return True, "Tablica została przeniesiona poprawnie."
+
 
 class Card(Timestamp):
     index = models.PositiveSmallIntegerField(default=0)
@@ -101,8 +118,8 @@ class Card(Timestamp):
     class Meta:
         ordering = ['index']
 
-    def move(self, index, new_board_id, old_index = None, old_board_id = None):
-        if index < 0 or Card.objects.count()  - 1 < index:
+    def move(self, index, new_board_id, old_index=None, old_board_id=None):
+        if index < 0 or Card.objects.count() - 1 < index:
             return False, "Wprowadzono nieprawidłowy index."
 
         self.board_id = new_board_id
@@ -132,7 +149,6 @@ class Card(Timestamp):
 
         changed_index = index + 1
         for card in new_cards:
-            print(changed_index)
             card.index = changed_index
             card.save()
             changed_index += 1
