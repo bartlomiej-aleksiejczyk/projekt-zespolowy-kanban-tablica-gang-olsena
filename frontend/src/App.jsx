@@ -84,7 +84,6 @@ function App() {
             let cards = board.card_data;
             let source_card = {...boards[(source.droppableId).slice(0, -2)].card_data[source.index]};
             let destination_card = {...boards[(destination.droppableId).slice(0, -2)]};
-
             boards[(source.droppableId).slice(0, -2)].card_data.splice(source.index, 1);
             boards[(destination.droppableId).slice(0, -2)].card_data.splice(destination.index, 0, source_card);
             boards[(destination.droppableId).slice(0, -2)].card_data[destination.index].board = destination_card.id;
