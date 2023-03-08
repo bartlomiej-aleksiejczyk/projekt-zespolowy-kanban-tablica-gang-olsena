@@ -49,15 +49,16 @@ class CardViewSet(viewsets.ViewSet):
         card.deleted_at = datetime.datetime.now()
         card.save()
 
-        is_success, message = card.move(card.index, card.board_id, card.index, card.board_id)
+        cards = Card.objects.filter(
+            index__gte=card.index,
+            deleted_at__isnull=True
+        ).order_by('index')
 
-        if not is_success:
-            return Response(
-                dict(
-                    success=is_success,
-                    message=message
-                )
-            )
+        changed_index = card.index
+        for card in cards:
+            card.index = changed_index
+            card.save()
+            changed_index += 1
 
         return Response(
             dict(

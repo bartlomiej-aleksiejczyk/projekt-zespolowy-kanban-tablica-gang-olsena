@@ -90,9 +90,9 @@ class Board(Dictionary, Timestamp):
         ).exclude(id=self.pk).order_by('index')
 
         changed_index = new_index + 1
-        for card in new_boards:
-            card.index = changed_index
-            card.save()
+        for board in new_boards:
+            board.index = changed_index
+            board.save()
             changed_index += 1
 
         return True, "Tablica została przeniesiona poprawnie."

@@ -129,18 +129,28 @@ class BoardViewSet(viewsets.ViewSet):
 
     def delete_board(self, request, pk):
         board = Board.objects.get_by_pk(pk=pk)
+
+        if board.is_static:
+            return Response(
+                dict(
+                    success=False,
+                    message="Nie możesz usunąć tej tablicy."
+                )
+            )
+
         board.deleted_at = datetime.datetime.now()
         board.save()
 
-        is_success, message = board.move(board.index, board.index)
+        boards = Board.objects.filter(
+            index__gte=board.index,
+            deleted_at__isnull=True
+        ).order_by('index')
 
-        if not is_success:
-            return Response(
-                dict(
-                    success=is_success,
-                    message=message
-                )
-            )
+        changed_index = board.index
+        for board in boards:
+            board.index = changed_index
+            board.save()
+            changed_index += 1
 
         return Response(
             dict(
