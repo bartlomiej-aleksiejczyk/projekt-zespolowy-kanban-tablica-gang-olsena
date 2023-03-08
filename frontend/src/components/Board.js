@@ -169,7 +169,7 @@ function Board(props) {
                                          onBlur={handleInputChangeName}/>
                     </Title>
                     {!props.is_static &&
-                    <Label for="Limit">
+                    <Label>
                         Limit: <InputNumber inputId="minmax-buttons" value={value2} onValueChange={(e) => handleInputChangeLimit(e)}
 
                          mode="decimal"
