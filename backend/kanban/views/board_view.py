@@ -61,6 +61,7 @@ class BoardViewSet(viewsets.ViewSet):
         serializer.is_valid(raise_exception=True)
         serializer.save()
 
+        print(index, pk)
         is_success, message = serializer.instance.move(index, pk)
 
         if not is_success:
