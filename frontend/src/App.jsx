@@ -137,6 +137,10 @@ function App() {
     }
     const [visible, setVisible] = useState(false);
     const [value, setValue] = useState('');
+    const onOpen = (callback,setCallback,setValue) => {
+        callback(true);
+        setCallback(setValue);
+    }
     return (
         //Naprawiłem bug#1 w ten sposób że żądanie do API zamiast na końcu przenoszenia (onDragEnd) wysyłane są podczas
         // działania (onDragUpdate) jeśli problem będzie występował w przyszłości można wydłużyć animacje, Jedyny efekt
@@ -147,7 +151,7 @@ function App() {
             <ConfirmDialog visible={visible} onHide={() => setVisible(false)}
                      message= <InputText value={value} onChange={(e) => setValue(e.target.value)} />
                      header="Wpisz nazwe tablicy:"
-                     icon="pi pi-check-square"
+                     icon="pi pi-table"
                      acceptLabel="Akceptuj"
                      rejectLabel="Odrzuć"
                      accept={acceptAddBoard}
@@ -161,7 +165,7 @@ function App() {
                 boxShadow: "0px 1px 7px rgba(0, 0, 0, 0.1), 0px 4px 5px -2px rgba(0, 0, 0, 0.12), 0px 10px 15px -5px rgba(0, 0, 0, 0.2)"
             }}
                     size="lg"
-                    onClick={() => setVisible(true)}/*{() => newBoard()}*/
+                    onClick={() => onOpen(setVisible,setValue,'')}/*{() => newBoard()}*/
                     label="Nowa tablica"
                     icon="pi pi-plus"/>
             <GlobalStyle whiteColor/>

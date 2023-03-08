@@ -76,6 +76,10 @@ function Card(props) {
     const [visi, setVisi] = useState(false);
     const [visible, setVisible] = useState(false);
     const [value, setValue] = useState('');
+    const onOpen = (callback,setCallback,setValue) => {
+        callback(true);
+        setCallback(setValue);
+    }
     return (
 
         <Draggable
@@ -105,7 +109,7 @@ function Card(props) {
                                    accept={acceptEditCard}
                                    reject={rejectEditCard}/>
                     <Button style={{marginLeft: "120px", marginBottom: "-47px"}}
-                            onClick={() => setVisi(true)}
+                            onClick={() => onOpen(setVisi,setValue,'')}
                             icon="pi pi-pencil"
                             rounded
                             text
