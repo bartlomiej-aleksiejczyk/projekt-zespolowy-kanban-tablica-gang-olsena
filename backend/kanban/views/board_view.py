@@ -128,7 +128,7 @@ class BoardViewSet(viewsets.ViewSet):
         )
 
     def delete_board(self, request, pk):
-        board = Board.objects.get_by_pk(pk=pk)
+        board = Board.objects.get_by_pk(pk=pk, raise_exception=True)
 
         if board.is_static:
             return Response(

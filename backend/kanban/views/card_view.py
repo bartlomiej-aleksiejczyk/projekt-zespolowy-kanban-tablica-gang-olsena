@@ -45,11 +45,12 @@ class CardViewSet(viewsets.ViewSet):
         )
 
     def delete_card(self, request, pk):
-        card = Card.objects.get_by_pk(pk=pk)
+        card = Card.objects.get_by_pk(pk=pk, raise_exception=True)
         card.deleted_at = datetime.datetime.now()
         card.save()
 
         cards = Card.objects.filter(
+            board_id=card.board_id,
             index__gte=card.index,
             deleted_at__isnull=True
         ).order_by('index')
