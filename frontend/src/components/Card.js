@@ -87,8 +87,10 @@ function Card(props) {
                     <ConfirmDialog visible={visible}
                                    onHide={() => setVisible(false)}
                                    message="Czy na pewno chcesz usunąć zadanie?"
-                                   header="Confirmation"
-                                   icon="pi pi-exclamation-triangle"
+                                   header="Potwierdzenie usunięcia"
+                                   icon="pi pi-trash"
+                                   acceptLabel="Tak"
+                                   rejectLabel="Nie"
                                    accept={accept}
                                    reject={reject}/>
                     <Button style={{marginLeft: "154px", marginBottom: "-7px"}}

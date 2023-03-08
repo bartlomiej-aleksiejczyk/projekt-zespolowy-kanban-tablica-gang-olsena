@@ -7,6 +7,7 @@ import 'primeicons/primeicons.css';
 import {Button} from 'primereact/button';
 import {ConfirmDialog} from 'primereact/confirmdialog';
 import {Toast} from 'primereact/toast';
+import { InputText } from 'primereact/inputtext';
 
 
 const BoardStyle = styled.div`
@@ -66,14 +67,14 @@ function Board(props) {
         changeId(props.backId, parseInt(e.target.innerHTML));
     }
 
-    function newCard(boardId, name, description) {
+    function newCard(boardId, description) {
         fetch(`http://localhost:8000/api/board/${boardId}/card/`,
             {
                 method : 'POST',
                 headers: {
                     "Content-Type": "application/json",
                 },
-                body   : JSON.stringify({"name": name, "description": description}),
+                body   : JSON.stringify({"description": description}),
             },)
             .then(() => props.fetchDb());
     }
@@ -119,7 +120,14 @@ function Board(props) {
     const reject = () => {
 
     }
+    const acceptAddCard = () => {
+        newCard(props.backId, value);
+    }
+    const rejectAddCard = () => {
+    }
     const [visible, setVisible] = useState(false);
+    const [visi, setVisi] = useState(false);
+    const [value, setValue] = useState('');
     return (
         <Draggable key={props.backId}
                    draggableId={props.dragId}
@@ -148,21 +156,32 @@ function Board(props) {
                             onBlur={handleInputChangeLimit}/>
                     </Label>
                     <p>
+                    <ConfirmDialog visible={visi} onHide={() => setVisi(false)}
+                     message=<InputText value={value} onChange={(e) => setValue(e.target.value)} />
+                     header="Wpisz zadanie:"
+                     icon="pi pi-check-square"
+                     acceptLabel="Akceptuj"
+                     rejectLabel="Odrzuć"
+                     accept={acceptAddCard}
+                     reject={rejectAddCard}
+                     />
                         <Button style={{marginRight: "25px"}}
                                 icon="pi pi-plus"
                                 size="lg"
                                 rounded
                                 text
                                 aria-label="Filter"
-                                onClick={() => newCard(props.backId, "Temporary", "Click on this text to edit")}/>
+                                onClick={() => setVisi(true)}/>
                         {!props.is_static &&
                         <span>
                             <Toast ref={toast}/>
                             <ConfirmDialog visible={visible}
                                            onHide={() => setVisible(false)}
                                            message="Czy na pewno chcesz usunąć kolumnę?"
-                                           header="Confirmation"
+                                           header="Potwierdzenie usunięcia"
                                            icon="pi pi-exclamation-triangle"
+                                           acceptLabel="Tak"
+                                           rejectLabel="Nie"
                                            accept={accept}
                                            reject={reject}/>
                             <Button style={{marginLeft: "25px"}}
