@@ -17,7 +17,7 @@ const BoardStyle = styled.div`
   min-width: 230px;
   zIndex : 1;
   margin-right: 20px;
-  margin-top: 125px;
+  margin-top: 140px;
   margin-bottom: auto;
   border: 4px solid #a09bf5;
   border-radius: 12px;
@@ -36,8 +36,9 @@ const Label = styled.label`
   align-items: center;
   font-weight: bold;
   display: flex;
+  margin-left: 2px;
   gap: 8px;
-  margin-bottom: -10px;
+  margin-bottom: -5px;
 `
 
 const Title = styled.h2`
@@ -45,10 +46,8 @@ const Title = styled.h2`
   max-width: 210px;
   min-width: 210px;
   padding: 0px;
-  margin-bottom: 10px;
+  margin-bottom: 20px;
   flex-direction: column;
-  max-width: 192px;
-  min-width: 192px;
   word-wrap: break-word;
   flex-wrap: wrap;
 `;
@@ -59,8 +58,8 @@ const CardsStyle = styled.div`
   min-height: 134px;
 `;
 const CardButtons = styled.div`
-  margin-top: 20px;
-  margin-bottom: 20px;
+  margin-top: 22px;
+  margin-bottom: 25px;
 
 
 `;
@@ -165,7 +164,7 @@ function Board(props) {
                         <ContentEditable spellCheck="false"
                                          className="Title"
                                          html={props.name}
-                                         disabled={false}
+                                         disabled={true}
                                          onBlur={handleInputChangeName}/>
                     </Title>
                     {!props.is_static &&
@@ -190,7 +189,14 @@ function Board(props) {
                      reject={rejectAddCard}
                      />
                     <CardButtons>
-                        <Button style={{marginRight: "25px"}}
+                        <Button style={{marginRight: "20px"}}
+                                icon="pi pi-pencil"
+                                size="lg"
+                                rounded
+                                text
+                                aria-label="Filter"
+                                onClick={() => onOpen(setVisible2,setValue3,props.name)}/>
+                        <Button style={{}}
                                 icon="pi pi-plus"
                                 size="lg"
                                 rounded
@@ -198,21 +204,14 @@ function Board(props) {
                                 aria-label="Filter"
                                 onClick={() => onOpen(setVisi,setValue,'')}/>
                         <ConfirmDialog visible={visible2} onHide={() => setVisible2(false)}
-                         message=<InputText value={value3} onChange={(e) => setValue3(e.target.value)} />
-                         header="Edytuj kolumne:"
-                         icon="pi pi-pencil"
-                         acceptLabel="Akceptuj"
-                         rejectLabel="Odrzuć"
-                         accept={acceptEditBoard}
-                         reject={rejectEditBoard}
-                         />
-                        <Button style={{}}
-                                icon="pi pi-pencil"
-                                size="lg"
-                                rounded
-                                text
-                                aria-label="Filter"
-                                onClick={() => onOpen(setVisible2,setValue3,props.name)}/>
+                                       message=<InputText value={value3} onChange={(e) => setValue3(e.target.value)} />
+                        header="Edytuj kolumne:"
+                        icon="pi pi-pencil"
+                        acceptLabel="Akceptuj"
+                        rejectLabel="Odrzuć"
+                        accept={acceptEditBoard}
+                        reject={rejectEditBoard}
+                        />
                         {!props.is_static &&
                             <span>
                             <Toast ref={toast}/>
@@ -225,7 +224,7 @@ function Board(props) {
                                            rejectLabel="Nie"
                                            accept={accept}
                                            reject={reject}/>
-                            <Button style={{}}
+                            <Button style={{marginLeft: "20px"}}
                                     icon="pi pi-trash"
                                     size="lg"
                                     rounded
