@@ -40,30 +40,31 @@ class Board(Dictionary, Timestamp):
     class Meta:
         ordering = ['index']
 
-    @property
-    def is_static(self):
-        last_index = 0
+    def get_last_index(self):
         last_board = Board.objects.all().order_by('-index').first()
 
         if isinstance(last_board, Board):
-            last_index = last_board.index
+            return last_board.index
 
+        return Board.objects.count()
+
+    @property
+    def is_static(self):
+        last_index = self.get_last_index()
         return self.index in [0,  last_index]
 
     def move(self, new_index, old_index = None):
-        boards_count = Board.objects.count()
-
-        if new_index < 0 or boards_count  - 1 < new_index:
+        if new_index < 0 or self.get_last_index() < new_index:
             return False, "Wprowadzono nieprawidłowy index."
 
-        if old_index == 0 or new_index == 0 or new_index == boards_count - 1 or old_index == boards_count - 1:
+        if old_index == 0 or new_index == 0 or new_index == self.get_last_index() or old_index == self.get_last_index():
             return False, "Nie możesz przenieść tej tablicy w te miejsce."
 
         if old_index is not None:
             if new_index == 0:
                 new_index += 1
 
-            if new_index == boards_count - 1:
+            if new_index == self.get_last_index():
                 new_index -= 1
 
         self.index = new_index
