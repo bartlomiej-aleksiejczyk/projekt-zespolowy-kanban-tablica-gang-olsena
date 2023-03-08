@@ -37,10 +37,9 @@ class BoardViewSet(viewsets.ViewSet):
 
         return Response(
             dict(
-                sucess=True,
-                data=BoardSerializer(
-                    Board.objects.get_by_pk(pk=serializer.instance.id)
-                ).data
+                success=True,
+                message="Kolumna została {}.".format(board_instance and "zaktualizowana" or "dodana"),
+                data=BoardSerializer(Board.objects.all(), many=True).data
             )
         )
 
@@ -61,7 +60,6 @@ class BoardViewSet(viewsets.ViewSet):
         serializer.is_valid(raise_exception=True)
         serializer.save()
 
-        print(index, pk)
         is_success, message = serializer.instance.move(index, pk)
 
         if not is_success:
@@ -75,7 +73,8 @@ class BoardViewSet(viewsets.ViewSet):
         return Response(
             dict(
                 success=True,
-                data=serializer.data
+                message="Zadanie zostało {}.".format(card_instance and "zaktualizowane" or "dodane"),
+                data=BoardSerializer(Board.objects.all(), many=True).data
             )
         )
 
@@ -90,12 +89,10 @@ class BoardViewSet(viewsets.ViewSet):
         )
 
     def get_boards(self, request):
-        boards = Board.objects.all()
-
         return Response(
             dict(
                 success=True,
-                data=BoardSerializer(boards, many=True).data
+                data=BoardSerializer(Board.objects.all(), many=True).data
             )
         )
 
@@ -125,10 +122,7 @@ class BoardViewSet(viewsets.ViewSet):
         return Response(
             dict(
                 success=True,
-                data=BoardSerializer(
-                    Board.objects.all(),
-                    many=True
-                ).data
+                data=BoardSerializer(Board.objects.all(), many=True).data
             )
         )
 
@@ -150,9 +144,7 @@ class BoardViewSet(viewsets.ViewSet):
         return Response(
             dict(
                 success=True,
-                data=BoardSerializer(
-                    Board.objects.all(),
-                    many=True
-                ).data
+                message="Kolumna została usunięta.",
+                data=BoardSerializer(Board.objects.all(), many=True).data,
             )
         )

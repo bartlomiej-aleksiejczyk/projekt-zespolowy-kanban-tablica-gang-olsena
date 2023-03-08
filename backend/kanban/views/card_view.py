@@ -4,6 +4,7 @@ from rest_framework import viewsets
 from rest_framework.response import Response
 
 from kanban.models import Board, Card
+from kanban.serializers.board_serializer import BoardSerializer
 from kanban.serializers.card_serializer import CardSerializer
 
 
@@ -39,10 +40,7 @@ class CardViewSet(viewsets.ViewSet):
         return Response(
             dict(
                 success=True,
-                data=CardSerializer(
-                    Card.objects.filter(board_id=card.board_id),
-                    many=True
-                ).data
+                data=BoardSerializer(Board.objects.all(), many=True).data,
             )
         )
 
@@ -64,9 +62,7 @@ class CardViewSet(viewsets.ViewSet):
         return Response(
             dict(
                 success=True,
-                data=CardSerializer(
-                    Card.objects.filter(board_id=card.board_id),
-                    many=True
-                ).data
+                message="Zadanie zostało usunięte.",
+                data=BoardSerializer(Board.objects.all(), many=True).data,
             )
         )

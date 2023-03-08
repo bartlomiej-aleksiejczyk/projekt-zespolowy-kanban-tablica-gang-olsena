@@ -6,9 +6,9 @@ import ContentEditable from 'react-contenteditable';
 import 'primeicons/primeicons.css';
 import {Button} from 'primereact/button';
 import {ConfirmDialog} from 'primereact/confirmdialog';
-import {Toast} from 'primereact/toast';
 import { InputText } from 'primereact/inputtext';
 import { InputNumber } from 'primereact/inputnumber';
+import toastCallback from "../services/CommonService";
 
 
 const BoardStyle = styled.div`
@@ -78,7 +78,8 @@ function Board(props) {
                 },
                 body   : JSON.stringify({"description": description}),
             },)
-            .then(() => props.fetchDb());
+            .then(response => response.json())
+            .then((response_data) => toastCallback(response_data, props.setBoards));
     }
 
     function removeBoard(taskId) {
@@ -87,7 +88,8 @@ function Board(props) {
                 method: 'DELETE'
                 ,
             })
-            .then(() => props.fetchDb());
+            .then(response => response.json())
+            .then((response_data) => toastCallback(response_data, props.setBoards));
     }
 
     function renameBoard(boardId, boardName) {
@@ -99,7 +101,8 @@ function Board(props) {
                 },
                 body   : JSON.stringify({"id": boardId, "name": boardName}),
             },)
-            .then(() => props.fetchDb());
+            .then(response => response.json())
+            .then((response_data) => toastCallback(response_data, props.setBoards));
     }
 
     function changeId(boardId, limit) {
@@ -111,10 +114,9 @@ function Board(props) {
                 },
                 body   : JSON.stringify({"id": boardId, "max_card": limit}),
             },)
-            .then(() => props.fetchDb());
+            .then(response => response.json())
+            .then((response_data) => toastCallback(response_data, props.setBoards));
     }
-
-    const toast = useRef(null);
     const accept = () => {
         removeBoard((props.backId));
     }
@@ -210,7 +212,6 @@ function Board(props) {
                                 onClick={() => onOpen(setVisible2,setValue3,props.name)}/>
                         {!props.is_static &&
                         <span>
-                            <Toast ref={toast}/>
                             <ConfirmDialog visible={visible}
                                            onHide={() => setVisible(false)}
                                            message="Czy na pewno chcesz usunąć kolumnę?"
@@ -240,7 +241,7 @@ function Board(props) {
                                     <Card backId={card.id}
                                           dragId={(card.id).toString()}
                                           description={card.description}
-                                          fetchDb={props.fetchDb}
+                                          setBoards={props.setBoards}
                                           indexDrag={indexDrag}
                                           newCard={newCard}
                                           name={card.name}

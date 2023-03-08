@@ -7,6 +7,7 @@ import {Button} from 'primereact/button';
 import {ConfirmDialog} from 'primereact/confirmdialog';
 import {Toast} from 'primereact/toast';
 import { InputText } from 'primereact/inputtext';
+import toastCallback from "../services/CommonService";
 
 const CardStyle = styled.div`
   box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.03), 0px 0px 2px rgba(0, 0, 0, 0.06), 0px 2px 6px rgba(0, 0, 0, 0.12);
@@ -44,7 +45,8 @@ function Card(props) {
                 },
                 body   : JSON.stringify({"id": id, "description": description}),
             },)
-            .then(() => props.fetchDb());
+            .then(response => response.json())
+            .then((response_data) => toastCallback(response_data, props.setBoards));
     }
 
     const handleInputChange = (e) => {
@@ -58,7 +60,6 @@ function Card(props) {
         }).then(() => props.fetchDb());
     }
 
-    const toast = useRef(null);
     const accept = () => {
         removeCard((props.backId));
     }
@@ -98,7 +99,6 @@ function Card(props) {
                                          disabled={false}
                                          onBlur={handleInputChange}/>
                     </Description>
-                    <Toast ref={toast}/>
                     <ConfirmDialog visible={visi}
                                    onHide={() => setVisi(false)}
                                    message=<InputText value={value} onChange={(e) => setValue(e.target.value)} />
@@ -109,7 +109,7 @@ function Card(props) {
                                    accept={acceptEditCard}
                                    reject={rejectEditCard}/>
                     <Button style={{marginLeft: "120px", marginBottom: "-47px"}}
-                            onClick={() => onOpen(setVisi,setValue,'')}
+                            onClick={() => onOpen(setVisi,setValue,props.description)}
                             icon="pi pi-pencil"
                             rounded
                             text

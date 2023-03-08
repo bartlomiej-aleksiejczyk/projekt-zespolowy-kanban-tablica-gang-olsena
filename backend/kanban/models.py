@@ -33,7 +33,6 @@ class Dictionary(models.Model):
 
 class Board(Dictionary, Timestamp):
     index = models.PositiveSmallIntegerField(default=0)
-    is_static = models.BooleanField(default=False)
     max_card = models.PositiveSmallIntegerField(default=None, null=True, blank=True)
 
     objects = CoreModelManager()
@@ -41,9 +40,14 @@ class Board(Dictionary, Timestamp):
     class Meta:
         ordering = ['index']
 
+    @property
+    def is_static(self):
+        return self.index in [0, len(Board.objects.all()) - 1]
+
     def move(self, new_index, old_index = None):
         boards_count = Board.objects.count()
 
+        print(new_index, old_index)
         if new_index < 0 or boards_count  - 1 < new_index:
             return False, "Wprowadzono nieprawidłowy index."
 
