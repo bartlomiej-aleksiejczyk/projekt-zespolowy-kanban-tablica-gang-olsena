@@ -4,7 +4,7 @@ import "primeicons/primeicons.css";
 import styled, {createGlobalStyle} from 'styled-components';
 import React, {useState, useEffect} from 'react';
 import {DragDropContext, Droppable} from 'react-beautiful-dnd';
-import Board from "./Board";
+import Board from "./components/Board";
 import {Button} from 'primereact/button';
 import 'primeflex/primeflex.css';
 
@@ -67,7 +67,7 @@ function App() {
             .then(() => fetchDb());
     }
 
-    function onDragEnd(result) {
+    async function onDragEnd(result) {
         const {destination, source, draggableId} = result;
         const draggableIde=draggableId.slice(0, -1)
         if(!destination) return;
@@ -77,23 +77,25 @@ function App() {
             let board = {...boards[source.index]};
             boards.splice(source.index, 1);
             boards.splice(destination.index, 0, board);
-            moveBoard(draggableIde, destination.index);
+            setBoards(boards);
+            await moveBoard(draggableIde, destination.index);
         } else if(result.type === "card") {
-            let board = boards[destination.droppableId];
+            let board = boards[(destination.droppableId).slice(0, -2)];
             let cards = board.card_data;
-            let source_card = {...boards[source.droppableId].card_data[source.index]};
+            let source_card = {...boards[(source.droppableId).slice(0, -2)].card_data[source.index]};
+            let destination_card = {...boards[(destination.droppableId).slice(0, -2)]};
+
+            boards[(source.droppableId).slice(0, -2)].card_data.splice(source.index, 1);
+            boards[(destination.droppableId).slice(0, -2)].card_data.splice(destination.index, 0, source_card);
+            boards[(destination.droppableId).slice(0, -2)].card_data[destination.index].board = destination_card.id;
+            setBoards(boards);
 
             if(cards.length - 1 < destination.index) {
-                moveCard(draggableIde, cards.length, board.id);
+                await moveCard(draggableIde, cards.length, board.id);
             } else {
-                moveCard(draggableIde, cards[destination.index].index, board.id)
+                await moveCard(draggableIde, destination.index, board.id)
             }
-
-            boards[source.droppableId].card_data.splice(source.index, 1);
-            boards[destination.droppableId].card_data.splice(destination.index, 0, source_card);
-
         }
-        setBoards(boards);
     }
 
     useEffect(() => {
@@ -159,9 +161,10 @@ function App() {
                                 return <Board key={board.id}
                                               backId={board.id}
                                               dragId={(board.id).toString()+"b"}
-                                              droppableId={(boards.indexOf(board)).toString()}
+                                              droppableId={(boards.indexOf(board)).toString()+"db"}
                                               column={board}
                                               cards={board.card_data}
+                                              board={board}
                                               name={board.name}
                                               limit={board.max_card}
                                               is_static={[0, boards.length - 1].indexOf(index) !== -1}
