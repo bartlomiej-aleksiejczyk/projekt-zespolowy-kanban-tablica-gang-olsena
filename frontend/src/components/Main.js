@@ -109,7 +109,7 @@ function Main() {
                 visible={visible}
                 onHide={() => setVisible(false)}
                 message={<InputText value={value} onChange={(e) => setValue(e.target.value)}/>}
-                header="Wpisz nazwe tablicy:"
+                header="Wpisz nazwe kolumny:"
                 icon="pi pi-table"
                 acceptLabel="Akceptuj"
                 rejectLabel="Odrzuć"
@@ -125,7 +125,7 @@ function Main() {
             }}
                     size="lg"
                     onClick={() => CommonService.onOpenDialog(setVisible, setValue, '')}
-                    label="Nowa tablica"
+                    label="Nowa kolumna"
                     icon="pi pi-plus"/>
             <GlobalStyle whiteColor/>
             <DragDropContext

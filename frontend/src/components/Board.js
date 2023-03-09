@@ -165,7 +165,7 @@ function Board(props) {
                                 onClick={() => CommonService.onOpenDialog(setVisi, setValue, '')}/>
                         <ConfirmDialog visible={visible2} onHide={() => setVisible2(false)}
                                        message=<InputText value={value3} onChange={(e) => setValue3(e.target.value)} />
-                        header="Edytuj kolumne:"
+                        header="Edytuj kolumnę:"
                         icon="pi pi-pencil"
                         acceptLabel="Akceptuj"
                         rejectLabel="Odrzuć"
