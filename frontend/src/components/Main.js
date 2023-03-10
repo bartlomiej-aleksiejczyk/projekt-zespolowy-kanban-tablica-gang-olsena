@@ -15,9 +15,13 @@ import CommonService from "../services/CommonService";
 const GlobalStyle = createGlobalStyle`
   body {
     box-sizing: border-box;
-    font-family: Lato;
+    font-family: Verdana;
     color: #232323;
-    background-color: #e55326;
+    background-color: #aec5de;
+    /*
+    background-color: #a2c0e0;
+    */
+
     scroll-margin-left: 0;
   }
 `
@@ -29,8 +33,8 @@ const BoardOfBoards = styled.div`
   position: absolute;
 `;
 const Header = styled.h1`
-  text-shadow: 4px 4px #944dce;
-  margin-left:35px;
+  text-shadow: 3px 3px #4f46e5;
+  margin-left: 35px;
   margin-top: 35px;
   font-size: 350%;
   width: 100%;

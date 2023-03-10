@@ -17,11 +17,10 @@ const BoardStyle = styled.div`
   max-width: 230px;
   min-width: 230px;
   zIndex : 1;
-  margin-right: 20px;
+  margin-right: 17px;
   margin-top: 140px;
   margin-bottom: auto;
-  border: 4px solid #a09bf5;
-  border-radius: 12px;
+  border-radius: 6px;
   display: flex;
   flex-wrap: wrap;
   flex-direction: column;
