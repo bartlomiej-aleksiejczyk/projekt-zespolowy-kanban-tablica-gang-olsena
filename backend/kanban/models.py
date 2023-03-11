@@ -60,10 +60,10 @@ class Board(Dictionary, Timestamp):
 
         print(new_index)
         if old_index == 0 \
-            or new_index == 0 \
-            or old_index == None and new_index == self.get_last_index() + 1 \
-            or old_index and new_index == self.get_last_index() \
-            or old_index == self.get_last_index():
+                or new_index == 0 \
+                or old_index == None and new_index == self.get_last_index() + 1 \
+                or old_index and new_index == self.get_last_index() \
+                or old_index == self.get_last_index():
             return False, "Nie możesz przenieść tej tablicy w te miejsce."
 
         if old_index is not None:
@@ -103,12 +103,23 @@ class Board(Dictionary, Timestamp):
 
         return True, "Tablica została przeniesiona poprawnie."
 
+class Row(Dictionary, Timestamp):
+    index = models.PositiveSmallIntegerField(default=0)
+    objects = CoreModelManager()
+
+    class Meta:
+        ordering = ['index']
 
 class Card(Timestamp):
     index = models.PositiveSmallIntegerField(default=0)
     board = models.ForeignKey(
         'kanban.Board',
         related_name='card_board',
+        on_delete=models.DO_NOTHING
+    )
+    row = models.ForeignKey(
+        'kanban.Row',
+        related_name='card_row',
         on_delete=models.DO_NOTHING
     )
     description = models.TextField()
@@ -154,3 +165,5 @@ class Card(Timestamp):
             changed_index += 1
 
         return True, "Wpis został przeniesiony poprawnie."
+
+

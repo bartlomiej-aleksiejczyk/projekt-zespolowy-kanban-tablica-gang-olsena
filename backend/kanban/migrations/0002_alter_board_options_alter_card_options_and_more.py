@@ -16,6 +16,10 @@ class Migration(migrations.Migration):
             options={'ordering': ['index']},
         ),
         migrations.AlterModelOptions(
+            name='row',
+            options={'ordering': ['index']},
+        ),
+        migrations.AlterModelOptions(
             name='card',
             options={'ordering': ['index']},
         ),
@@ -23,5 +27,11 @@ class Migration(migrations.Migration):
             model_name='card',
             name='board',
             field=models.ForeignKey(on_delete=django.db.models.deletion.DO_NOTHING, related_name='card_board', to='kanban.board'),
+        ),
+        migrations.AlterField(
+            model_name='card',
+            name='row',
+            field=models.ForeignKey(on_delete=django.db.models.deletion.DO_NOTHING, related_name='card_row',
+                                    to='kanban.row'),
         ),
     ]

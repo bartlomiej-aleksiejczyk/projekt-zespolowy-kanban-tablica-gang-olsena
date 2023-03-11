@@ -6,6 +6,7 @@ from rest_framework.response import Response
 from kanban.models import Board, Card
 from kanban.serializers.board_serializer import BoardSerializer
 from kanban.serializers.card_serializer import CardSerializer
+from kanban.serializers.row_serializer import RowSerializer
 
 
 class BoardViewSet(viewsets.ViewSet):

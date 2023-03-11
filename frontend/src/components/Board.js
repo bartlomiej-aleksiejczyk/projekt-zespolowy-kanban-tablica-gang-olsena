@@ -17,7 +17,7 @@ const BoardStyle = styled.div`
   max-width: 230px;
   min-width: 230px;
   zIndex : 1;
-  margin-right: 17px;
+  margin-right: 6px;
   margin-top: 140px;
   margin-bottom: auto;
   border-radius: 6px;
