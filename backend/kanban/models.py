@@ -103,12 +103,6 @@ class Board(Dictionary, Timestamp):
 
         return True, "Tablica została przeniesiona poprawnie."
 
-class Row(Dictionary, Timestamp):
-    index = models.PositiveSmallIntegerField(default=0)
-    objects = CoreModelManager()
-
-    class Meta:
-        ordering = ['index']
 
 class Card(Timestamp):
     index = models.PositiveSmallIntegerField(default=0)
@@ -167,3 +161,9 @@ class Card(Timestamp):
         return True, "Wpis został przeniesiony poprawnie."
 
 
+class Row(Dictionary, Timestamp):
+    index = models.PositiveSmallIntegerField(default=0)
+    objects = CoreModelManager()
+
+    class Meta:
+        ordering = ['index']

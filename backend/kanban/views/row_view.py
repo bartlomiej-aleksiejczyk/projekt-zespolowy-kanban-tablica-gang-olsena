@@ -3,7 +3,7 @@ import datetime
 from rest_framework import viewsets
 from rest_framework.response import Response
 
-from kanban.models import Board, Card
+from kanban.models import Board, Card, Row
 from kanban.serializers.board_serializer import BoardSerializer
 from kanban.serializers.card_serializer import CardSerializer
 from kanban.serializers.row_serializer import RowSerializer
@@ -27,7 +27,7 @@ class RowViewSet(viewsets.ViewSet):
         serializer.save()
 
         if not row_instance:
-            is_success, message = serializer.instance.move(index)
+            is_success, message = True, "tu wcześniej była serializer.instance.move(index)"
 
             if not is_success:
                 return Response(

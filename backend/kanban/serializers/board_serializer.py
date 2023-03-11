@@ -1,13 +1,15 @@
 from rest_framework import serializers
-from kanban.models import Board
+from kanban.models import Board, Row
 from kanban.serializers.card_serializer import CardSerializer
 from kanban.serializers.row_serializer import RowSerializer
+from kanban.serializers.row_board_serializer import RowBoardSerializer
+
 
 
 
 class BoardSerializer(serializers.ModelSerializer):
-    row_data = RowSerializer(source='card_row', many=True, read_only=True)
     card_data = CardSerializer(source='card_board', many=True, read_only=True)
+    row_data = RowBoardSerializer(source='*')
     is_static = serializers.SerializerMethodField()
 
     class Meta:
