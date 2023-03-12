@@ -2,6 +2,7 @@ import React, {useState} from 'react'
 import styled from 'styled-components';
 import {Droppable, Draggable} from 'react-beautiful-dnd';
 import Card from "./Card";
+import Row from "./Row";
 import ContentEditable from 'react-contenteditable';
 import 'primeicons/primeicons.css';
 import {Button} from 'primereact/button';
@@ -52,7 +53,7 @@ const Title = styled.h2`
   flex-wrap: wrap;
 `;
 
-const CardsStyle = styled.div`
+const RowStyle = styled.div`
   margin-top: -8px;
   flex-grow: 2;
   min-height: 134px;
@@ -108,16 +109,7 @@ function Board(props) {
     const [value2, setValue2] = useState(props.limit);
     const [value3, setValue3] = useState(props.name);
     return (
-        <Draggable key={props.backId}
-                   draggableId={props.dragId}
-                   isDragDisabled={props.is_static}
-                   index={props.index}>
-            {provided => (
-                <BoardStyle
-                    {...provided.dragHandleProps}
-                    boardOverflow={(props.limit < (props.cards).length) && (props.limit != null)}
-                    {...provided.draggableProps}
-                    ref={provided.innerRef}>
+                <BoardStyle>
                     <Title>
                         <ContentEditable spellCheck="false"
                                          className="Title"
@@ -192,30 +184,18 @@ function Board(props) {
                         </span>
                         }
                     </CardButtons>
-                    <Droppable droppableId={props.droppableId}
-                               type="card">
-                        {(provided) => (
-
-                            <CardsStyle
-                                ref={provided.innerRef}
-                                {...provided.droppableId}>
-                                {(props.cards).map((card, indexDrag) =>
-                                    <Card key={card.id}
-                                          backId={card.id}
-                                          dragId={(card.id).toString() + "c"}
-                                          description={card.description}
+                            <RowStyle>
+                                {(props.rows).map((row, indexDrag) =>
+                                    <Row key={row.id}
+                                          backId={row.id}
+                                          dragId={(row.id).toString() + "c"}
+                                          description={row.name}
+                                          cards={row.card_data}
                                           setBoards={props.setBoards}
-                                          indexDrag={indexDrag}
-                                          name={card.name}
-                                          board={card.board}/>
+                                          indexDrag={indexDrag}/>
                                 )}
-                                {provided.placeholder}
-                            </CardsStyle>
-                        )}
-                    </Droppable>
+                            </RowStyle>
                 </BoardStyle>
-            )}
-        </Draggable>
     )
 }
 

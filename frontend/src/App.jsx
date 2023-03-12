@@ -18,6 +18,7 @@ function App() {
     return (
         <div>
             <Toast ref={toast} position="bottom-right"/>
+            TEST
             <Main/>
         </div>
     )

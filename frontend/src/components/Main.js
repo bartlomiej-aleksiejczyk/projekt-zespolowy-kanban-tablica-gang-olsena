@@ -50,6 +50,7 @@ function Main() {
     const [boards, setBoards] = useState([]);
 
     useEffect(() => {
+        console.log("test_fetch")
         fetch('http://localhost:8000/api/board/', {
             method: 'GET'
         },)
@@ -132,27 +133,15 @@ function Main() {
                     label="Nowa kolumna"
                     icon="pi pi-plus"/>
             <GlobalStyle whiteColor/>
-            <DragDropContext
-                onDragEnd={onDragEnd}>
-                <Droppable
-                    key="unikalnyKlucz1"
-                    droppableId="all-columns"
-                    direction="horizontal"
-                    type="board"
-                    disabledDroppable={true}
-                >
-                    {provided => (
-                        <BoardOfBoards
-                            {...provided.droppableProps}
-                            ref={provided.innerRef}
-                        >
+            console.log
+                        <BoardOfBoards>
                             {boards.map((board, index) => {
                                 return <Board key={board.id}
                                               backId={board.id}
                                               dragId={(board.id).toString() + "b"}
                                               droppableId={(boards.indexOf(board)).toString()}
                                               column={board}
-                                              cards={board.card_data}
+                                              rows={board.row_data}
                                               board={board}
                                               name={board.name}
                                               limit={board.max_card}
@@ -160,11 +149,7 @@ function Main() {
                                               setBoards={setBoards}
                                               index={index}/>
                             })}
-                            {provided.placeholder}
                         </BoardOfBoards>
-                    )}
-                </Droppable>
-            </DragDropContext>
         </WholeWebpage>
     )
 }
