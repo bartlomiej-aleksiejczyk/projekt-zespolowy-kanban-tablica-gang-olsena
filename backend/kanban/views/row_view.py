@@ -43,7 +43,7 @@ class RowViewSet(viewsets.ViewSet):
         return Response(
             dict(
                 success=True,
-                message="Rząd został {}.".format(row_instance and "zaktualizowana" or "dodana"),
+                message="Rząd został {}.".format(row_instance and "zaktualizowany" or "dodany"),
                 data=pseudo_serializer_all()
             )
         )
@@ -109,6 +109,6 @@ class RowViewSet(viewsets.ViewSet):
             dict(
                 success=True,
                 message="Rząd został usunięty.",
-                data=BoardSerializer(Board.objects.all(), many=True).data
+                data=pseudo_serializer_all()
             )
         )
