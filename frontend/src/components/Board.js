@@ -117,7 +117,6 @@ function Board(props) {
                                          disabled={true}
                                          onBlur={handleInputChangeName}/>
                     </Title>
-                    {!props.is_static &&
                     <Label>
                         Limit: <InputNumber inputId="minmax-buttons" value={value2}
                                             onValueChange={(e) => handleInputChangeLimit(e)}
@@ -129,7 +128,6 @@ function Board(props) {
                                             style={{height: '2em', width: '100%'}}
                     />
                     </Label>
-                    }
                     <ConfirmDialog visible={visi} onHide={() => setVisi(false)}
                                    message=<InputText value={value} onChange={(e) => setValue(e.target.value)}/>
                     header="Wpisz zadanie:"
@@ -189,7 +187,7 @@ function Board(props) {
                                     <Row key={row.id}
                                           backId={row.id}
                                           dragId={(row.id).toString() + "c"}
-                                          description={row.name}
+                                          name={row.name}
                                           cards={row.card_data}
                                           setBoards={props.setBoards}
                                           indexDrag={indexDrag}/>

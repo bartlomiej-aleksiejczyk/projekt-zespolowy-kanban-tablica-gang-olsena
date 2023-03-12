@@ -12,7 +12,16 @@ import ApiService from "../services/ApiService";
 import CommonService from "../services/CommonService";
 import Board from "./Board";
 
-
+const TitleRow = styled.h3`
+  text-align: center;
+  max-width: 200px;
+  min-width: 200px;
+  padding: 0px;
+  margin-bottom: 20px;
+  flex-direction: column;
+  word-wrap: break-word;
+  flex-wrap: wrap;
+` ;
 const RowStyle = styled.div`
   box-shadow: 0px 1px 7px rgba(0, 0, 0, 0.1), 0px 4px 5px -2px rgba(0, 0, 0, 0.12), 0px 10px 15px -5px rgba(0, 0, 0, 0.2);
   max-width: 230px;
@@ -31,23 +40,28 @@ const RowStyle = styled.div`
     props.boardOverflow ? '#800000' : 'white'};
   color: ${props =>
     props.boardOverflow ? 'white' : 'inherit'};
+` ;
 
-`;
 const CardsStyle = styled.div`
   margin-top: -8px;
   flex-grow: 2;
   min-height: 200px;
   max-height: 200px;
-`;
+` ;
 const RowsStyle = styled.div`
   margin-top: -8px;
   flex-grow: 2;
+  border: 2px solid #706bb6;
   min-height: 134px;
+  min-width: 220px;
+  max-width: 220px;
 `;
 function Row(props) {
     return(
         <RowsStyle>
-
+            <TitleRow>
+                {props.name}
+            </TitleRow>
             <CardsStyle>
                 {(props.cards).map((card, indexDrag) =>
                     <Card key={card.id}
@@ -64,4 +78,4 @@ function Row(props) {
     )
 }
 
-export default Board;
+export default Row;
