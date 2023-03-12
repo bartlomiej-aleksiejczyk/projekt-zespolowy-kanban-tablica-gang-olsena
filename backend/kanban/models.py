@@ -123,16 +123,18 @@ class Card(Timestamp):
     class Meta:
         ordering = ['index']
 
-    def move(self, index, new_board_id, old_index=None, old_board_id=None):
+    def move(self, index, new_board_id, new_row_id, old_index=None, old_board_id=None, old_row_id=None):
         if index < 0 or Card.objects.count() - 1 < index:
             return False, "Wprowadzono nieprawidłowy index."
 
+        self.row_id = new_row_id
         self.board_id = new_board_id
         self.index = index
         self.save()
 
-        if old_index is not None and old_board_id is not None:
+        if old_index is not None and old_board_id and old_row_id is not None:
             old_cards = Card.objects.filter(
+                row_id = old_row_id,
                 board_id=old_board_id,
                 index__gte=old_index,
                 deleted_at__isnull=True
@@ -147,6 +149,7 @@ class Card(Timestamp):
                 changed_index += 1
 
         new_cards = Card.objects.filter(
+            row_id = new_row_id,
             board_id=new_board_id,
             index__gte=index,
             deleted_at__isnull=True
@@ -164,6 +167,7 @@ class Card(Timestamp):
 class Row(Dictionary, Timestamp):
     index = models.PositiveSmallIntegerField(default=0)
     objects = CoreModelManager()
+
 
     class Meta:
         ordering = ['index']

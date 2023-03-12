@@ -3,14 +3,13 @@ import datetime
 from rest_framework import viewsets
 from rest_framework.response import Response
 
-from kanban.models import Board, Card
+from kanban.models import Board, Card, Row
 from kanban.serializers.board_serializer import BoardSerializer
 from kanban.serializers.card_serializer import CardSerializer
 from kanban.serializers.row_serializer import RowSerializer
 
 
 class BoardViewSet(viewsets.ViewSet):
-
     def update_board(self, request, pk=None):
         data = request.data.copy()
         index = int(data.get('index', 1))
@@ -48,6 +47,7 @@ class BoardViewSet(viewsets.ViewSet):
         data = request.data.copy()
         card_id = data.get('id')
         index = int(data.get('index', 0))
+        row = data.get('row')
 
         card_instance = None
         if card_id:
@@ -57,11 +57,12 @@ class BoardViewSet(viewsets.ViewSet):
         Board.objects.get_by_pk(pk=pk)
         data['board'] = pk
         data['index'] = index
+        data['row'] = row
         serializer = CardSerializer(data=data, instance=card_instance, partial=True)
         serializer.is_valid(raise_exception=True)
         serializer.save()
 
-        is_success, message = serializer.instance.move(index, pk)
+        is_success, message = serializer.instance.move(index, pk, row)
 
         if not is_success:
             return Response(
@@ -81,7 +82,6 @@ class BoardViewSet(viewsets.ViewSet):
 
     def get_board(self, request, pk):
         board = Board.objects.get_by_pk(pk=pk)
-
         return Response(
             dict(
                 success=True,
@@ -90,7 +90,7 @@ class BoardViewSet(viewsets.ViewSet):
         )
 
     def get_boards(self, request):
-        return Response(
+         return Response(
             dict(
                 success=True,
                 data=BoardSerializer(Board.objects.all(), many=True).data

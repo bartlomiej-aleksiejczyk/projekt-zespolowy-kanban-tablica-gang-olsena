@@ -1,13 +1,16 @@
 import datetime
-
 from rest_framework import viewsets
 from rest_framework.response import Response
-
 from kanban.models import Board, Card, Row
 from kanban.serializers.board_serializer import BoardSerializer
 from kanban.serializers.card_serializer import CardSerializer
 from kanban.serializers.row_serializer import RowSerializer
+from kanban.serializers.pseudo_serialize_all import pseudo_serializer_all
+import json
+import logging
+import copy
 
+logger = logging.getLogger(__name__)
 
 
 class RowViewSet(viewsets.ViewSet):
@@ -41,45 +44,9 @@ class RowViewSet(viewsets.ViewSet):
             dict(
                 success=True,
                 message="Rząd został {}.".format(row_instance and "zaktualizowana" or "dodana"),
-                data=RowSerializer(Row.objects.all(), many=True).data
+                data=pseudo_serializer_all()
             )
         )
-
-    def update_row_card(self, request, pk):
-        data = request.data.copy()
-        card_id = data.get('id')
-        index = int(data.get('index', 0))
-
-        card_instance = None
-        if card_id:
-            card_instance = Card.objects.get_by_pk(pk=card_id)
-            index = card_instance.index
-
-        Row.objects.get_by_pk(pk=pk)
-        data['row'] = pk
-        data['index'] = index
-        serializer = CardSerializer(data=data, instance=card_instance, partial=True)
-        serializer.is_valid(raise_exception=True)
-        serializer.save()
-
-        is_success, message = serializer.instance.move(index, pk)
-
-        if not is_success:
-            return Response(
-                dict(
-                    success=is_success,
-                    message=message
-                )
-            )
-
-        return Response(
-            dict(
-                success=True,
-                message="Zadanie zostało {}.".format(card_instance and "zaktualizowane" or "dodane"),
-                data=BoardSerializer(Board.objects.all(), many=True).data
-            )
-        )
-
     def get_row(self, request, pk):
         row = Row.objects.get_by_pk(pk=pk)
 
@@ -98,13 +65,26 @@ class RowViewSet(viewsets.ViewSet):
             )
         )
 
-    def get_row_cards(self, request, pk):
-        cards = Card.objects.filter(row_id=pk)
-
+    def get_board_row_cards(self, request):
+        boards = (BoardSerializer(Board.objects.all(), many=True)).data
+        rows = (RowSerializer(Row.objects.all(), many=True)).data
+        cards = (CardSerializer(Card.objects.all(), many=True)).data
+        for board in boards:
+            # Use deepcopy when you are working with nested objects. copy won´t do the trick there!
+            rows_cp=copy.deepcopy(rows)
+            board['row_data'] = rows_cp
+            del rows_cp
+            for row in board['row_data']:
+                card_board_row = []
+                for card in cards:
+                    if (card['row'] == row['id']) & (card['board'] == board['id']):
+                        card_board_row.append(card)
+                row['card_data'] = card_board_row
+                del card_board_row
         return Response(
             dict(
                 success=True,
-                data=CardSerializer(cards, many=True).data
+                data_rows=boards,
             )
         )
 
@@ -112,7 +92,7 @@ class RowViewSet(viewsets.ViewSet):
         row = Row.objects.get_by_pk(pk=pk, raise_exception=True)
 
         row.deleted_at = datetime.datetime.now()
-        board.save()
+        row.save()
 
         rows = Row.objects.filter(
             index__gte=row.index,

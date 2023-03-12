@@ -27,8 +27,10 @@ class CardViewSet(viewsets.ViewSet):
         is_success, message = card.move(
             request.data.get('index', card.index),
             request.data.get('board', card.board_id),
+            request.data.get('row', card.row_id),
             card.index,
-            card.board_id
+            card.board_id,
+            card.row_id
         )
 
         if not is_success:
@@ -52,6 +54,7 @@ class CardViewSet(viewsets.ViewSet):
         card.save()
 
         cards = Card.objects.filter(
+            row_id=card.row_id,
             board_id=card.board_id,
             index__gte=card.index,
             deleted_at__isnull=True
