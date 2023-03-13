@@ -1,8 +1,6 @@
 import React, {useState} from 'react'
 import styled from 'styled-components';
-import {Droppable, Draggable} from 'react-beautiful-dnd';
-import Card from "./Card";
-import Row from "./Row";
+import {Draggable} from 'react-beautiful-dnd';
 import ContentEditable from 'react-contenteditable';
 import 'primeicons/primeicons.css';
 import {Button} from 'primereact/button';
@@ -11,6 +9,7 @@ import {InputText} from 'primereact/inputtext';
 import {InputNumber} from 'primereact/inputnumber';
 import ApiService from "../services/ApiService";
 import CommonService from "../services/CommonService";
+import Row from "./Row";
 
 
 const BoardStyle = styled.div`
@@ -109,7 +108,15 @@ function Board(props) {
     const [value2, setValue2] = useState(props.limit);
     const [value3, setValue3] = useState(props.name);
     return (
-                <BoardStyle>
+        <Draggable key={props.backId}
+                   draggableId={props.dragId}
+                   isDragDisabled={props.is_static}
+                   index={props.index}>
+            {provided => (
+                <BoardStyle
+                    {...provided.dragHandleProps}
+                    {...provided.draggableProps}
+                    ref={provided.innerRef}>
                     <Title>
                         <ContentEditable spellCheck="false"
                                          className="Title"
@@ -117,6 +124,7 @@ function Board(props) {
                                          disabled={true}
                                          onBlur={handleInputChangeName}/>
                     </Title>
+                    {!props.is_static &&
                     <Label>
                         Limit: <InputNumber inputId="minmax-buttons" value={value2}
                                             onValueChange={(e) => handleInputChangeLimit(e)}
@@ -128,6 +136,7 @@ function Board(props) {
                                             style={{height: '2em', width: '100%'}}
                     />
                     </Label>
+                    }
                     <ConfirmDialog visible={visi} onHide={() => setVisi(false)}
                                    message=<InputText value={value} onChange={(e) => setValue(e.target.value)}/>
                     header="Wpisz zadanie:"
@@ -187,13 +196,15 @@ function Board(props) {
                                     <Row key={row.id}
                                           backId={row.id}
                                           dragId={(row.id).toString() + "c"}
-                                          name={row.name}
                                           cards={row.card_data}
                                           setBoards={props.setBoards}
-                                          indexDrag={indexDrag}/>
+                                          indexDrag={indexDrag}
+                                          name={row.name}/>
                                 )}
                             </RowStyle>
                 </BoardStyle>
+            )}
+        </Draggable>
     )
 }
 

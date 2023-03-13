@@ -1,16 +1,9 @@
-import React, {useState} from 'react'
+import React from 'react'
 import styled from 'styled-components';
-import {Droppable, Draggable} from 'react-beautiful-dnd';
+import {Droppable} from 'react-beautiful-dnd';
 import Card from "./Card";
-import ContentEditable from 'react-contenteditable';
 import 'primeicons/primeicons.css';
-import {Button} from 'primereact/button';
-import {ConfirmDialog} from 'primereact/confirmdialog';
-import {InputText} from 'primereact/inputtext';
-import {InputNumber} from 'primereact/inputnumber';
-import ApiService from "../services/ApiService";
-import CommonService from "../services/CommonService";
-import Board from "./Board";
+
 
 const TitleRow = styled.h3`
   text-align: center;
@@ -22,10 +15,10 @@ const TitleRow = styled.h3`
   word-wrap: break-word;
   flex-wrap: wrap;
 ` ;
-const RowStyle = styled.div`
+const RowsStyle = styled.div`
   box-shadow: 0px 1px 7px rgba(0, 0, 0, 0.1), 0px 4px 5px -2px rgba(0, 0, 0, 0.12), 0px 10px 15px -5px rgba(0, 0, 0, 0.2);
-  max-width: 230px;
-  min-width: 230px;
+  max-width: 210px;
+  min-width: 210px;
   zIndex : 1;
   margin-right: 6px;
   margin-top: 140px;
@@ -48,21 +41,18 @@ const CardsStyle = styled.div`
   min-height: 200px;
   max-height: 200px;
 ` ;
-const RowsStyle = styled.div`
-  margin-top: -8px;
-  flex-grow: 2;
-  border: 2px solid #706bb6;
-  min-height: 134px;
-  min-width: 220px;
-  max-width: 220px;
-`;
 function Row(props) {
     return(
         <RowsStyle>
             <TitleRow>
                 {props.name}
             </TitleRow>
-            <CardsStyle>
+            <Droppable droppableId={props.droppableId}
+                       type="card">
+                {(provided) => (
+            <CardsStyle
+                ref={provided.innerRef}
+                {...provided.droppableId}>
                 {(props.cards).map((card, indexDrag) =>
                     <Card key={card.id}
                           backId={card.id}
@@ -72,8 +62,11 @@ function Row(props) {
                           indexDrag={indexDrag}
                           name={card.name}
                           board={card.board}/>
-                    )}
+                )}
+                {provided.placeholder}
             </CardsStyle>
+                )}
+            </Droppable>
         </RowsStyle>
     )
 }

@@ -69,7 +69,15 @@ function Card(props) {
     const [visible, setVisible] = useState(false);
     const [value, setValue] = useState('');
     return (
-                <CardStyle>
+
+        <Draggable
+            key={props.backId}
+            draggableId={props.dragId}
+            index={props.indexDrag}>
+            {(provided) => (
+                <CardStyle{...provided.draggableProps}
+                          {...provided.dragHandleProps}
+                          ref={provided.innerRef}>
                     <Description
                         className='tasks-container'>
                         <ContentEditable
@@ -112,6 +120,8 @@ function Card(props) {
                             severity="danger"
                             aria-label="Cancel"/>
                 </CardStyle>
+            )}
+        </Draggable>
     )
 }
 
