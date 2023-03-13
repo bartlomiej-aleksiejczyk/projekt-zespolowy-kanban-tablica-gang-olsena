@@ -8,14 +8,18 @@ from kanban.serializers.board_serializer import BoardSerializer
 from kanban.serializers.card_serializer import CardSerializer
 from kanban.serializers.row_serializer import RowSerializer
 from kanban.serializers.pseudo_serialize_all import pseudo_serializer_all
+import logging
+logger = logging.getLogger(__name__)
 
 
 
 class BoardViewSet(viewsets.ViewSet):
     def update_board(self, request, pk=None):
         data = request.data.copy()
-        index = int(data.get('index', 1))
-
+        if Board.objects.all().count() == 0:
+            index = int(data.get('index', 0))
+        else:
+            index = int(data.get('index', 1))
         board_instance = None
         if pk:
             board_instance = Board.objects.get_by_pk(pk=pk)
@@ -50,7 +54,8 @@ class BoardViewSet(viewsets.ViewSet):
         card_id = data.get('id')
         index = int(data.get('index', 0))
         row = data.get('row')
-
+        if row is None:
+            row = ((Row.objects.all())[0]).id
         card_instance = None
         if card_id:
             card_instance = Card.objects.get_by_pk(pk=card_id)

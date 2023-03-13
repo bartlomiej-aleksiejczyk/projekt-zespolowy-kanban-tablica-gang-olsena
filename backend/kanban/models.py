@@ -134,7 +134,7 @@ class Card(Timestamp):
 
         if old_index is not None and old_board_id and old_row_id is not None:
             old_cards = Card.objects.filter(
-                row_id = old_row_id,
+                row_id=old_row_id,
                 board_id=old_board_id,
                 index__gte=old_index,
                 deleted_at__isnull=True
@@ -149,7 +149,7 @@ class Card(Timestamp):
                 changed_index += 1
 
         new_cards = Card.objects.filter(
-            row_id = new_row_id,
+            row_id=new_row_id,
             board_id=new_board_id,
             index__gte=index,
             deleted_at__isnull=True
@@ -167,7 +167,56 @@ class Card(Timestamp):
 class Row(Dictionary, Timestamp):
     index = models.PositiveSmallIntegerField(default=0)
     objects = CoreModelManager()
-
+    is_collapsed = models.BooleanField(default=False)
 
     class Meta:
         ordering = ['index']
+    def get_last_index(self):
+        last_board = Row.objects.all().order_by('-index').first()
+
+        if isinstance(last_board, Row):
+            return last_board.index
+
+        return Row.objects.count()
+    def move(self, new_index, old_index=None):
+        if new_index < 0 or self.get_last_index() < new_index:
+            return False, "Wprowadzono nieprawidłowy index."
+
+        print(new_index)
+
+        if old_index is not None:
+            if new_index == 0:
+                new_index += 1
+
+            if new_index == self.get_last_index():
+                new_index -= 1
+
+        self.index = new_index
+        self.save()
+
+        if old_index is not None:
+            old_rows = Row.objects.filter(
+                index__gte=old_index,
+                deleted_at__isnull=True
+            ).exclude(id=self.pk).order_by('index')
+
+            changed_index = old_index
+            for row in old_rows:
+                if changed_index >= 0:
+                    row.index = changed_index
+                    row.save()
+
+                changed_index += 1
+
+        new_rows = Row.objects.filter(
+            index__gte=new_index,
+            deleted_at__isnull=True
+        ).exclude(id=self.pk).order_by('index')
+
+        changed_index = new_index + 1
+        for row in new_rows:
+            row.index = changed_index
+            row.save()
+            changed_index += 1
+
+        return True, "Tablica została przeniesiona poprawnie."

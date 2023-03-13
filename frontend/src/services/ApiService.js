@@ -9,8 +9,28 @@ const ApiService = {
                 body   : JSON.stringify({"name": name}),
             }).then(response => response.json())
     },
+    newRow   : function(name) {
+        return fetch(`http://localhost:8000/api/board/row/`,
+            {
+                method : 'POST',
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body   : JSON.stringify({"name": name}),
+            }).then(response => response.json())
+    },
     updateBoard: function(pk, data) {
         return fetch(`http://localhost:8000/api/board/${pk}/`,
+            {
+                method : 'POST',
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body   : JSON.stringify(data),
+            }).then(response => response.json())
+    },
+    updateRow: function(pk, data) {
+        return fetch(`http://localhost:8000/api/board/row/${pk}/`,
             {
                 method : 'POST',
                 headers: {
@@ -31,6 +51,13 @@ const ApiService = {
     },
     removeBoard: function(taskId) {
         return fetch(`http://localhost:8000/api/board/${taskId}/`,
+            {
+                method: 'DELETE'
+                ,
+            }).then(response => response.json())
+    },
+    removeRow: function(rowId) {
+        return fetch(`http://localhost:8000/api/board/row/${rowId}/`,
             {
                 method: 'DELETE'
                 ,

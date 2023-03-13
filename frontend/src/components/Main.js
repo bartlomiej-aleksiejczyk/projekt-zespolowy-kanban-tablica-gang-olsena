@@ -28,7 +28,7 @@ const GlobalStyle = createGlobalStyle`
 
 const BoardOfBoards = styled.div`
   display: flex;
-  margin-left:35px;
+  margin-left:200px;
   justify-content: space-around;
   position: absolute;
 `;
@@ -62,9 +62,8 @@ function Main() {
         const draggableIde = draggableId.slice(0, -1)
         if(!destination) return;
         if(destination.droppableId === source.droppableId && destination.index === source.index) return;
-
         if(result.type === "board") {
-            let board = {...boards[source.index]};
+            let board = {...boards[(source.index)]};
             boards.splice(source.index, 1);
             boards.splice(destination.index, 0, board);
             setBoards(boards);
@@ -104,8 +103,19 @@ function Main() {
     const rejectAddBoard = () => {
         setValue('');
     }
+    const acceptAddRow = () => {
+        ApiService.newRow(value1).then((response_data) => {
+            CommonService.toastCallback(response_data, setBoards);
+            setValue('');
+        });
+    }
+    const rejectAddRow = () => {
+        setValue('');
+    }
     const [visible, setVisible] = useState(false);
     const [value, setValue] = useState('');
+    const [visible1, setVisible1] = useState(false);
+    const [value1, setValue1] = useState('');
     return (
         <WholeWebpage>
             <Header>Kanban Board</Header>
@@ -120,6 +130,17 @@ function Main() {
                 accept={acceptAddBoard}
                 reject={rejectAddBoard}
             />
+            <ConfirmDialog
+                visible={visible1}
+                onHide={() => setVisible1(false)}
+                message={<InputText value1={value} onChange={(e) => setValue1(e.target.value)}/>}
+                header="Wpisz nazwe rzędu:"
+                icon="pi pi-table"
+                acceptLabel="Akceptuj"
+                rejectLabel="Odrzuć"
+                accept={acceptAddRow}
+                reject={rejectAddRow}
+            />
             <Button style={{
                 position : "fixed",
                 zIndex   : "1",
@@ -130,6 +151,17 @@ function Main() {
                     size="lg"
                     onClick={() => CommonService.onOpenDialog(setVisible, setValue, '')}
                     label="Nowa kolumna"
+                    icon="pi pi-plus"/>
+            <Button style={{
+                position : "fixed",
+                zIndex   : "1",
+                right    : "270px",
+                top      : "41px",
+                boxShadow: "0px 1px 7px rgba(0, 0, 0, 0.1), 0px 4px 5px -2px rgba(0, 0, 0, 0.12), 0px 10px 15px -5px rgba(0, 0, 0, 0.2)"
+            }}
+                    size="lg"
+                    onClick={() => CommonService.onOpenDialog(setVisible1, setValue1, '')}
+                    label="Nowy rząd"
                     icon="pi pi-plus"/>
             <GlobalStyle whiteColor/>
             <DragDropContext
@@ -150,9 +182,9 @@ function Main() {
                                 return <Board key={board.id}
                                               backId={board.id}
                                               dragId={(board.id).toString() + "b"}
-                                              droppableId={(boards.indexOf(board)).toString()}
                                               column={board}
                                               rows={board.row_data}
+                                              boards={boards}
                                               board={board}
                                               name={board.name}
                                               limit={board.max_card}

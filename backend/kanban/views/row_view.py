@@ -17,7 +17,7 @@ class RowViewSet(viewsets.ViewSet):
 
     def update_row(self, request, pk=None):
         data = request.data.copy()
-        index = int(data.get('index', 1))
+        index = int(data.get('index', 0))
 
         row_instance = None
         if pk:
@@ -30,7 +30,7 @@ class RowViewSet(viewsets.ViewSet):
         serializer.save()
 
         if not row_instance:
-            is_success, message = True, "tu wcześniej była serializer.instance.move(index)"
+            is_success, message = serializer.instance.move(index)
 
             if not is_success:
                 return Response(

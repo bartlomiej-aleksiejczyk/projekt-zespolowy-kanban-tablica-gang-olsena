@@ -18,7 +18,7 @@ const BoardStyle = styled.div`
   min-width: 230px;
   zIndex : 1;
   margin-right: 6px;
-  margin-top: 140px;
+  margin-top: 180px;
   margin-bottom: auto;
   border-radius: 6px;
   display: flex;
@@ -40,11 +40,15 @@ const Label = styled.label`
   gap: 8px;
   margin-bottom: -5px;
 `
+const LabelDummy = styled.label`
+  margin-top: 13px;
+  margin-bottom: 13px;
+`
 
 const Title = styled.h2`
   text-align: center;
-  max-width: 210px;
-  min-width: 210px;
+  max-width: 205px;
+  min-width: 205px;
   padding: 0px;
   margin-bottom: 20px;
   flex-direction: column;
@@ -52,14 +56,13 @@ const Title = styled.h2`
   flex-wrap: wrap;
 `;
 
-const RowStyle = styled.div`
-  margin-top: -8px;
-  flex-grow: 2;
-  min-height: 134px;
+const RowStyle = styled.section`
+  
+  align-items: center;
+
 `;
 const CardButtons = styled.div`
   margin-top: 22px;
-  margin-bottom: 25px;
 
 
 `;
@@ -124,18 +127,20 @@ function Board(props) {
                                          disabled={true}
                                          onBlur={handleInputChangeName}/>
                     </Title>
-                    {!props.is_static &&
-                    <Label>
-                        Limit: <InputNumber inputId="minmax-buttons" value={value2}
-                                            onValueChange={(e) => handleInputChangeLimit(e)}
+                    {!(props.is_static)
+                        ?<Label>
+                            Limit: <InputNumber inputId="minmax-buttons" value={value2}
+                                                onValueChange={(e) => handleInputChangeLimit(e)}
 
-                                            mode="decimal"
-                                            showButtons min={1}
-                                            max={100}
-                                            size="1"
-                                            style={{height: '2em', width: '100%'}}
-                    />
-                    </Label>
+                                                mode="decimal"
+                                                showButtons min={1}
+                                                max={100}
+                                                size="1"
+                                                style={{height: '2em', width: '100%'}}
+                            />
+                        </Label>
+                        :<LabelDummy>
+                        </LabelDummy>
                     }
                     <ConfirmDialog visible={visi} onHide={() => setVisi(false)}
                                    message=<InputText value={value} onChange={(e) => setValue(e.target.value)}/>
@@ -191,17 +196,20 @@ function Board(props) {
                         </span>
                         }
                     </CardButtons>
-                            <RowStyle>
+                    <RowStyle>
                                 {(props.rows).map((row, indexDrag) =>
                                     <Row key={row.id}
+                                          boardIndex={(props.board).index}
                                           backId={row.id}
+                                          isCollapsed={row.is_collapsed}
                                           dragId={(row.id).toString() + "c"}
+                                          droppableId={((props.rows).indexOf(row)).toString()+((props.boards).indexOf(props.board)).toString()}
                                           cards={row.card_data}
                                           setBoards={props.setBoards}
                                           indexDrag={indexDrag}
                                           name={row.name}/>
                                 )}
-                            </RowStyle>
+                    </RowStyle>
                 </BoardStyle>
             )}
         </Draggable>
