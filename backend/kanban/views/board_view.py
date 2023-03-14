@@ -6,11 +6,9 @@ from rest_framework.response import Response
 from kanban.models import Board, Card, Row
 from kanban.serializers.board_serializer import BoardSerializer
 from kanban.serializers.card_serializer import CardSerializer
-from kanban.serializers.row_serializer import RowSerializer
-from kanban.serializers.pseudo_serialize_all import pseudo_serializer_all
 import logging
-logger = logging.getLogger(__name__)
 
+logger = logging.getLogger(__name__)
 
 
 class BoardViewSet(viewsets.ViewSet):
@@ -45,7 +43,7 @@ class BoardViewSet(viewsets.ViewSet):
             dict(
                 success=True,
                 message="Kolumna została {}.".format(board_instance and "zaktualizowana" or "dodana"),
-                data=pseudo_serializer_all()
+                data=BoardSerializer(Board.objects.all(), many=True).data
             )
         )
 
@@ -83,7 +81,7 @@ class BoardViewSet(viewsets.ViewSet):
             dict(
                 success=True,
                 message="Zadanie zostało {}.".format(card_instance and "zaktualizowane" or "dodane"),
-                data=pseudo_serializer_all()
+                data=BoardSerializer(Board.objects.all(), many=True).data
             )
         )
 
@@ -97,10 +95,10 @@ class BoardViewSet(viewsets.ViewSet):
         )
 
     def get_boards(self, request):
-         return Response(
+        return Response(
             dict(
                 success=True,
-                data=pseudo_serializer_all()
+                data=BoardSerializer(Board.objects.all(), many=True).data
             )
         )
 
@@ -123,7 +121,7 @@ class BoardViewSet(viewsets.ViewSet):
             return Response(
                 dict(
                     success=is_success,
-                    data=pseudo_serializer_all(),
+                    data=BoardSerializer(Board.objects.all(), many=True).data,
                     message=message
                 )
             )
@@ -131,7 +129,7 @@ class BoardViewSet(viewsets.ViewSet):
         return Response(
             dict(
                 success=True,
-                data=pseudo_serializer_all(),
+                data=BoardSerializer(Board.objects.all(), many=True).data
             )
         )
 
@@ -164,6 +162,6 @@ class BoardViewSet(viewsets.ViewSet):
             dict(
                 success=True,
                 message="Kolumna została usunięta.",
-                data=pseudo_serializer_all(),
+                data=BoardSerializer(Board.objects.all(), many=True).data
             )
         )

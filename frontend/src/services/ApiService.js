@@ -10,7 +10,7 @@ const ApiService = {
             }).then(response => response.json())
     },
     newRow   : function(name) {
-        return fetch(`http://localhost:8000/api/board/row/`,
+        return fetch(`http://localhost:8000/api/row/`,
             {
                 method : 'POST',
                 headers: {
@@ -30,7 +30,7 @@ const ApiService = {
             }).then(response => response.json())
     },
     updateRow: function(pk, data) {
-        return fetch(`http://localhost:8000/api/board/row/${pk}/`,
+        return fetch(`http://localhost:8000/api/row/${pk}/`,
             {
                 method : 'POST',
                 headers: {
@@ -57,7 +57,7 @@ const ApiService = {
             }).then(response => response.json())
     },
     removeRow: function(rowId) {
-        return fetch(`http://localhost:8000/api/board/row/${rowId}/`,
+        return fetch(`http://localhost:8000/api/row/${rowId}/`,
             {
                 method: 'DELETE'
                 ,

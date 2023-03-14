@@ -114,6 +114,8 @@ class Card(Timestamp):
     row = models.ForeignKey(
         'kanban.Row',
         related_name='card_row',
+        null=True,
+        blank=True,
         on_delete=models.DO_NOTHING
     )
     description = models.TextField()
@@ -165,12 +167,12 @@ class Card(Timestamp):
 
 
 class Row(Dictionary, Timestamp):
-    index = models.PositiveSmallIntegerField(default=0)
     objects = CoreModelManager()
     is_collapsed = models.BooleanField(default=False)
 
     class Meta:
-        ordering = ['index']
+        ordering = ['-id']
+
     def get_last_index(self):
         last_board = Row.objects.all().order_by('-index').first()
 

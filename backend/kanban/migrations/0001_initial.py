@@ -28,20 +28,6 @@ class Migration(migrations.Migration):
             },
         ),
         migrations.CreateModel(
-            name='Row',
-            fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('updated_at', models.DateTimeField(blank=True, null=True)),
-                ('created_at', models.DateTimeField(auto_now_add=True)),
-                ('deleted_at', models.DateTimeField(blank=True, null=True)),
-                ('name', models.CharField(max_length=64)),
-                ('index', models.PositiveSmallIntegerField(default=0)),
-            ],
-            options={
-                'ordering': ['index'],
-            },
-        ),
-        migrations.CreateModel(
             name='Card',
             fields=[
                 ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
@@ -51,7 +37,6 @@ class Migration(migrations.Migration):
                 ('index', models.PositiveSmallIntegerField(default=0)),
                 ('description', models.TextField()),
                 ('board', models.ForeignKey(on_delete=django.db.models.deletion.DO_NOTHING, related_name='card_board', to='kanban.board')),
-                ('row', models.ForeignKey(on_delete=django.db.models.deletion.DO_NOTHING, related_name='card_row', to='kanban.row')),
             ],
             options={
                 'ordering': ['index'],
