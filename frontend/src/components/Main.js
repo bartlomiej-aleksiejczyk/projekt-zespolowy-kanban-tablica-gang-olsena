@@ -28,7 +28,7 @@ const GlobalStyle = createGlobalStyle`
 
 const BoardOfBoards = styled.div`
   display: flex;
-  margin-left:200px;
+  margin-left:280px;
   justify-content: space-around;
   position: absolute;
 `;

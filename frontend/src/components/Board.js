@@ -14,8 +14,8 @@ import Row from "./Row";
 
 const BoardStyle = styled.div`
   box-shadow: 0px 1px 7px rgba(0, 0, 0, 0.1), 0px 4px 5px -2px rgba(0, 0, 0, 0.12), 0px 10px 15px -5px rgba(0, 0, 0, 0.2);
-  max-width: 230px;
-  min-width: 230px;
+  max-width: 250px;
+  min-width: 250px;
   zIndex : 1;
   margin-right: 6px;
   margin-top: 180px;
@@ -49,11 +49,13 @@ const Title = styled.h2`
   text-align: center;
   max-width: 205px;
   min-width: 205px;
+  height: 60px;
   padding: 0px;
   margin-bottom: 20px;
   flex-direction: column;
   word-wrap: break-word;
   flex-wrap: wrap;
+  overflow: auto;
 `;
 
 const RowStyle = styled.section`
@@ -199,6 +201,7 @@ function Board(props) {
                     <RowStyle>
                                 {(props.rows).map((row, indexDrag) =>
                                     <Row key={row.id}
+                                          limit={props.limit}
                                           boardIndex={(props.board).index}
                                           backId={row.id}
                                           isCollapsed={row.is_collapsed}

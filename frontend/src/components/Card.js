@@ -11,14 +11,13 @@ import CommonService from "../services/CommonService";
 
 const CardStyle = styled.div`
   box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.03), 0px 0px 2px rgba(0, 0, 0, 0.06), 0px 2px 6px rgba(0, 0, 0, 0.12);
-  max-width: 210px;
-  min-width: 210px;
+  max-width: 228px;
+  min-width: 228px;
   border: 2px solid #b7b3ea;
   border-radius: 6px;
   padding: 4px;
-  margin-top: -5px;
-  margin-outside: 1px;
-  margin-bottom: 8px;
+  margin-top: 3px;
+  margin-left: 5px;
   display: flex;
   flex-direction: column;
   flex-wrap: wrap;
