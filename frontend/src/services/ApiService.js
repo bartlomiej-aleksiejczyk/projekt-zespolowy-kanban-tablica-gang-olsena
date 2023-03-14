@@ -9,8 +9,28 @@ const ApiService = {
                 body   : JSON.stringify({"name": name}),
             }).then(response => response.json())
     },
+    newRow   : function(name) {
+        return fetch(`http://localhost:8000/api/row/`,
+            {
+                method : 'POST',
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body   : JSON.stringify({"name": name}),
+            }).then(response => response.json())
+    },
     updateBoard: function(pk, data) {
         return fetch(`http://localhost:8000/api/board/${pk}/`,
+            {
+                method : 'POST',
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body   : JSON.stringify(data),
+            }).then(response => response.json())
+    },
+    updateRow: function(pk, data) {
+        return fetch(`http://localhost:8000/api/row/${pk}/`,
             {
                 method : 'POST',
                 headers: {
@@ -36,6 +56,13 @@ const ApiService = {
                 ,
             }).then(response => response.json())
     },
+    removeRow: function(rowId) {
+        return fetch(`http://localhost:8000/api/row/${rowId}/`,
+            {
+                method: 'DELETE'
+                ,
+            }).then(response => response.json())
+    },
     newCard    : function(boardId, description) {
         return fetch(`http://localhost:8000/api/board/${boardId}/card/`,
             {
@@ -56,14 +83,14 @@ const ApiService = {
                 body   : JSON.stringify(data),
             }).then(response => response.json())
     },
-    moveCard   : function(pk, index, board) {
+    moveCard   : function(pk, index, board, row) {
         return fetch(`http://localhost:8000/api/card/${pk}/move/`,
             {
                 method : 'POST',
                 headers: {
                     "Content-Type": "application/json",
                 },
-                body   : JSON.stringify({"index": index, "board": board}),
+                body   : JSON.stringify({"index": index, "board": board,"row":row}),
             }).then(response => response.json());
     },
     removeCard : function(taskId) {

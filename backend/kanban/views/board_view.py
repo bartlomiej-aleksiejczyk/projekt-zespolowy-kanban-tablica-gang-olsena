@@ -3,17 +3,21 @@ import datetime
 from rest_framework import viewsets
 from rest_framework.response import Response
 
-from kanban.models import Board, Card
+from kanban.models import Board, Card, Row
 from kanban.serializers.board_serializer import BoardSerializer
 from kanban.serializers.card_serializer import CardSerializer
+import logging
+
+logger = logging.getLogger(__name__)
 
 
 class BoardViewSet(viewsets.ViewSet):
-
     def update_board(self, request, pk=None):
         data = request.data.copy()
-        index = int(data.get('index', 1))
-
+        if Board.objects.all().count() == 0:
+            index = int(data.get('index', 0))
+        else:
+            index = int(data.get('index', 1))
         board_instance = None
         if pk:
             board_instance = Board.objects.get_by_pk(pk=pk)
@@ -47,7 +51,9 @@ class BoardViewSet(viewsets.ViewSet):
         data = request.data.copy()
         card_id = data.get('id')
         index = int(data.get('index', 0))
-
+        row = data.get('row')
+        if row is None:
+            row = ((Row.objects.all())[0]).id
         card_instance = None
         if card_id:
             card_instance = Card.objects.get_by_pk(pk=card_id)
@@ -56,11 +62,12 @@ class BoardViewSet(viewsets.ViewSet):
         Board.objects.get_by_pk(pk=pk)
         data['board'] = pk
         data['index'] = index
+        data['row'] = row
         serializer = CardSerializer(data=data, instance=card_instance, partial=True)
         serializer.is_valid(raise_exception=True)
         serializer.save()
 
-        is_success, message = serializer.instance.move(index, pk)
+        is_success, message = serializer.instance.move(index, pk, row)
 
         if not is_success:
             return Response(
@@ -80,7 +87,6 @@ class BoardViewSet(viewsets.ViewSet):
 
     def get_board(self, request, pk):
         board = Board.objects.get_by_pk(pk=pk)
-
         return Response(
             dict(
                 success=True,
@@ -156,6 +162,6 @@ class BoardViewSet(viewsets.ViewSet):
             dict(
                 success=True,
                 message="Kolumna została usunięta.",
-                data=BoardSerializer(Board.objects.all(), many=True).data,
+                data=BoardSerializer(Board.objects.all(), many=True).data
             )
         )

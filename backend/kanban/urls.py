@@ -1,6 +1,8 @@
 from django.urls import path
 from kanban.views.board_view import BoardViewSet
 from kanban.views.card_view import CardViewSet
+from kanban.views.row_view import RowViewSet
+
 
 single_board_viewset = BoardViewSet.as_view(
     dict(
@@ -42,6 +44,17 @@ board_card_viewset = BoardViewSet.as_view(
         get='get_board_cards'
     )
 )
+single_row_viewset = RowViewSet.as_view(
+    dict(
+        post='update_row',
+        delete='delete_row'
+    )
+)
+row_viewset = RowViewSet.as_view(
+    dict(
+        post='update_row'
+    )
+)
 
 urlpatterns = [
     path('board/', board_viewset),
@@ -49,5 +62,7 @@ urlpatterns = [
     path('board/<int:pk>/move/', board_move_viewset),
     path('card/<int:pk>/', single_card_viewset),
     path('card/<int:pk>/move/', card_move_viewset),
-    path('board/<int:pk>/card/', board_card_viewset)
+    path('board/<int:pk>/card/', board_card_viewset),
+    path('row/<int:pk>/', single_row_viewset),
+    path('row/', row_viewset),
 ]
