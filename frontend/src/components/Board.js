@@ -164,14 +164,14 @@ function Board(props) {
                                 rounded
                                 text
                                 aria-label="Filter"
-                                onClick={() => CommonService.onOpenDialog(setVisible2, setValue3, props.name)}/>
+                                onClick={() => CommonService.onOpenDialog(setVisible2, [{callback: setValue3, value: props.name}])}/>
                         <Button style={{}}
                                 icon="pi pi-plus"
                                 size="lg"
                                 rounded
                                 text
                                 aria-label="Filter"
-                                onClick={() => CommonService.onOpenDialog(setVisi, setValue, '')}/>
+                                onClick={() => CommonService.onOpenDialog(setVisi, [{callback: setValue, value: ''}])}/>
                         <ConfirmDialog visible={visible2} onHide={() => setVisible2(false)}
                                        message=<InputText value={value3} onChange={(e) => setValue3(e.target.value)}/>
                         header="Edytuj kolumnę:"

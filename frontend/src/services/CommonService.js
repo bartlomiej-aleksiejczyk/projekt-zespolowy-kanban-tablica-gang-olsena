@@ -21,9 +21,12 @@ const CommonService = {
             successCallback(response_data.data);
         }
     },
-    onOpenDialog : (callback, setCallback, setValue) => {
+    onOpenDialog : (callback, setters) => {
         callback(true);
-        setCallback(setValue);
+
+        setters.forEach(setter => {
+            setter.callback(setter.value);
+        });
     }
 }
 export default CommonService;

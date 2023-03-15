@@ -128,7 +128,7 @@ function Card(props) {
                                        rejectLabel="Odrzuć"
                                        accept={acceptEditCard}
                                        reject={rejectEditCard}/>
-                        <Button onClick={() => CommonService.onOpenDialog(setVisi, setValue, props.description)}
+                        <Button onClick={() => CommonService.onOpenDialog(setVisi, [{callback: setValue, value: props.description}, {callback: setEditSelectedUser, value: props.data?.user_data}])}
                                 icon="pi pi-pencil"
                                 rounded
                                 text

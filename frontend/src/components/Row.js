@@ -143,7 +143,7 @@ function Row(props) {
                             size="lg"
                             rounded
                             text
-                            onClick={() => CommonService.onOpenDialog(setVisible2, setValue3, props.name)}/>
+                            onClick={() => CommonService.onOpenDialog(setVisible2, [{callback: setValue3, value: props.name}])}/>
                     <Button style={{marginLeft: "40px", marginTop: "80px", zIndex: 7, fontSize: "12px", scale: "120%"}}
                             icon="pi pi-trash"
                             size="lg"
