@@ -51,7 +51,7 @@ class BoardViewSet(viewsets.ViewSet):
         data = request.data.copy()
         card_id = data.get('id')
         index = int(data.get('index', 0))
-        row_id = data.get('row', Row.objects.first().id)
+        row_id = data.get('row')
 
         card_instance = None
         if card_id:
@@ -60,6 +60,9 @@ class BoardViewSet(viewsets.ViewSet):
 
             if row_id is None:
                 row_id = card_instance.row_id
+
+        if row_id is None:
+            row_id = Row.objects.first().id
 
         Board.objects.get_by_pk(pk=pk)
         data['board'] = pk
