@@ -11,6 +11,7 @@ import {Avatar} from 'primereact/avatar';
 import CommonService from "../services/CommonService";
 import {useUserService} from "../utils/UserServiceContext";
 import {Dropdown} from 'primereact/dropdown';
+import {Tooltip} from 'primereact/tooltip';
 
 
 const CardStyle = styled.div`
@@ -75,7 +76,7 @@ function Card(props) {
         apiService.updateCard(props.board, {
             "id"         : props.backId,
             "description": value,
-            "user": editSelectedUser.id
+            "user"       : editSelectedUser.id
         }).then((response_data) => {
             CommonService.toastCallback(response_data, props.setBoards);
         });
@@ -90,7 +91,8 @@ function Card(props) {
                 <div>
                     <InputText className="w-full" value={value} onChange={(e) => setValue(e.target.value)}/>
                 </div>
-                <Dropdown className="mt-3 w-full" value={editSelectedUser} onChange={(e) => setEditSelectedUser(e.value)} options={users}
+                <Dropdown className="mt-3 w-full" value={editSelectedUser}
+                          onChange={(e) => setEditSelectedUser(e.value)} options={users}
                           optionLabel="username"
                           placeholder="Wybierz użytkownika"/>
             </div>
@@ -148,9 +150,13 @@ function Card(props) {
                                 severity="danger"
                                 aria-label="Cancel"/>
                         {props.data.user_data &&
-                        <Avatar className="mt-2" label={userLabel}
-                                style={{backgroundColor: '#' + userLabel.repeat(3), color: '#ffffff'}}/>
-                        }
+                        <div>
+                            <Tooltip target=".user-avatar"/>
+                            <Avatar className="mt-2 user-avatar"
+                                    label={userLabel}
+                                    data-pr-tooltip={props.data.user_data.username}
+                                    style={{backgroundColor: '#' + userLabel.repeat(3), color: '#ffffff'}}/>
+                        </div>}
                     </div>
                 </CardStyle>
             )}
