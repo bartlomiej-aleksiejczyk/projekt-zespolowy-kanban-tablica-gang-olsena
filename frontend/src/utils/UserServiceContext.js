@@ -41,7 +41,7 @@ export const UserServiceProvider = (props) => {
                 localStorage.setItem("authToken", JSON.stringify(response.data));
 
                 setAuthToken(response.data);
-                setUser(jwt_decode(response.data.access));
+                setUser(jwt_decode(response.data.access).user_data);
 
                 req.headers.Authorization = `Bearer ${response.data.access}`;
                 return req;

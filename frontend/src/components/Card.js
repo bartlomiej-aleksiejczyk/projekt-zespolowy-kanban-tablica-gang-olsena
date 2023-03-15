@@ -1,4 +1,4 @@
-import React, {useState} from 'react'
+import React, {useState, useEffect} from 'react'
 import styled from "styled-components";
 import {Draggable} from "react-beautiful-dnd";
 import ContentEditable from 'react-contenteditable';
@@ -7,7 +7,11 @@ import {Button} from 'primereact/button';
 import {ConfirmDialog} from 'primereact/confirmdialog';
 import {InputText} from 'primereact/inputtext';
 import ApiService from "../services/ApiService";
+import {Avatar} from 'primereact/avatar';
 import CommonService from "../services/CommonService";
+import {useUserService} from "../utils/UserServiceContext";
+import {Dropdown} from 'primereact/dropdown';
+
 
 const CardStyle = styled.div`
   box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.03), 0px 0px 2px rgba(0, 0, 0, 0.06), 0px 2px 6px rgba(0, 0, 0, 0.12);
@@ -35,8 +39,17 @@ const Description = styled.div`
 `;
 
 function Card(props) {
+    const [visi, setVisi] = useState(false);
+    const [visible, setVisible] = useState(false);
+    const [value, setValue] = useState('');
+    const [editSelectedUser, setEditSelectedUser] = useState(props.data?.user_data);
+    const [users, setUsers] = useState('');
+
+
+    const apiService = useUserService();
+
     const handleInputChange = (e) => {
-        ApiService.updateCard(props.board, {
+        apiService.updateCard(props.board, {
             "id"         : props.backId,
             "description": e.target.innerHTML
         }).then((response_data) => {
@@ -44,8 +57,14 @@ function Card(props) {
         });
     }
 
+    useEffect(() => {
+        apiService.getUsers().then(function(response_data) {
+            setUsers(response_data.data);
+        });
+    }, []);
+
     const accept = () => {
-        ApiService.removeCard((props.backId)).then((response_data) => {
+        apiService.removeCard((props.backId)).then((response_data) => {
             CommonService.toastCallback(response_data, props.setBoards)
         });
     }
@@ -53,9 +72,10 @@ function Card(props) {
     const reject = () => {
     }
     const acceptEditCard = () => {
-        ApiService.updateCard(props.board, {
+        apiService.updateCard(props.board, {
             "id"         : props.backId,
-            "description": value
+            "description": value,
+            "user": editSelectedUser.id
         }).then((response_data) => {
             CommonService.toastCallback(response_data, props.setBoards);
         });
@@ -64,11 +84,21 @@ function Card(props) {
     const rejectEditCard = () => {
         setValue('');
     }
-    const [visi, setVisi] = useState(false);
-    const [visible, setVisible] = useState(false);
-    const [value, setValue] = useState('');
-    return (
 
+    const editCardDialog = () => {
+        return (<div>
+                <div>
+                    <InputText className="w-full" value={value} onChange={(e) => setValue(e.target.value)}/>
+                </div>
+                <Dropdown className="mt-3 w-full" value={editSelectedUser} onChange={(e) => setEditSelectedUser(e.value)} options={users}
+                          optionLabel="username"
+                          placeholder="Wybierz użytkownika"/>
+            </div>
+        )
+    }
+
+    let userLabel = props.data.user_data.username.charAt(0).toUpperCase() + props.data.user_data.username.charAt(props.data.user_data.username.length - 1).toUpperCase();
+    return (
         <Draggable
             key={props.backId}
             draggableId={props.dragId}
@@ -80,44 +110,48 @@ function Card(props) {
                     <Description
                         className='tasks-container'>
                         <ContentEditable
-                                         spellCheck="false"
-                                         className="Description"
-                                         html={props.description}
-                                         disabled={false}
-                                         onBlur={handleInputChange}/>
+                            spellCheck="false"
+                            className="Description"
+                            html={props.description}
+                            disabled={false}
+                            onBlur={handleInputChange}/>
                     </Description>
-                    <ConfirmDialog visible={visi}
-                                   onHide={() => setVisi(false)}
-                                   message=<InputText value={value} onChange={(e) => setValue(e.target.value)}/>
-                    header="Potwierdzenie edycji"
-                    icon="pi pi-pencil"
-                    acceptLabel="Akceptuj"
-                    rejectLabel="Odrzuć"
-                    accept={acceptEditCard}
-                    reject={rejectEditCard}/>
-                    <Button style={{marginLeft: "120px", marginBottom: "-47px"}}
-                            onClick={() => CommonService.onOpenDialog(setVisi, setValue, props.description)}
-                            icon="pi pi-pencil"
-                            rounded
-                            text
-                            aria-label="Cancel"/>
-                    <ConfirmDialog visible={visible}
-                                   onHide={() => setVisible(false)}
-                                   message="Czy na pewno chcesz usunąć zadanie?"
-                                   header="Potwierdzenie usunięcia"
-                                   icon="pi pi-trash"
-                                   acceptLabel="Tak"
-                                   rejectLabel="Nie"
-                                   accept={accept}
-                                   reject={reject}/>
-                    <Button style={{marginLeft: "154px", marginBottom: "-7px"}}
-                            onClick={() => setVisible(true)}
-                            icon="pi pi-times"
-                            rounded
-                            text
+                    <div className="flex flex-column md:flex-row justify-content-end align-content-center flex-wrap">
+                        <ConfirmDialog visible={visi}
+                                       onHide={() => setVisi(false)}
+                                       message={editCardDialog}
+                                       header="Potwierdzenie edycji"
+                                       icon="pi pi-pencil"
+                                       acceptLabel="Akceptuj"
+                                       rejectLabel="Odrzuć"
+                                       accept={acceptEditCard}
+                                       reject={rejectEditCard}/>
+                        <Button onClick={() => CommonService.onOpenDialog(setVisi, setValue, props.description)}
+                                icon="pi pi-pencil"
+                                rounded
+                                text
+                                aria-label="Cancel"/>
+                        <ConfirmDialog visible={visible}
+                                       onHide={() => setVisible(false)}
+                                       message="Czy na pewno chcesz usunąć zadanie?"
+                                       header="Potwierdzenie usunięcia"
+                                       icon="pi pi-trash"
+                                       acceptLabel="Tak"
+                                       rejectLabel="Nie"
+                                       accept={accept}
+                                       reject={reject}/>
+                        <Button onClick={() => setVisible(true)}
+                                icon="pi pi-times"
+                                rounded
+                                text
                             //size="small"
-                            severity="danger"
-                            aria-label="Cancel"/>
+                                severity="danger"
+                                aria-label="Cancel"/>
+                        {props.data.user_data &&
+                        <Avatar className="mt-2" label={userLabel}
+                                style={{backgroundColor: '#' + userLabel.repeat(3), color: '#ffffff'}}/>
+                        }
+                    </div>
                 </CardStyle>
             )}
         </Draggable>

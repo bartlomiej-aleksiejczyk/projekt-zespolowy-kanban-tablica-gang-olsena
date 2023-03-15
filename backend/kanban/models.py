@@ -60,7 +60,6 @@ class Board(Dictionary, Timestamp):
         if new_index < 0 or self.get_last_index() < new_index:
             return False, "Wprowadzono nieprawidłowy index."
 
-        print(new_index)
         if old_index == 0 \
             or new_index == 0 \
             or old_index is None and new_index == self.get_last_index() + 1 \
@@ -194,8 +193,6 @@ class Row(Dictionary, Timestamp):
     def move(self, new_index, old_index=None):
         if new_index < 0 or self.get_last_index() < new_index:
             return False, "Wprowadzono nieprawidłowy index."
-
-        print(new_index)
 
         if old_index is not None:
             if new_index == 0:

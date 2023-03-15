@@ -10,6 +10,7 @@ import {InputNumber} from 'primereact/inputnumber';
 import ApiService from "../services/ApiService";
 import CommonService from "../services/CommonService";
 import Row from "./Row";
+import {useUserService} from "../utils/UserServiceContext";
 
 
 const BoardStyle = styled.div`
@@ -70,26 +71,29 @@ const CardButtons = styled.div`
 `;
 
 function Board(props) {
+    const apiService = useUserService();
+
+
     const handleInputChangeName = (e) => {
-        ApiService.updateBoard(props.backId, {"name": e.target.innerHTML}).then((response_data) => {
+        apiService.updateBoard(props.backId, {"name": e.target.innerHTML}).then((response_data) => {
             CommonService.toastCallback(response_data, props.setBoards)
         });
     }
     const handleInputChangeLimit = (e) => {
         setValue2(e.value);
-        ApiService.updateBoard(props.backId, {"max_card": e.value}).then((response_data) => {
+        apiService.updateBoard(props.backId, {"max_card": e.value}).then((response_data) => {
             CommonService.toastCallback(response_data, props.setBoards)
         });
     }
 
     const accept = () => {
-        ApiService.removeBoard((props.backId)).then((response_data) => {
+        apiService.removeBoard((props.backId)).then((response_data) => {
             CommonService.toastCallback(response_data, props.setBoards)
         });
     }
 
     const acceptAddCard = () => {
-        ApiService.newCard(props.backId, value).then((response_data) => {
+        apiService.newCard(props.backId, value).then((response_data) => {
             CommonService.toastCallback(response_data, props.setBoards)
             setValue('');
         });
@@ -98,7 +102,7 @@ function Board(props) {
         setValue('');
     }
     const acceptEditBoard = () => {
-        ApiService.updateBoard(props.backId, {"name": value3}).then((response_data) => {
+        apiService.updateBoard(props.backId, {"name": value3}).then((response_data) => {
             CommonService.toastCallback(response_data, props.setBoards)
         });
 
@@ -130,7 +134,7 @@ function Board(props) {
                                          onBlur={handleInputChangeName}/>
                     </Title>
                     {!(props.is_static)
-                        ?<Label>
+                        ? <Label>
                             Limit: <InputNumber inputId="minmax-buttons" value={value2}
                                                 onValueChange={(e) => handleInputChangeLimit(e)}
 
@@ -139,9 +143,9 @@ function Board(props) {
                                                 max={100}
                                                 size="1"
                                                 style={{height: '2em', width: '100%'}}
-                            />
+                        />
                         </Label>
-                        :<LabelDummy>
+                        : <LabelDummy>
                         </LabelDummy>
                     }
                     <ConfirmDialog visible={visi} onHide={() => setVisi(false)}
@@ -160,7 +164,7 @@ function Board(props) {
                                 rounded
                                 text
                                 aria-label="Filter"
-                                onClick={() => CommonService.onOpenDialog(setVisible2,setValue3,props.name)}/>
+                                onClick={() => CommonService.onOpenDialog(setVisible2, setValue3, props.name)}/>
                         <Button style={{}}
                                 icon="pi pi-plus"
                                 size="lg"
@@ -169,7 +173,7 @@ function Board(props) {
                                 aria-label="Filter"
                                 onClick={() => CommonService.onOpenDialog(setVisi, setValue, '')}/>
                         <ConfirmDialog visible={visible2} onHide={() => setVisible2(false)}
-                                       message=<InputText value={value3} onChange={(e) => setValue3(e.target.value)} />
+                                       message=<InputText value={value3} onChange={(e) => setValue3(e.target.value)}/>
                         header="Edytuj kolumnę:"
                         icon="pi pi-pencil"
                         acceptLabel="Akceptuj"
@@ -199,19 +203,19 @@ function Board(props) {
                         }
                     </CardButtons>
                     <RowStyle>
-                                {(props.rows).map((row, indexDrag) =>
-                                    <Row key={row.id}
-                                          limit={props.limit}
-                                          boardIndex={(props.board).index}
-                                          backId={row.id}
-                                          isCollapsed={row.is_collapsed}
-                                          dragId={(row.id).toString() + "c"}
-                                          droppableId={((props.rows).indexOf(row)).toString()+((props.boards).indexOf(props.board)).toString()}
-                                          cards={row.card_data}
-                                          setBoards={props.setBoards}
-                                          indexDrag={indexDrag}
-                                          name={row.name}/>
-                                )}
+                        {(props.rows).map((row, indexDrag) =>
+                            <Row key={row.id}
+                                 limit={props.limit}
+                                 boardIndex={(props.board).index}
+                                 backId={row.id}
+                                 isCollapsed={row.is_collapsed}
+                                 dragId={(row.id).toString() + "c"}
+                                 droppableId={((props.rows).indexOf(row)).toString() + ((props.boards).indexOf(props.board)).toString()}
+                                 cards={row.card_data}
+                                 setBoards={props.setBoards}
+                                 indexDrag={indexDrag}
+                                 name={row.name}/>
+                        )}
                     </RowStyle>
                 </BoardStyle>
             )}

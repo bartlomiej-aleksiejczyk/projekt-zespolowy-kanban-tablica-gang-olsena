@@ -23,7 +23,7 @@ export const AuthProvider = ({children}) => {
         let response_data = await response.json();
         if(response.status === 200) {
             setAuthToken(response_data);
-            setUser(jwt_decode(response_data.access));
+            setUser(jwt_decode(response_data.access).user_data);
             localStorage.setItem("authToken", JSON.stringify(response_data));
             navigate("/");
         } else {
@@ -41,7 +41,7 @@ export const AuthProvider = ({children}) => {
 
         CommonService.toastCallback(response_data, function() {
             setAuthToken(response_data);
-            setUser(jwt_decode(response_data.access));
+            setUser(jwt_decode(response_data.access).user_data);
             localStorage.setItem("authToken", JSON.stringify(response_data));
         });
     };
@@ -64,7 +64,7 @@ export const AuthProvider = ({children}) => {
 
     useEffect(() => {
         if(authToken) {
-            setUser(jwt_decode(authToken.access));
+            setUser(jwt_decode(authToken.access).user_data);
         }
         setLoading(false);
     }, [authToken, loading]);

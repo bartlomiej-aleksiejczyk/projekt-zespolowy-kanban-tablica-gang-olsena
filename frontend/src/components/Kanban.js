@@ -49,15 +49,15 @@ const WholeWebpage = styled.div`
 
 function Kanban() {
     const [boards, setBoards] = useState([]);
-    const userService = useUserService();
-    let {user} = useContext(AuthService);
+    const apiService = useUserService();
+    let {user, logoutUser} = useContext(AuthService);
+
 
     useEffect(() => {
-        userService.getBoards().then((response_data) => {
+        apiService.getBoards().then((response_data) => {
             setBoards(response_data.data)
         });
-        console.log(user);
-    }, [userService]);
+    }, [apiService]);
 
     async function onDragEnd(result) {
         const {destination, source, draggableId} = result;
@@ -69,7 +69,7 @@ function Kanban() {
             boards.splice(source.index, 1);
             boards.splice(destination.index, 0, board);
             setBoards(boards);
-            await ApiService.moveBoard(draggableIde, destination.index).then((response_data) => {
+            await apiService.moveBoard(draggableIde, destination.index).then((response_data) => {
                 CommonService.toastCallback(response_data, setBoards)
             });
             ;
@@ -90,11 +90,11 @@ function Kanban() {
 
 
             if(cards.length - 1 < destination.index) {
-                await ApiService.moveCard(draggableIde, cards.length, board.id, row.id).then((response_data) => {
+                await apiService.moveCard(draggableIde, cards.length, board.id, row.id).then((response_data) => {
                     CommonService.toastCallback(response_data, setBoards)
                 });
             } else {
-                await ApiService.moveCard(draggableIde, destination.index, board.id, row.id).then((response_data) => {
+                await apiService.moveCard(draggableIde, destination.index, board.id, row.id).then((response_data) => {
                     CommonService.toastCallback(response_data, setBoards)
                 });
             }
@@ -102,7 +102,7 @@ function Kanban() {
     }
 
     const acceptAddBoard = () => {
-        ApiService.newBoard(value).then((response_data) => {
+        apiService.newBoard(value).then((response_data) => {
             CommonService.toastCallback(response_data, setBoards);
             setValue('');
         });
@@ -111,7 +111,7 @@ function Kanban() {
         setValue('');
     }
     const acceptAddRow = () => {
-        ApiService.newRow(value1).then((response_data) => {
+        apiService.newRow(value1).then((response_data) => {
             CommonService.toastCallback(response_data, setBoards);
             setValue('');
         });
@@ -127,50 +127,62 @@ function Kanban() {
         <UserServiceProvider>
             <WholeWebpage>
                 <Header>Kanban Board</Header>
-                <ConfirmDialog
-                    visible={visible}
-                    onHide={() => setVisible(false)}
-                    message={<InputText value={value} onChange={(e) => setValue(e.target.value)}/>}
-                    header="Wpisz nazwe kolumny:"
-                    icon="pi pi-table"
-                    acceptLabel="Akceptuj"
-                    rejectLabel="Odrzuć"
-                    accept={acceptAddBoard}
-                    reject={rejectAddBoard}
-                />
-                <ConfirmDialog
-                    visible={visible1}
-                    onHide={() => setVisible1(false)}
-                    message={<InputText value1={value} onChange={(e) => setValue1(e.target.value)}/>}
-                    header="Wpisz nazwe rzędu:"
-                    icon="pi pi-table"
-                    acceptLabel="Akceptuj"
-                    rejectLabel="Odrzuć"
-                    accept={acceptAddRow}
-                    reject={rejectAddRow}
-                />
-                <Button style={{
-                    position : "fixed",
-                    zIndex   : "1",
-                    right    : "30px",
-                    top      : "41px",
-                    boxShadow: "0px 1px 7px rgba(0, 0, 0, 0.1), 0px 4px 5px -2px rgba(0, 0, 0, 0.12), 0px 10px 15px -5px rgba(0, 0, 0, 0.2)"
-                }}
-                        size="lg"
-                        onClick={() => CommonService.onOpenDialog(setVisible, setValue, '')}
-                        label="Nowa kolumna"
-                        icon="pi pi-plus"/>
-                <Button style={{
-                    position : "fixed",
-                    zIndex   : "1",
-                    right    : "270px",
-                    top      : "41px",
-                    boxShadow: "0px 1px 7px rgba(0, 0, 0, 0.1), 0px 4px 5px -2px rgba(0, 0, 0, 0.12), 0px 10px 15px -5px rgba(0, 0, 0, 0.2)"
-                }}
-                        size="lg"
-                        onClick={() => CommonService.onOpenDialog(setVisible1, setValue1, '')}
-                        label="Nowy rząd"
-                        icon="pi pi-plus"/>
+                <div style={{
+                    position: "fixed",
+                    top     : "40px",
+                    right   : "0",
+                    zIndex  : "1"
+                }}>
+                    <ConfirmDialog
+                        visible={visible}
+                        onHide={() => setVisible(false)}
+                        message={<InputText value={value} onChange={(e) => setValue(e.target.value)}/>}
+                        header="Wpisz nazwe kolumny:"
+                        icon="pi pi-table"
+                        acceptLabel="Akceptuj"
+                        rejectLabel="Odrzuć"
+                        accept={acceptAddBoard}
+                        reject={rejectAddBoard}
+                    />
+                    <ConfirmDialog
+                        visible={visible1}
+                        onHide={() => setVisible1(false)}
+                        message={<InputText value1={value} onChange={(e) => setValue1(e.target.value)}/>}
+                        header="Wpisz nazwe rzędu:"
+                        icon="pi pi-table"
+                        acceptLabel="Akceptuj"
+                        rejectLabel="Odrzuć"
+                        accept={acceptAddRow}
+                        reject={rejectAddRow}
+                    />
+                    <div className="inline mr-3">
+                        <Button style={{
+                            boxShadow: "0px 1px 7px rgba(0, 0, 0, 0.1), 0px 4px 5px -2px rgba(0, 0, 0, 0.12), 0px 10px 15px -5px rgba(0, 0, 0, 0.2)"
+                        }}
+                                size="lg"
+                                onClick={() => CommonService.onOpenDialog(setVisible1, setValue1, '')}
+                                label="Nowy rząd"
+                                icon="pi pi-plus"/>
+                    </div>
+                    <div className="inline mr-3">
+                        <Button style={{
+                            boxShadow: "0px 1px 7px rgba(0, 0, 0, 0.1), 0px 4px 5px -2px rgba(0, 0, 0, 0.12), 0px 10px 15px -5px rgba(0, 0, 0, 0.2)"
+                        }}
+                                size="lg"
+                                onClick={() => CommonService.onOpenDialog(setVisible, setValue, '')}
+                                label="Nowa kolumna"
+                                icon="pi pi-plus"/>
+                    </div>
+                    <div className="inline mr-3">
+
+                        <Button size="lg"
+                                onClick={() => logoutUser()}
+                                label={`${user.username} | Wyloguj się`}
+                                icon="pi pi-sign-out"/>
+                    </div>
+
+
+                </div>
                 <GlobalStyle whiteColor/>
                 <DragDropContext
                     onDragEnd={onDragEnd}>
