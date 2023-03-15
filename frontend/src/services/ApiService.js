@@ -16,14 +16,7 @@ class ApiService {
     }
 
     updateBoard(pk, data) {
-        return this.axios.post(`http://localhost:8000/api/board/${pk}/`,
-            {
-                method : 'POST',
-                headers: {
-                    "Content-Type": "application/json",
-                },
-                body   : JSON.stringify(data),
-            }).then(response => response.data);
+        return this.axios.post(`http://localhost:8000/api/board/${pk}/`, data).then(response => response.data);
     }
 
     updateRow(pk, data) {
