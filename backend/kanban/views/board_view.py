@@ -1,17 +1,17 @@
 import datetime
 
 from rest_framework import viewsets
+from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 
-from kanban.models import Board, Card, Row
+from kanban.models import Board, Card
 from kanban.serializers.board_serializer import BoardSerializer
 from kanban.serializers.card_serializer import CardSerializer
-import logging
-
-logger = logging.getLogger(__name__)
 
 
 class BoardViewSet(viewsets.ViewSet):
+    permission_classes = (IsAuthenticated,)
+
     def update_board(self, request, pk=None):
         data = request.data.copy()
         if Board.objects.all().count() == 0:
@@ -51,18 +51,20 @@ class BoardViewSet(viewsets.ViewSet):
         data = request.data.copy()
         card_id = data.get('id')
         index = int(data.get('index', 0))
-        row = data.get('row')
-        if row is None:
-            row = ((Row.objects.all())[0]).id
+        row_id = data.get('row')
+
         card_instance = None
         if card_id:
             card_instance = Card.objects.get_by_pk(pk=card_id)
             index = card_instance.index
 
+            if row_id is None:
+                row_id = card_instance.row_id
+
         Board.objects.get_by_pk(pk=pk)
         data['board'] = pk
         data['index'] = index
-        data['row'] = row
+        data['row'] = row_id
         serializer = CardSerializer(data=data, instance=card_instance, partial=True)
         serializer.is_valid(raise_exception=True)
         serializer.save()
