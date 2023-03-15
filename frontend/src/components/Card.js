@@ -99,7 +99,7 @@ function Card(props) {
         )
     }
 
-    let userLabel = props.data.user_data.username.charAt(0).toUpperCase() + props.data.user_data.username.charAt(props.data.user_data.username.length - 1).toUpperCase();
+    let userLabel = props.data.user_data?.username.charAt(0).toUpperCase() + props.data.user_data?.username.charAt(props.data.user_data?.username.length - 1).toUpperCase();
     return (
         <Draggable
             key={props.backId}

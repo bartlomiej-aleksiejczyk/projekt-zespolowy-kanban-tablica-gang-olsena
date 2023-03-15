@@ -55,7 +55,7 @@ class ApiService {
     }
 
     removeCard(taskId) {
-        return this.axios.post(`http://localhost:8000/api/card/${taskId}/`, {pk: taskId}).then(response => response.data);
+        return this.axios.delete(`http://localhost:8000/api/card/${taskId}/`, {pk: taskId}).then(response => response.data);
     }
 
     getUsers() {
