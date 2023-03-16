@@ -1,6 +1,7 @@
 import datetime
 
 from rest_framework import viewsets
+from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 
 from kanban.models import Board, Card
@@ -9,6 +10,8 @@ from kanban.serializers.card_serializer import CardSerializer
 
 
 class CardViewSet(viewsets.ViewSet):
+    permission_classes = (IsAuthenticated,)
+
     def get_card(self, request, pk):
         card = Card.objects.get_by_pk(pk=pk)
 

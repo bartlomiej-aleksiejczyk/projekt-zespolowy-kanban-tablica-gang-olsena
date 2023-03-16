@@ -1,17 +1,14 @@
 import datetime
 from rest_framework import viewsets
+from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
-from kanban.models import Board, Card, Row
+from kanban.models import Board, Row
 from kanban.serializers.board_serializer import BoardSerializer
-from kanban.serializers.card_serializer import CardSerializer
 from kanban.serializers.row_serializer import RowSerializer
-import logging
-import copy
-
-logger = logging.getLogger(__name__)
-
 
 class RowViewSet(viewsets.ViewSet):
+    permission_classes = (IsAuthenticated,)
+
 
     def update_row(self, request, pk=None):
         data = request.data.copy()

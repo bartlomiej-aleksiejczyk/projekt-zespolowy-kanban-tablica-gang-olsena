@@ -1,3 +1,5 @@
+from django.contrib.auth.base_user import BaseUserManager
+from django.contrib.auth.models import AbstractUser
 from django.db import models
 
 
@@ -25,7 +27,7 @@ class Timestamp(models.Model):
 
 
 class Dictionary(models.Model):
-    name = models.CharField(max_length=64)
+    name = models.CharField(max_length=32)
 
     class Meta:
         app_label = 'kanban'
@@ -58,12 +60,11 @@ class Board(Dictionary, Timestamp):
         if new_index < 0 or self.get_last_index() < new_index:
             return False, "Wprowadzono nieprawidłowy index."
 
-        print(new_index)
         if old_index == 0 \
-                or new_index == 0 \
-                or old_index == None and new_index == self.get_last_index() + 1 \
-                or old_index and new_index == self.get_last_index() \
-                or old_index == self.get_last_index():
+            or new_index == 0 \
+            or old_index is None and new_index == self.get_last_index() + 1 \
+            or old_index and new_index == self.get_last_index() \
+            or old_index == self.get_last_index():
             return False, "Nie możesz przenieść tej tablicy w te miejsce."
 
         if old_index is not None:
@@ -119,6 +120,14 @@ class Card(Timestamp):
         on_delete=models.DO_NOTHING
     )
     description = models.TextField()
+
+    user = models.ForeignKey(
+        'kanban.User',
+        related_name='card_user',
+        null=True,
+        blank=True,
+        on_delete=models.DO_NOTHING
+    )
 
     objects = CoreModelManager()
 
@@ -180,11 +189,10 @@ class Row(Dictionary, Timestamp):
             return last_board.index
 
         return Row.objects.count()
+
     def move(self, new_index, old_index=None):
         if new_index < 0 or self.get_last_index() < new_index:
             return False, "Wprowadzono nieprawidłowy index."
-
-        print(new_index)
 
         if old_index is not None:
             if new_index == 0:
@@ -222,3 +230,29 @@ class Row(Dictionary, Timestamp):
             changed_index += 1
 
         return True, "Tablica została przeniesiona poprawnie."
+
+
+class UserManager(CoreModelManager, BaseUserManager):
+    model_name = 'Użytkownik'
+
+    def create_user(self, username, password=None, email=None):
+        user = self.model(
+            username=username,
+            email=email
+        )
+        user.set_password(password)
+        user.save(using=self._db)
+        return user
+
+    def create_superuser(self, username, password, email):
+        user = self.create_user(username=username, password=password, email=email)
+        user.is_staff = True
+        user.is_superuser = True
+        user.save(using=self._db)
+        return user
+
+
+class User(Timestamp, AbstractUser):
+    avatar = models.ImageField(default=None)
+
+    objects = UserManager()

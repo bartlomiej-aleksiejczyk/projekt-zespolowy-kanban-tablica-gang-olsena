@@ -5,6 +5,8 @@ import React, {useRef, useLayoutEffect} from 'react';
 import Main from "./components/Main";
 import 'primeflex/primeflex.css';
 import {Toast} from 'primereact/toast';
+import {AuthProvider} from "./services/AuthService";
+import {BrowserRouter as Router } from "react-router-dom";
 
 
 function App() {
@@ -16,10 +18,12 @@ function App() {
 
 
     return (
-        <div>
+        <Router>
             <Toast ref={toast} position="bottom-right"/>
-            <Main/>
-        </div>
+            <AuthProvider>
+                <Main/>
+            </AuthProvider>
+        </Router>
     )
 }
 
