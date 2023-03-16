@@ -52,7 +52,7 @@ const CardsStyle = styled.div`
   overflow: auto;
   border-radius: 6px;
   border: 3px solid #b7b3ea;
-  transition: background-color 2s ease;
+  transition: background-color 0.4s;
   background-color: ${props =>
     props.rowOverflow ? '#800000' : 'white'};
   color: ${props =>

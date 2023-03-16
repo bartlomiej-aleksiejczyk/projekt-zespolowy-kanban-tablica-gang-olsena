@@ -32,12 +32,17 @@ const CardStyle = styled.div`
 
 const Description = styled.div`
   flex-direction: column;
-  max-width: 192px;
-  min-width: 192px;
+  max-width: 220px;
+  min-width: 220px;
   word-wrap: break-word;
   flex-wrap: wrap;
   padding-left: 5px;
   padding-right:5px;
+`;
+const UserChoiceBar = styled.div`
+  display: flex;
+  flex-direction: row;
+  word-wrap: break-word;
 `;
 
 function Card(props) {
@@ -46,10 +51,7 @@ function Card(props) {
     const [value, setValue] = useState('');
     const [editSelectedUser, setEditSelectedUser] = useState(props.data?.user_data);
     const [users, setUsers] = useState('');
-
-
     const apiService = useUserService();
-
     const handleInputChange = (e) => {
         apiService.updateCard(props.board, {
             "id"         : props.backId,
@@ -74,13 +76,25 @@ function Card(props) {
     const reject = () => {
     }
     const acceptEditCard = () => {
-        apiService.updateCard(props.board, {
-            "id"         : props.backId,
-            "description": value,
-            "user"       : editSelectedUser.id
-        }).then((response_data) => {
-            CommonService.toastCallback(response_data, props.setBoards);
-        });
+        if (editSelectedUser==null){
+            console.log("test")
+            apiService.updateCard(props.board, {
+                "id"         : props.backId,
+                "description": value,
+                "user"       : ""
+            }).then((response_data) => {
+                CommonService.toastCallback(response_data, props.setBoards);
+            });
+        }else{
+            apiService.updateCard(props.board, {
+                "id"         : props.backId,
+                "description": value,
+                "user"       : editSelectedUser.id
+            }).then((response_data) => {
+                CommonService.toastCallback(response_data, props.setBoards);
+            });
+        }
+
     }
 
     const rejectEditCard = () => {
@@ -88,14 +102,29 @@ function Card(props) {
     }
 
     const editCardDialog = () => {
-        return (<div>
+        //let usersCp=users.unshift(null)
+        return (
+            <div>
                 <div>
                     <InputText className="w-full" value={value} onChange={(e) => setValue(e.target.value)}/>
                 </div>
-                <Dropdown className="mt-3 w-full" value={editSelectedUser}
-                          onChange={(e) => setEditSelectedUser(e.value)} options={users}
-                          optionLabel="username"
-                          placeholder="Wybierz użytkownika"/>
+
+                <UserChoiceBar>
+                <Button
+                    style={{marginTop:"13px", marginRight:"3px"}}
+                    onClick={() => setEditSelectedUser(null)}
+                    icon="pi pi-times"
+                    rounded
+                    text
+                    size="small"
+                    severity="danger"
+                    aria-label="Cancel"/>
+                    <Dropdown className="mt-3 w-full" value={(editSelectedUser)}
+                              onChange={(e) => setEditSelectedUser(e.value)} options={(users)}
+                              optionLabel="username"
+                              placeholder="Wybierz użytkownika"
+                    />
+                </UserChoiceBar>
             </div>
         )
     }
@@ -124,7 +153,7 @@ function Card(props) {
                                        onHide={() => setVisi(false)}
                                        message={editCardDialog}
                                        header="Potwierdzenie edycji"
-                                       icon="pi pi-pencil"
+                                       // icon="pi pi-pencil"
                                        acceptLabel="Akceptuj"
                                        rejectLabel="Odrzuć"
                                        accept={acceptEditCard}

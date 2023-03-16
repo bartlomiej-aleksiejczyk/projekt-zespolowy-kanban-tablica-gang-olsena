@@ -27,11 +27,17 @@ export const AuthProvider = ({children}) => {
             setUser(jwt_decode(response_data.access).user_data);
             localStorage.setItem("authToken", JSON.stringify(response_data));
             navigate("/");
+            window.PrimeToast.show({
+                severity: 'success',
+                summary: 'Sukces',
+                detail: "Zalogowano pomyślnie",
+                life: 3000
+            });
         } else {
             window.PrimeToast.show({
                 severity: 'warn',
                 summary : 'Ostrzeżenie',
-                detail  : "Zły login lub hasło",
+                detail  : "Nieprawidłowy login lub hasło",
                 // detail  : response_data.detail,
                 life    : 3000
             });
