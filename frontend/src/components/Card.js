@@ -12,6 +12,7 @@ import CommonService from "../services/CommonService";
 import {useUserService} from "../utils/UserServiceContext";
 import {Dropdown} from 'primereact/dropdown';
 import {Tooltip} from 'primereact/tooltip';
+import stc from 'string-to-color';
 
 
 const CardStyle = styled.div`
@@ -155,7 +156,7 @@ function Card(props) {
                             <Avatar className="mt-2 user-avatar"
                                     label={userLabel}
                                     data-pr-tooltip={props.data.user_data.username}
-                                    style={{backgroundColor: '#' + userLabel.repeat(3), color: '#ffffff'}}/>
+                                    style={{backgroundColor: stc(props.data.user_data.username), color: 'white'}}/>
                         </div>}
                     </div>
                 </CardStyle>

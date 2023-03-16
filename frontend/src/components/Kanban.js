@@ -21,10 +21,6 @@ const GlobalStyle = createGlobalStyle`
     font-family: Verdana;
     color: #232323;
     background-color: #aec5de;
-    /*
-    background-color: #a2c0e0;
-    */
-
     scroll-margin-left: 0;
   }
 `
@@ -32,6 +28,7 @@ const GlobalStyle = createGlobalStyle`
 const BoardOfBoards = styled.div`
   display: flex;
   margin-left:280px;
+  margin-top: -160px;
   justify-content: space-around;
   position: absolute;
 `;
@@ -51,8 +48,6 @@ function Kanban() {
     const [boards, setBoards] = useState([]);
     const apiService = useUserService();
     let {user, logoutUser} = useContext(AuthService);
-
-
     useEffect(() => {
         apiService.getBoards().then((response_data) => {
             setBoards(response_data.data)
@@ -122,17 +117,28 @@ function Kanban() {
     const [visible, setVisible] = useState(false);
     const [value, setValue] = useState('');
     const [visible1, setVisible1] = useState(false);
+    const [visible2, setVisible2] = useState(false);
     const [value1, setValue1] = useState('');
+    const [value2, setValue2] = useState('');
     return (
         <UserServiceProvider>
             <WholeWebpage>
                 <Header>Kanban Board</Header>
                 <div style={{
-                    position: "fixed",
+                    position: "absolute",
                     top     : "40px",
                     right   : "0",
                     zIndex  : "1"
                 }}>
+                    <ConfirmDialog visible={visible2}
+                                   onHide={() => setVisible2(false)}
+                                   message={`Czy na pewno chcesz wylogować się z konta: ${user.username}?`}
+                                   header="Potwierdzenie usunięcia"
+                                   icon="pi pi-sign-out"
+                                   acceptLabel="Tak"
+                                   rejectLabel="Nie"
+                                   accept={logoutUser()}
+                                   reject={() => {}}/>
                     <ConfirmDialog
                         visible={visible}
                         onHide={() => setVisible(false)}
@@ -175,9 +181,12 @@ function Kanban() {
                     </div>
                     <div className="inline mr-3">
 
-                        <Button size="lg"
-                                onClick={() => logoutUser()}
-                                label={`${user.username} | Wyloguj się`}
+                        <Button style={{
+                            boxShadow: "0px 1px 7px rgba(0, 0, 0, 0.1), 0px 4px 5px -2px rgba(0, 0, 0, 0.12), 0px 10px 15px -5px rgba(0, 0, 0, 0.2)",}}
+                                size="lg"
+                                onClick={() => CommonService.onOpenDialog(setVisible2, [{callback: setValue2, value: ''}])}
+                                //label={`${user.username} | Wyloguj się`}
+                                label={`Wyloguj się`}
                                 icon="pi pi-sign-out"/>
                     </div>
 

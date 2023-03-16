@@ -12,12 +12,12 @@ import Kanban from "./Kanban";
 
 function Main() {
     return (
-        <Routes>
-            <Route exact path='/' element={<AuthRoute/>}>
-                <Route exact path='/' element={<Kanban/>}/>
-            </Route>
-            <Route element={<Login/>} path="/login"/>
-        </Routes>
+            <Routes>
+                        <Route exact path='/' element={<AuthRoute/>}>
+                            <Route exact path='/' element={<Kanban/>}/>
+                        </Route>
+                        <Route element={<Login/>} path="/login"/>
+                    </Routes>
     )
 }
 
