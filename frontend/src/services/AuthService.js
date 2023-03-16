@@ -16,10 +16,11 @@ export const AuthProvider = ({children}) => {
     const [loading, setLoading] = useState(true);
     const userService = useUserService();
     const navigate = useNavigate();
-
+    const apiService = useUserService();
 
     const loginUser = async (username, password) => {
         var response = await userService.loginUser(username, password);
+        console.log(response)
         let response_data = await response.json();
         if(response.status === 200) {
             setAuthToken(response_data);
@@ -30,20 +31,32 @@ export const AuthProvider = ({children}) => {
             window.PrimeToast.show({
                 severity: 'warn',
                 summary : 'Ostrzeżenie',
-                detail  : response_data.detail,
+                detail  : "Zły login lub hasło",
+                // detail  : response_data.detail,
                 life    : 3000
             });
         }
     };
 
-    const registerUser = (username, password, password2) => {
-        const response_data = ApiService.createUser(username, password);
-
-        CommonService.toastCallback(response_data, function() {
-            setAuthToken(response_data);
-            setUser(jwt_decode(response_data.access).user_data);
-            localStorage.setItem("authToken", JSON.stringify(response_data));
-        });
+    const registerUser = async (username, password, password2) => {
+        const response_data = await apiService.createUser(username, password);
+        if(response_data.status === 200) {
+            window.PrimeToast.show({
+                severity: 'success',
+                summary: 'Sukces',
+                detail: "Udało się założyć konto",
+                life: 3000
+            });
+            navigate("/");
+        }
+        if(response_data.status === 400) {
+            window.PrimeToast.show({
+                severity: 'error',
+                summary: 'Błąd',
+                detail: response_data.detail,
+                life: 3000
+            });
+        }
     };
 
     const logoutUser = () => {

@@ -102,6 +102,10 @@ function Kanban() {
             setValue('');
         });
     }
+    const acceptLogout = () => {
+        logoutUser();
+            setValue('');
+        }
     const rejectAddBoard = () => {
         setValue('');
     }
@@ -137,7 +141,7 @@ function Kanban() {
                                    icon="pi pi-sign-out"
                                    acceptLabel="Tak"
                                    rejectLabel="Nie"
-                                   accept={logoutUser()}
+                                   accept={acceptLogout}
                                    reject={() => {}}/>
                     <ConfirmDialog
                         visible={visible}

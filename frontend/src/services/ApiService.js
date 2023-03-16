@@ -69,7 +69,7 @@ class ApiService {
         })
     }
 
-    createUser(username, password) {
+    createUser(username, password, password2) {
         return fetch("http://127.0.0.1:8000/api/user/", {
             method : "POST",
             headers: {
