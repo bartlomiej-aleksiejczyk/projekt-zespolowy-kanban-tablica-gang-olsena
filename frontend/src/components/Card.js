@@ -36,8 +36,8 @@ const Description = styled.div`
   min-width: 220px;
   word-wrap: break-word;
   flex-wrap: wrap;
-  padding-left: 5px;
-  padding-right:5px;
+  padding-left: 8px;
+  padding-right:8px;
 `;
 const UserChoiceBar = styled.div`
   display: flex;
@@ -148,7 +148,7 @@ function Card(props) {
                             disabled={false}
                             onBlur={handleInputChange}/>
                     </Description>
-                    <div className="flex flex-column md:flex-row justify-content-end align-content-center flex-wrap">
+                    <div className="flex flex-column md:flex-row justify-content-end align-content-center flex-wrap px-2">
                         <ConfirmDialog visible={visi}
                                        onHide={() => setVisi(false)}
                                        message={editCardDialog}
