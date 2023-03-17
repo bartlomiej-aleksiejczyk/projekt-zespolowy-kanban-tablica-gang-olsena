@@ -61,10 +61,10 @@ class Board(Dictionary, Timestamp):
             return False, "Wprowadzono nieprawidłowy index."
 
         if old_index == 0 \
-            or new_index == 0 \
-            or old_index is None and new_index == self.get_last_index() + 1 \
-            or old_index and new_index == self.get_last_index() \
-            or old_index == self.get_last_index():
+                or new_index == 0 \
+                or old_index is None and new_index == self.get_last_index() + 1 \
+                or old_index and new_index == self.get_last_index() \
+                or old_index == self.get_last_index():
             return False, "Nie możesz przenieść tej tablicy w te miejsce."
 
         if old_index is not None:
@@ -120,7 +120,7 @@ class Card(Timestamp):
         on_delete=models.DO_NOTHING
     )
     description = models.TextField()
-
+    color = models.CharField(max_length=7, default="#FFFFFF")
     user = models.ForeignKey(
         'kanban.User',
         related_name='card_user',
@@ -252,7 +252,7 @@ class UserManager(CoreModelManager, BaseUserManager):
         return user
 
 
-class User(Timestamp, AbstractUser):
-    avatar = models.ImageField(default=None)
 
+class User(Timestamp, AbstractUser):
+    avatar = models.CharField(default="https://u.cubeupload.com/dawid8374/genericavatar.png", max_length=200)
     objects = UserManager()

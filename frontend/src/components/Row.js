@@ -182,6 +182,7 @@ function Row(props) {
                                 {(props.cards).map((card, indexDrag) =>
                                     <Card key={card.id}
                                           backId={card.id}
+                                          color={card.color}
                                           dragId={(card.id).toString() + "c"}
                                           description={card.description}
                                           setBoards={props.setBoards}

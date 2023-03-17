@@ -27,7 +27,7 @@ const CardStyle = styled.div`
   display: flex;
   flex-direction: column;
   flex-wrap: wrap;
-  background-color: inherit;
+  background-color: ${props => props.color};
 `;
 
 const Description = styled.div`
@@ -43,6 +43,12 @@ const UserChoiceBar = styled.div`
   display: flex;
   flex-direction: row;
   word-wrap: break-word;
+`;
+const AvatarImage = styled.img`
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+
 `;
 
 function Card(props) {
@@ -138,7 +144,9 @@ function Card(props) {
             {(provided) => (
                 <CardStyle{...provided.draggableProps}
                           {...provided.dragHandleProps}
-                          ref={provided.innerRef}>
+                          ref={provided.innerRef}
+                            color={props.color}
+                            onDoubleClick={()=> console.log(props.data.user_data)}>
                     <Description
                         className='tasks-container'>
                         <ContentEditable
@@ -172,21 +180,25 @@ function Card(props) {
                                        rejectLabel="Nie"
                                        accept={accept}
                                        reject={reject}/>
-                        <Button onClick={() => setVisible(true)}
+                        <Button onClick={() => (setVisible(true),console.log(props.data.user_data.avatar))}
                                 icon="pi pi-times"
                                 rounded
                                 text
                             //size="small"
                                 severity="danger"
                                 aria-label="Cancel"/>
+
                         {props.data.user_data &&
-                        <div>
-                            <Tooltip target=".user-avatar"/>
-                            <Avatar className="mt-2 user-avatar"
-                                    label={userLabel}
-                                    data-pr-tooltip={props.data.user_data.username}
-                                    style={{backgroundColor: stc(props.data.user_data.username), color: 'white'}}/>
-                        </div>}
+
+                        // <div>
+                        //     <Tooltip target=".user-avatar"/>
+                        //     <Avatar className="mt-2 user-avatar"
+                        //             label={userLabel}
+                        //             data-pr-tooltip={props.data.user_data.username}
+                        //             style={{backgroundColor: stc(props.data.user_data.username), color: 'white'}}/>
+                        // </div>
+                            <AvatarImage src={props.data.user_data.avatar}/>
+                            }
                     </div>
                 </CardStyle>
             )}
