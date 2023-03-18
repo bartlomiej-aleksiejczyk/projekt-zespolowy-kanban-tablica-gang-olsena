@@ -256,3 +256,6 @@ class UserManager(CoreModelManager, BaseUserManager):
 class User(Timestamp, AbstractUser):
     avatar = models.CharField(default="https://u.cubeupload.com/dawid8374/genericavatar.png", max_length=200)
     objects = UserManager()
+class Parameter(Timestamp, Dictionary):
+    avatar = models.CharField(default="https://u.cubeupload.com/dawid8374/genericavatar.png", max_length=200)
+    objects = UserManager()

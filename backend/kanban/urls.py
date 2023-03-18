@@ -2,7 +2,7 @@ from django.urls import path
 from kanban.views.board_view import BoardViewSet
 from kanban.views.card_view import CardViewSet
 from kanban.views.row_view import RowViewSet
-
+from kanban.views.parameter_view import ParameterViewSet
 
 single_board_viewset = BoardViewSet.as_view(
     dict(
@@ -55,6 +55,11 @@ row_viewset = RowViewSet.as_view(
         post='update_row'
     )
 )
+parameter_viewset = ParameterViewSet.as_view(
+    dict(
+        get='get_remaining_user_assignment'
+    )
+)
 
 urlpatterns = [
     path('board/', board_viewset),
@@ -65,4 +70,5 @@ urlpatterns = [
     path('board/<int:pk>/card/', board_card_viewset),
     path('row/<int:pk>/', single_row_viewset),
     path('row/', row_viewset),
+    path('limit/', parameter_viewset),
 ]

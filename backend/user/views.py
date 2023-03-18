@@ -5,6 +5,8 @@ from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework_simplejwt.views import TokenObtainPairView
 
 from kanban.models import User
+
+from kanban.models import User
 from user.serializers import UserSerializer, RegisterSerializer, MyTokenObtainPairSerializer
 
 
@@ -32,6 +34,24 @@ class UserViewSet(viewsets.ViewSet):
                 access=str(refresh.access_token)
             )
         )
+
+    def update_user(self, request, pk):
+        data = request.data.copy()
+
+        user_instance = None
+        if pk:
+            user_instance = User.objects.get_by_pk(pk=pk)
+
+        serializer = UserSerializer(data=data, instance=user_instance, partial=True)
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+
+        return Response(
+            dict(
+                success=True,
+                message="Zaktualizowano obrazek"),
+                data=UserSerializer(User.objects.all(), many=True).data
+            )
 
 class MyTokenObtainPairView(TokenObtainPairView):
     serializer_class = MyTokenObtainPairSerializer
