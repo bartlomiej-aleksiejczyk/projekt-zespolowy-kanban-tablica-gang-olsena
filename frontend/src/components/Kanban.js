@@ -32,6 +32,11 @@ const BoardOfBoards = styled.div`
   justify-content: space-around;
   position: absolute;
 `;
+const FreeUsersBoard = styled.div`
+  display: flex;
+  margin-left:280px;
+  justify-content: space-around;
+`;
 const Header = styled.h1`
   text-shadow: 3px 3px #4f46e5;
   margin-left: 35px;
@@ -229,6 +234,9 @@ function Kanban() {
                             </BoardOfBoards>
                         )}
                     </Droppable>
+                    <FreeUsersBoard>
+                        test
+                    </FreeUsersBoard>
                 </DragDropContext>
             </WholeWebpage>
         </UserServiceProvider>

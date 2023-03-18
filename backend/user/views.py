@@ -49,9 +49,10 @@ class UserViewSet(viewsets.ViewSet):
         return Response(
             dict(
                 success=True,
-                message="Zaktualizowano obrazek"),
+                message="Użytkownik został {}.".format(user_instance and "zaktualizowany" or "dodany"),
                 data=UserSerializer(User.objects.all(), many=True).data
             )
+        )
 
 class MyTokenObtainPairView(TokenObtainPairView):
     serializer_class = MyTokenObtainPairSerializer

@@ -55,6 +55,9 @@ class ApiService {
         return this.axios.get(`http://localhost:8000/api/user/`).then(response => response.data);
 
     }
+    updateUser(pk, data) {
+        return this.axios.post(`http://localhost:8000/api/row/${pk}/`, data).then(response => response.data);
+    }
 
     loginUser(username, password) {
         return fetch("http://localhost:8000/api/token/", {

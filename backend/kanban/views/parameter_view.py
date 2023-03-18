@@ -1,4 +1,5 @@
 import datetime
+from itertools import chain
 from rest_framework import viewsets
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
@@ -9,10 +10,10 @@ from kanban.serializers.card_serializer import CardSerializer
 from kanban.serializers.parameter_serializer import ParameterSerializer
 from kanban.serializers.remaining_user_assignment_serializer import RemainingSerializer
 
+
 class ParameterViewSet(viewsets.ViewSet):
     # odkomentować po testach
     # permission_classes = (IsAuthenticated,)
-
 
     def update_parameter(self, request, pk=None):
         data = request.data.copy()
@@ -31,10 +32,17 @@ class ParameterViewSet(viewsets.ViewSet):
                 data=BoardSerializer(Board.objects.all(), many=True).data
             )
         )
+
     def get_remaining_user_assignment(self, request):
+        occurrences = RemainingSerializer(User.objects.all(), many=True).data
+        result = RemainingSerializer(User.objects.none(), many=True).data
+        for user in occurrences:
+            for number in range(user['remaining_assignments']):
+                result.append(user)
+        print(type(result))
         return Response(
             dict(
                 success=True,
-                data=RemainingSerializer(User.objects.all(),  many=True).data
+                data=result
             )
         )
