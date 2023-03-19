@@ -91,7 +91,7 @@ function Card(props) {
                 "user"       : "",
                 "color"      : value1
             }).then((response_data) => {
-                CommonService.toastCallback(response_data, props.setBoards);
+                CommonService.toastCallback(response_data, props.setBoards,props.setRemaining);
             });
         }else{
             apiService.updateCard(props.board, {
