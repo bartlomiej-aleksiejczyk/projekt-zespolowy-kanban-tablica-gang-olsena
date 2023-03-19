@@ -86,7 +86,7 @@ function Board(props) {
 
     const accept = () => {
         apiService.removeBoard((props.backId)).then((response_data) => {
-            CommonService.toastCallback(response_data, props.setBoards)
+            CommonService.toastCallback(response_data, props.setBoards, props.setRemaining)
         });
     }
 
@@ -211,10 +211,11 @@ function Board(props) {
                                  dragId={(row.id).toString() + "c"}
                                  droppableId={((props.rows).indexOf(row)).toString() + ((props.boards).indexOf(props.board)).toString()}
                                  cards={row.card_data}
-                                 setBoards={props.setBoards}
                                  indexDrag={indexDrag}
                                  name={row.name}
                                  users={props.users}
+                                 setBoards={props.setBoards}
+                                 setRemaining={props.setRemaining}
                             />
                         )}
                     </RowStyle>

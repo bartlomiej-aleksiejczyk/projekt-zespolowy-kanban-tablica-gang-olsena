@@ -1,6 +1,6 @@
 import React, {useState, useEffect} from 'react'
 import styled from "styled-components";
-import {Draggable} from "react-beautiful-dnd";
+import {Draggable, Droppable} from "react-beautiful-dnd";
 import ContentEditable from 'react-contenteditable';
 import 'primeicons/primeicons.css';
 import {Button} from 'primereact/button';
@@ -46,12 +46,12 @@ const UserChoiceBar = styled.div`
   word-wrap: break-word;
 `;
 const AvatarImage = styled.img`
-  width: 20px;
-  height: 20px;
+  width: 40px;
+  height: 40px;
   border-radius: 50%;
-
 `;
-
+const DroppableDiv=styled.div`
+`;
 function Card(props) {
     const [visible1, setVisible1] = useState(false);
     const [visible, setVisible] = useState(false);
@@ -76,7 +76,7 @@ function Card(props) {
     }
     const accept = () => {
         apiService.removeCard((props.backId)).then((response_data) => {
-            CommonService.toastCallback(response_data, props.setBoards)
+            CommonService.toastCallback(response_data, props.setBoards, props.setRemaining)
         });
     }
 
@@ -100,7 +100,7 @@ function Card(props) {
                 "user"       : editSelectedUser.id,
                 "color"      : value1
             }).then((response_data) => {
-                CommonService.toastCallback(response_data, props.setBoards);
+                CommonService.toastCallback(response_data, props.setBoards,props.setRemaining);
             });
         }
 
@@ -143,6 +143,7 @@ function Card(props) {
 
     let userLabel = props.data.user_data?.username.charAt(0).toUpperCase() + props.data.user_data?.username.charAt(props.data.user_data?.username.length - 1).toUpperCase();
     return (
+
         <Draggable
             key={props.backId}
             draggableId={props.dragId}
@@ -151,8 +152,17 @@ function Card(props) {
                 <CardStyle{...provided.draggableProps}
                           {...provided.dragHandleProps}
                           ref={provided.innerRef}
+
                             color={props.color}
                             onDoubleClick={()=> console.log(props.data.user_data)}>
+                    <Droppable
+                        droppableId={props.dropId}
+                        direction="horizontal"
+                        type="avatar">
+                        {(provided) => (
+                            <DroppableDiv
+                                {...provided.droppableId}
+                                ref={provided.innerRef}>
                     <Description
                         className='tasks-container'>
                         <ContentEditable
@@ -206,9 +216,14 @@ function Card(props) {
                             <AvatarImage src={props.data.user_data.avatar}/>
                             }
                     </div>
+                                {provided.placeholder}
+                            </DroppableDiv>
+                        )}
+                    </Droppable>
                 </CardStyle>
-            )}
+                )}
         </Draggable>
+
     )
 }
 

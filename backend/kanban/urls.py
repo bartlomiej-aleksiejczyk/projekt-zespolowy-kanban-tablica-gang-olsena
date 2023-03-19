@@ -34,6 +34,7 @@ card_move_viewset = CardViewSet.as_view(
 single_card_viewset = CardViewSet.as_view(
     dict(
         get='get_card',
+        post='update_card',
         delete='delete_card'
     )
 )
@@ -55,9 +56,15 @@ row_viewset = RowViewSet.as_view(
         post='update_row'
     )
 )
+parameter_limit_viewset = ParameterViewSet.as_view(
+    dict(
+        get='get_remaining_user_assignment',
+    )
+)
 parameter_viewset = ParameterViewSet.as_view(
     dict(
-        get='get_remaining_user_assignment'
+        get='get_parameter',
+        post='update_parameter',
     )
 )
 
@@ -70,5 +77,7 @@ urlpatterns = [
     path('board/<int:pk>/card/', board_card_viewset),
     path('row/<int:pk>/', single_row_viewset),
     path('row/', row_viewset),
-    path('limit/', parameter_viewset),
+    path('limit/', parameter_limit_viewset),
+    path('parameter/<int:pk>/', parameter_viewset),
+
 ]

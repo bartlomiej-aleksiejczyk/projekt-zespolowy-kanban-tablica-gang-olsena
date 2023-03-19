@@ -1,5 +1,5 @@
 const CommonService = {
-    toastCallback: function(response_data, successCallback,successCallback1,successCallback2) {
+    toastCallback: function(response_data, successCallback,successCallback1,successCallback2,successCallback3) {
         console.log(response_data)
         if(response_data.success) {
             if(response_data.message && response_data.message.length > 0) {
@@ -29,6 +29,10 @@ const CommonService = {
         if(successCallback2 && response_data.data2) {
             console.log("2")
             successCallback2(response_data.data2);
+        }
+        if(successCallback3 && response_data.data3) {
+            console.log("2")
+            successCallback3(response_data.data3);
         }
     },
     onOpenDialog : (callback, setters) => {

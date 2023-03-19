@@ -6,6 +6,8 @@ from rest_framework_simplejwt.views import TokenObtainPairView
 from kanban.serializers.board_serializer import BoardSerializer
 from kanban.models import Board, User
 from user.serializers import UserSerializer, RegisterSerializer, MyTokenObtainPairSerializer
+from kanban.views.parameter_view import ParameterViewSet
+from kanban.views.helper import remaining_helper
 
 
 class UserViewSet(viewsets.ViewSet):
@@ -57,7 +59,8 @@ class UserViewSet(viewsets.ViewSet):
                 message="Użytkownik został {}.".format(user_instance and "zaktualizowany" or "dodany"),
                 data=BoardSerializer(Board.objects.all(), many=True).data,
                 data1=UserSerializer(User.objects.all(), many=True).data,
-                data2=UserSerializer(User.objects.get_by_pk(pk=pk)).data
+                data2=UserSerializer(User.objects.get_by_pk(pk=pk)).data,
+                data3=remaining_helper()
             )
         )
 

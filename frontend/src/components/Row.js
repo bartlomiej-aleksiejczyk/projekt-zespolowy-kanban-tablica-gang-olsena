@@ -68,14 +68,12 @@ const RowSide = styled.div`
 `;
 const RowSideCollapsable = styled.div`
   position: absolute;
-  margin-left: -250px;
+  margin-left: -252px;
   margin-top: 3px;
   min-width: 246px;
   min-height: 235px;
   max-height: 235px;
-  
   z-index: 8;
-  border: 3px solid #b7b3ea;
   border-radius: 6px;
   background-color: white;
 
@@ -121,7 +119,7 @@ function Row(props) {
     }
     const acceptRowDelete = () => {
         apiService.removeRow((props.backId)).then((response_data) => {
-            CommonService.toastCallback(response_data, props.setBoards)
+            CommonService.toastCallback(response_data, props.setBoards,props.setRemaining)
         });
     }
     return (
@@ -129,7 +127,7 @@ function Row(props) {
         <RowsStyleExtension>
             {props.boardIndex === 0 &&
             <RowSide>
-                <ToggleButton style={{width: "227px", marginLeft: "10px", marginTop: "10px", height: "50"}}
+                <ToggleButton style={{width: "227px", marginLeft: "10px", marginTop: "10px"}}
                               onLabel={props.name} offLabel={props.name} onIcon="pi pi-minus" offIcon="pi pi-plus"
                               checked={!props.isCollapsed}
                               onChange={props.isCollapsed ? () => handleExpand() : () => handleCollapse()}/>
@@ -185,13 +183,16 @@ function Row(props) {
                                           backId={card.id}
                                           color={card.color}
                                           dragId={(card.id).toString() + "c"}
+                                          dropId={(card.id).toString() + "cd"}
                                           description={card.description}
-                                          setBoards={props.setBoards}
                                           indexDrag={indexDrag}
                                           data={card}
                                           name={card.name}
                                           board={card.board}
-                                          users={props.users}/>
+                                          users={props.users}
+                                          setBoards={props.setBoards}
+                                          setRemaining={props.setRemaining}
+                                    />
                                 )}
                                 {provided.placeholder}
                             </CardsStyle>

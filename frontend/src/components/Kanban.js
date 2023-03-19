@@ -15,6 +15,10 @@ import {UserServiceProvider, useUserService} from '../utils/UserServiceContext';
 import AuthService from "../services/AuthService";
 import { Avatar } from 'primereact/avatar';
 import { Dialog } from 'primereact/dialog';
+import {InputNumber} from 'primereact/inputnumber';
+import Card from "./Card";
+import UserAvatar from "./UserAvatar";
+
 
 const GlobalStyle = createGlobalStyle`
   body {
@@ -25,18 +29,39 @@ const GlobalStyle = createGlobalStyle`
     scroll-margin-left: 0;
   }
 `
+const AssignmentLimitText = styled.h3`
+  text-align: center;
+  padding: 15px;
+  margin-top: 20px;
+`;
 
+const InputContainer = styled.div`
+  display: flex;
+  justify-content: center;
+`;
+const UserAssignArea = styled.div`
+  display: flex;
+  padding: 10px;
+  justify-content: center;
+  flex-wrap: wrap;
+`;
 const BoardOfBoards = styled.div`
   display: flex;
-  margin-left:280px;
+  margin-left:481px;
   margin-top: -160px;
   justify-content: space-around;
   position: absolute;
 `;
 const FreeUsersBoard = styled.div`
-  display: flex;
-  margin-left:280px;
-  justify-content: space-around;
+  position: relative;
+  margin-top: 170px;
+  margin-left: 25px;
+  width:200px;
+  top: 100%;
+  box-sizing: border-box;
+  background-color: white;
+  border-radius: 6px;
+
 `;
 const Header = styled.h1`
   text-shadow: 3px 3px #4f46e5;
@@ -74,7 +99,9 @@ function Kanban() {
     const [value1, setValue1] = useState('');
     const [value2, setValue2] = useState('');
     const [value3, setValue3] = useState('');
+    const [value4, setValue4] = useState('');
     const [users, setUsers] = useState('');
+    const [remaining, setRemaining] = useState([]);
     const renderFooter = (visible4) => {
         return (
             <div>
@@ -83,7 +110,15 @@ function Kanban() {
             </div>
         );
     }
-
+    const handleInputChangeLimit = (e) => {
+        if(e.value!==null){
+            setValue4(e.value);
+            console.log(e.value)
+            apiService.updateParameter( 1,{"value": e.value}).then((response_data) => {
+                CommonService.toastCallback(response_data, setValue4(response_data.data.value),setRemaining)
+            });
+        }
+    }
     const acceptAddBoard = () => {
         apiService.newBoard(value).then((response_data) => {
             CommonService.toastCallback(response_data, setBoards);
@@ -108,7 +143,7 @@ function Kanban() {
     }
     const acceptUserEdit = () => {
         apiService.updateUser(user.id, {"avatar":value3}).then((response_data) => {
-            CommonService.toastCallback(response_data, setBoards,setUsers,setUserLogged);
+            CommonService.toastCallback(response_data, setBoards,setUsers,setUserLogged, setRemaining)
             setValue('');
         });
         setVisible3(false)
@@ -123,6 +158,11 @@ function Kanban() {
         });
     }, []);
     useEffect(() => {
+        apiService.getParameter(1).then(function(response_data) {
+            setValue4(response_data.data.value);
+        });
+    }, []);
+    useEffect(() => {
         apiService.getBoards().then((response_data) => {
             setBoards(response_data.data)
         });
@@ -130,6 +170,11 @@ function Kanban() {
     useEffect(() => {
         apiService.getUsers().then(function(response_data) {
             setUsers(response_data.data);
+        });
+    }, []);
+    useEffect(() => {
+        apiService.getRemaining().then(function(response_data) {
+            setRemaining(response_data.data);
         });
     }, []);
     async function onDragEnd(result) {
@@ -171,6 +216,18 @@ function Kanban() {
                     CommonService.toastCallback(response_data, setBoards)
                 });
             }
+        }else if(result.type === "avatar") {
+            console.log(source)
+            let cardAvatarid = parseInt(((destination.droppableId)).slice(0, -2) );
+            let userId= (remaining[(source.index)]).id;
+            remaining.splice((source.index),1);
+            setRemaining(remaining);
+            await apiService.updateSingleCard(cardAvatarid, {
+                "user"       : userId
+            }).then((response_data) => {
+                CommonService.toastCallback(response_data, setBoards, setRemaining);
+            });
+
         }
     }
     return (
@@ -294,6 +351,7 @@ function Kanban() {
                                                   limit={board.max_card}
                                                   is_static={board.is_static}
                                                   setBoards={setBoards}
+                                                  setRemaining={setRemaining}
                                                   index={index}
                                                   users={users}
                                                    />
@@ -303,6 +361,49 @@ function Kanban() {
                         )}
                     </Droppable>
                     <FreeUsersBoard>
+                        <AssignmentLimitText>
+                            Limit przypisań:
+                        </AssignmentLimitText>
+
+                        <InputContainer
+                        >
+                            <InputNumber inputId="minmax-buttons" value={value4}
+                                                onValueChange={(e) => handleInputChangeLimit(e)}
+                                                mode="decimal"
+                                                showButtons min={1}
+                                                max={100}
+                                                size="1"
+                                                buttonLayout={"horizontal"}
+                                                incrementButtonIcon="pi pi-plus"
+                                                decrementButtonIcon="pi pi-minus"
+                                                allowEmpty={false}
+                                                inputStyle={{textAlign:"center"}}
+                            />
+                        </InputContainer>
+                        <Droppable
+                            key="unikalnyKlucz2"
+                            droppableId="wholeofthese"
+                            direction="horizontal"
+                            type="avatar"
+                        >
+                            {provided => (
+                        <UserAssignArea
+                                {...provided.droppableProps}
+                                ref={provided.innerRef}
+                                >
+                            {remaining.map((avatar, indexDrag) =>
+                                <UserAvatar index={indexDrag}
+                                            key={indexDrag}
+                                            id={avatar.id}
+                                            dragId={(indexDrag).toString() + "a"}
+                                            username={avatar.username}
+                                            img={avatar.avatar} />
+                            )}
+                            {provided.placeholder}
+
+                        </UserAssignArea>
+                                )}
+                        </Droppable>
                     </FreeUsersBoard>
                 </DragDropContext>
             </WholeWebpage>

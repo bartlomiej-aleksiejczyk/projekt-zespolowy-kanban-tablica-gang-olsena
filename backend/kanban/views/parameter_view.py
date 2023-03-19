@@ -9,39 +9,58 @@ from kanban.serializers.row_serializer import RowSerializer
 from kanban.serializers.card_serializer import CardSerializer
 from kanban.serializers.parameter_serializer import ParameterSerializer
 from kanban.serializers.remaining_user_assignment_serializer import RemainingSerializer
-
+from kanban.views.helper import remaining_helper
 
 class ParameterViewSet(viewsets.ViewSet):
-    permission_classes = (IsAuthenticated,)
+    # permission_classes = (IsAuthenticated,)
 
-    def update_parameter(self, request, pk=None):
-        data = request.data.copy()
-        parameter_instance = None
-        if pk:
-            parameter_instance = Parameter.objects.get_by_pk(pk=pk)
-
-        serializer = ParameterSerializer(data=data, instance=parameter_instance, partial=True)
-        serializer.is_valid(raise_exception=True)
-        serializer.save()
-
+    def get_parameter(self, request, pk):
+        parameter = Parameter.objects.get_by_pk(pk=pk)
         return Response(
             dict(
                 success=True,
-                message="Parametr został {}.".format(parameter_instance and "zaktualizowany" or "dodany"),
-                data=BoardSerializer(Board.objects.all(), many=True).data
+                data=ParameterSerializer(parameter).data
             )
         )
 
+
+
     def get_remaining_user_assignment(self, request):
-        occurrences = RemainingSerializer(User.objects.all(), many=True).data
-        result = RemainingSerializer(User.objects.none(), many=True).data
-        for user in occurrences:
-            for number in range(user['remaining_assignments']):
-                result.append(user)
-        print(type(result))
+        result=remaining_helper()
         return Response(
             dict(
                 success=True,
                 data=result
             )
         )
+    def update_parameter(self, request, pk=None):
+        data = request.data.copy()
+        limit = data.get('value')
+        parameter_instance = None
+
+        parameter_old = Parameter.objects.get_by_pk(pk=pk)
+        bad_response = ParameterSerializer(parameter_old).data
+        if pk == 1:
+            for assignment in RemainingSerializer(User.objects.all(), many=True).data:
+                print(assignment.get('assignments'))
+                if limit < assignment.get('assignments'):
+                    return Response(
+                        dict(
+                            success=False,
+                            message="Limit mniejszy od aktualnie przydzielonych zadań, usuń przydziały aby ustawić mniejszy limit",
+                            data=ParameterSerializer(Parameter.objects.get_by_pk(pk=1)).data
+                        )
+                    )
+        if pk:
+            parameter_instance = Parameter.objects.get_by_pk(pk=pk)
+            serializer = ParameterSerializer(data=data, instance=parameter_instance, partial=True)
+            serializer.is_valid(raise_exception=True)
+            serializer.save()
+            return Response(
+                dict(
+                    success=True,
+                    message="Parametr został {}.".format(parameter_instance and "zaktualizowany" or "dodany"),
+                    data=ParameterSerializer(Parameter.objects.get_by_pk(pk=1)).data,
+                    data1=remaining_helper()
+                )
+            )

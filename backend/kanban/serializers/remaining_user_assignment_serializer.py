@@ -5,14 +5,17 @@ from kanban.serializers.parameter_serializer import ParameterSerializer
 
 
 class RemainingSerializer(serializers.ModelSerializer):
-    remaining_assigments = serializers.SerializerMethodField()
-
+    remaining_assignments = serializers.SerializerMethodField()
+    assignments = serializers.SerializerMethodField()
     class Meta:
         model = User
-        fields = ['id', 'username', 'avatar', 'remaining_assignments']
+        fields = ['id', 'username', 'avatar', 'remaining_assignments', 'assignments']
 
     @staticmethod
-    def get_remaining_assigments(obj):
-        occurrences = Card.objects.filter(user=obj).count()
-        limit = (Parameter.objects.get_by_pk(0)).value
+    def get_remaining_assignments(obj):
+        occurrences = Card.objects.filter(user=obj, deleted_at__isnull=True).count()
+        limit = (Parameter.objects.get_by_pk(1)).value
         return limit - occurrences
+    @staticmethod
+    def get_assignments(obj):
+        return Card.objects.filter(user=obj, deleted_at__isnull=True).count()
