@@ -13,6 +13,7 @@ import {useUserService} from "../utils/UserServiceContext";
 import {Dropdown} from 'primereact/dropdown';
 import {Tooltip} from 'primereact/tooltip';
 import stc from 'string-to-color';
+import { MultiStateCheckbox } from 'primereact/multistatecheckbox';
 
 
 const CardStyle = styled.div`
@@ -52,11 +53,18 @@ const AvatarImage = styled.img`
 `;
 
 function Card(props) {
-    const [visi, setVisi] = useState(false);
+    const [visible1, setVisible1] = useState(false);
     const [visible, setVisible] = useState(false);
     const [value, setValue] = useState('');
+    const [value1, setValue1] = useState(props.color);
+    const options = [
+        { value: '#FFFFFF', style: {backgroundColor:`#FFFFFF`} },
+        { value: '#B2F199', style: {backgroundColor:`#B2F199`}},
+        { value: '#99B3E6', style: {backgroundColor:`#99B3E6`}},
+        { value: '#FFE680', style: {backgroundColor:`#FFE680`}},
+        { value: '#F2B580', style: {backgroundColor:`#F2B580`}},
+    ];
     const [editSelectedUser, setEditSelectedUser] = useState(props.data?.user_data);
-    const [users, setUsers] = useState('');
     const apiService = useUserService();
     const handleInputChange = (e) => {
         apiService.updateCard(props.board, {
@@ -66,13 +74,6 @@ function Card(props) {
             CommonService.toastCallback(response_data, props.setBoards)
         });
     }
-
-    useEffect(() => {
-        apiService.getUsers().then(function(response_data) {
-            setUsers(response_data.data);
-        });
-    }, []);
-
     const accept = () => {
         apiService.removeCard((props.backId)).then((response_data) => {
             CommonService.toastCallback(response_data, props.setBoards)
@@ -87,7 +88,8 @@ function Card(props) {
             apiService.updateCard(props.board, {
                 "id"         : props.backId,
                 "description": value,
-                "user"       : ""
+                "user"       : "",
+                "color"      : value1
             }).then((response_data) => {
                 CommonService.toastCallback(response_data, props.setBoards);
             });
@@ -95,7 +97,8 @@ function Card(props) {
             apiService.updateCard(props.board, {
                 "id"         : props.backId,
                 "description": value,
-                "user"       : editSelectedUser.id
+                "user"       : editSelectedUser.id,
+                "color"      : value1
             }).then((response_data) => {
                 CommonService.toastCallback(response_data, props.setBoards);
             });
@@ -114,10 +117,13 @@ function Card(props) {
                 <div>
                     <InputText className="w-full" value={value} onChange={(e) => setValue(e.target.value)}/>
                 </div>
-
+                <div className="card flex flex-row align-items-center gap-3 pt-3 pb-3 pl-2">
+                    <MultiStateCheckbox value={value1} onChange={(e) => setValue1(e.value)} options={options} optionValue="value" empty={false} />
+                    <span>{value1}</span>
+                </div>
                 <UserChoiceBar>
                 <Button
-                    style={{marginTop:"13px", marginRight:"3px"}}
+                    style={{ marginRight:"3px"}}
                     onClick={() => setEditSelectedUser(null)}
                     icon="pi pi-times"
                     rounded
@@ -125,8 +131,8 @@ function Card(props) {
                     size="small"
                     severity="danger"
                     aria-label="Cancel"/>
-                    <Dropdown className="mt-3 w-full" value={(editSelectedUser)}
-                              onChange={(e) => setEditSelectedUser(e.value)} options={(users)}
+                    <Dropdown className=" w-full" value={(editSelectedUser)}
+                              onChange={(e) => setEditSelectedUser(e.value)} options={(props.users)}
                               optionLabel="username"
                               placeholder="Wybierz użytkownika"
                     />
@@ -157,8 +163,8 @@ function Card(props) {
                             onBlur={handleInputChange}/>
                     </Description>
                     <div className="flex flex-column md:flex-row justify-content-end align-content-center flex-wrap px-2">
-                        <ConfirmDialog visible={visi}
-                                       onHide={() => setVisi(false)}
+                        <ConfirmDialog visible={visible1}
+                                       onHide={() => setVisible1(false)}
                                        message={editCardDialog}
                                        header="Potwierdzenie edycji"
                                        // icon="pi pi-pencil"
@@ -166,7 +172,7 @@ function Card(props) {
                                        rejectLabel="Odrzuć"
                                        accept={acceptEditCard}
                                        reject={rejectEditCard}/>
-                        <Button onClick={() => CommonService.onOpenDialog(setVisi, [{callback: setValue, value: props.description}, {callback: setEditSelectedUser, value: props.data?.user_data}])}
+                        <Button onClick={() => CommonService.onOpenDialog(setVisible1, [{callback: setValue, value: props.description}, {callback: setEditSelectedUser, value: props.data?.user_data}])}
                                 icon="pi pi-pencil"
                                 rounded
                                 text
@@ -180,7 +186,7 @@ function Card(props) {
                                        rejectLabel="Nie"
                                        accept={accept}
                                        reject={reject}/>
-                        <Button onClick={() => (setVisible(true),console.log(props.data.user_data.avatar))}
+                        <Button onClick={() => (setVisible(true))}
                                 icon="pi pi-times"
                                 rounded
                                 text

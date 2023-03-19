@@ -52,11 +52,12 @@ const CardsStyle = styled.div`
   overflow: auto;
   border-radius: 6px;
   border: 3px solid #b7b3ea;
+  background-color:white;
   transition: background-color 0.4s;
-  background-color: ${props =>
-    props.rowOverflow ? '#800000' : 'white'};
-  color: ${props =>
-    props.rowOverflow ? 'white' : 'inherit'};
+  // background-color: {props =>
+  //   props.rowOverflow ? '#800000' : 'white'};
+  // color: {props =>
+  //   props.rowOverflow ? 'white' : 'inherit'};
 `;
 const RowSide = styled.div`
   position: absolute;
@@ -189,7 +190,8 @@ function Row(props) {
                                           indexDrag={indexDrag}
                                           data={card}
                                           name={card.name}
-                                          board={card.board}/>
+                                          board={card.board}
+                                          users={props.users}/>
                                 )}
                                 {provided.placeholder}
                             </CardsStyle>

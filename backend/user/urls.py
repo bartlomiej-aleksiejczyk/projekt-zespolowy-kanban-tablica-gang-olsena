@@ -14,10 +14,16 @@ user_img_viewset = UserViewSet.as_view(
         post='update_user'
     )
 )
+single_user_viewset = UserViewSet.as_view(
+    dict(
+        get='get_single_user'
+    )
+)
 
 urlpatterns = [
     path('user/', user_viewset, name='user_viewset'),
     path('user/<int:pk>/image/', user_img_viewset, name='user_img_viewset'),
+    path('user/<int:pk>/', single_user_viewset, name='single_user_viewset'),
     path('token/', MyTokenObtainPairView.as_view(), name='token_obtain_pair'),
     path('token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
     path('token/verify/', TokenVerifyView.as_view(), name='token_verify'),

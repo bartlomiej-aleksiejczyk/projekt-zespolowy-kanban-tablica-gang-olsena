@@ -3,10 +3,8 @@ from rest_framework.response import Response
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework_simplejwt.views import TokenObtainPairView
-
-from kanban.models import User
-
-from kanban.models import User
+from kanban.serializers.board_serializer import BoardSerializer
+from kanban.models import Board, User
 from user.serializers import UserSerializer, RegisterSerializer, MyTokenObtainPairSerializer
 
 
@@ -18,7 +16,14 @@ class UserViewSet(viewsets.ViewSet):
                 data=UserSerializer(User.objects.all(), many=True).data
             )
         )
-
+    def get_single_user(self, request, pk):
+        user = User.objects.get_by_pk(pk=pk)
+        return Response(
+            dict(
+                success=True,
+                data=UserSerializer(user).data
+            )
+        )
     def create_user(self, request):
         serializer = RegisterSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
@@ -50,7 +55,9 @@ class UserViewSet(viewsets.ViewSet):
             dict(
                 success=True,
                 message="Użytkownik został {}.".format(user_instance and "zaktualizowany" or "dodany"),
-                data=UserSerializer(User.objects.all(), many=True).data
+                data=BoardSerializer(Board.objects.all(), many=True).data,
+                data1=UserSerializer(User.objects.all(), many=True).data,
+                data2=UserSerializer(User.objects.get_by_pk(pk=pk)).data
             )
         )
 

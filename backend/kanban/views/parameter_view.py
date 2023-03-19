@@ -12,8 +12,7 @@ from kanban.serializers.remaining_user_assignment_serializer import RemainingSer
 
 
 class ParameterViewSet(viewsets.ViewSet):
-    # odkomentować po testach
-    # permission_classes = (IsAuthenticated,)
+    permission_classes = (IsAuthenticated,)
 
     def update_parameter(self, request, pk=None):
         data = request.data.copy()

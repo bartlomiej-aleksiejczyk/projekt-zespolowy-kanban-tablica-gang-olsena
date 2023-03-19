@@ -10,7 +10,7 @@ from kanban.serializers.card_serializer import CardSerializer
 
 
 class CardViewSet(viewsets.ViewSet):
-    # permission_classes = (IsAuthenticated,)
+    permission_classes = (IsAuthenticated,)
 
     def get_card(self, request, pk):
         card = Card.objects.get_by_pk(pk=pk)

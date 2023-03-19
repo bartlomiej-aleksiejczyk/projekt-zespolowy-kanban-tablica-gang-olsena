@@ -39,20 +39,18 @@ const Label = styled.label`
   display: flex;
   margin-left: 2px;
   gap: 8px;
-  margin-bottom: -5px;
+  margin-bottom: 0px;
 `
 const LabelDummy = styled.label`
-  margin-top: 13px;
-  margin-bottom: 13px;
 `
 
 const Title = styled.h2`
   text-align: center;
   max-width: 205px;
   min-width: 205px;
-  height: 60px;
+  height: 35px;
   padding: 0px;
-  margin-bottom: 20px;
+  margin-bottom: 0px;
   flex-direction: column;
   word-wrap: break-word;
   flex-wrap: wrap;
@@ -65,7 +63,7 @@ const RowStyle = styled.section`
 
 `;
 const CardButtons = styled.div`
-  margin-top: 22px;
+  margin-top:0px;
 
 
 `;
@@ -133,7 +131,8 @@ function Board(props) {
                                          disabled={true}
                                          onBlur={handleInputChangeName}/>
                     </Title>
-                    {!(props.is_static)
+                    {false
+                        //(props.is_static)
                         ? <Label>
                             Limit: <InputNumber inputId="minmax-buttons" value={value2}
                                                 onValueChange={(e) => handleInputChangeLimit(e)}
@@ -214,7 +213,9 @@ function Board(props) {
                                  cards={row.card_data}
                                  setBoards={props.setBoards}
                                  indexDrag={indexDrag}
-                                 name={row.name}/>
+                                 name={row.name}
+                                 users={props.users}
+                            />
                         )}
                     </RowStyle>
                 </BoardStyle>

@@ -2,7 +2,7 @@ import "primereact/resources/themes/lara-light-indigo/theme.css";
 import "primereact/resources/primereact.min.css";
 import "primeicons/primeicons.css";
 import styled, {createGlobalStyle} from 'styled-components';
-import React, {useState, useEffect, useContext} from 'react';
+import React, {useState, useEffect, useContext, useRef } from 'react';
 import {DragDropContext, Droppable} from 'react-beautiful-dnd';
 import Board from "./Board";
 import {Button} from 'primereact/button';
@@ -13,7 +13,8 @@ import ApiService from "../services/ApiService";
 import CommonService from "../services/CommonService";
 import {UserServiceProvider, useUserService} from '../utils/UserServiceContext';
 import AuthService from "../services/AuthService";
-
+import { Avatar } from 'primereact/avatar';
+import { Dialog } from 'primereact/dialog';
 
 const GlobalStyle = createGlobalStyle`
   body {
@@ -46,6 +47,16 @@ const Header = styled.h1`
   padding: 5px;
   color: #ffffff;
 `;
+const AvatarMenu = styled.div`
+  display: block;
+  text-align: center;
+  margin: 0 auto;
+  width: 100px;
+  height: 100px;
+  border-radius: 50%;
+
+`;
+
 const WholeWebpage = styled.div`
 `;
 
@@ -53,12 +64,74 @@ function Kanban() {
     const [boards, setBoards] = useState([]);
     const apiService = useUserService();
     let {user, logoutUser} = useContext(AuthService);
+    const [userLogged, setUserLogged] = useState('');
+    const [visible, setVisible] = useState(false);
+    const [value, setValue] = useState('');
+    const [visible1, setVisible1] = useState(false);
+    const [visible2, setVisible2] = useState(false);
+    const [visible3, setVisible3] = useState(false);
+    const [visible4, setVisible4] = useState(false);
+    const [value1, setValue1] = useState('');
+    const [value2, setValue2] = useState('');
+    const [value3, setValue3] = useState('');
+    const [users, setUsers] = useState('');
+    const renderFooter = (visible4) => {
+        return (
+            <div>
+                <Button label="Odrzuć" icon="pi pi-times" onClick={() =>rejectUserEdit()} autoFocus />
+                <Button label="Zatwierdź" icon="pi pi-check" onClick={() =>acceptUserEdit()} autoFocus />
+            </div>
+        );
+    }
+
+    const acceptAddBoard = () => {
+        apiService.newBoard(value).then((response_data) => {
+            CommonService.toastCallback(response_data, setBoards);
+            setValue('');
+        });
+    }
+    const acceptLogout = () => {
+        logoutUser();
+            setValue('');
+        }
+    const rejectAddBoard = () => {
+        setValue('');
+    }
+    const acceptAddRow = () => {
+        apiService.newRow(value1).then((response_data) => {
+            CommonService.toastCallback(response_data, setBoards);
+            setValue('');
+        });
+    }
+    const rejectAddRow = () => {
+        setValue('');
+    }
+    const acceptUserEdit = () => {
+        apiService.updateUser(user.id, {"avatar":value3}).then((response_data) => {
+            CommonService.toastCallback(response_data, setBoards,setUsers,setUserLogged);
+            setValue('');
+        });
+        setVisible3(false)
+    }
+    const rejectUserEdit = () => {
+        setVisible3(false);
+        setValue('');
+    }
+    useEffect(() => {
+        apiService.getUser(user.id).then(function(response_data) {
+            setUserLogged(response_data.data);
+        });
+    }, []);
     useEffect(() => {
         apiService.getBoards().then((response_data) => {
             setBoards(response_data.data)
         });
     }, [apiService]);
-
+    useEffect(() => {
+        apiService.getUsers().then(function(response_data) {
+            setUsers(response_data.data);
+        });
+    }, []);
     async function onDragEnd(result) {
         const {destination, source, draggableId} = result;
         const draggableIde = draggableId.slice(0, -1)
@@ -100,35 +173,6 @@ function Kanban() {
             }
         }
     }
-
-    const acceptAddBoard = () => {
-        apiService.newBoard(value).then((response_data) => {
-            CommonService.toastCallback(response_data, setBoards);
-            setValue('');
-        });
-    }
-    const acceptLogout = () => {
-        logoutUser();
-            setValue('');
-        }
-    const rejectAddBoard = () => {
-        setValue('');
-    }
-    const acceptAddRow = () => {
-        apiService.newRow(value1).then((response_data) => {
-            CommonService.toastCallback(response_data, setBoards);
-            setValue('');
-        });
-    }
-    const rejectAddRow = () => {
-        setValue('');
-    }
-    const [visible, setVisible] = useState(false);
-    const [value, setValue] = useState('');
-    const [visible1, setVisible1] = useState(false);
-    const [visible2, setVisible2] = useState(false);
-    const [value1, setValue1] = useState('');
-    const [value2, setValue2] = useState('');
     return (
         <UserServiceProvider>
             <WholeWebpage>
@@ -170,6 +214,17 @@ function Kanban() {
                         accept={acceptAddRow}
                         reject={rejectAddRow}
                     />
+                    <Dialog header="Edycja danych użytkownika" visible={visible3} style={{ width: '50vw' }} footer={renderFooter('displayBasic')} onHide={() => setVisible3(false)}>
+                        <div>
+                            <h4>
+                                Awatar użytkownika:
+                            </h4>
+                            <AvatarMenu>
+                                <Avatar  image={userLogged.avatar} size="xlarge" shape="circle" className="flex justify-content-center"/>
+                            </AvatarMenu>
+                            <InputText style={{marginTop:"10px"}} id="awatar" type="text" placeholder="Wprowadź link do obrazka" onChange={(e) => setValue3(e.target.value)} className="w-full mb-3" />
+                        </div>
+                    </Dialog>
                     <div className="inline mr-3">
                         <Button style={{
                             boxShadow: "0px 1px 7px rgba(0, 0, 0, 0.1), 0px 4px 5px -2px rgba(0, 0, 0, 0.12), 0px 10px 15px -5px rgba(0, 0, 0, 0.2)"
@@ -198,8 +253,19 @@ function Kanban() {
                                 label={`Wyloguj się`}
                                 icon="pi pi-sign-out"/>
                     </div>
+                    <div className="inline mr-3">
 
-
+                        <Button style={{
+                            boxShadow: "0px 1px 7px rgba(0, 0, 0, 0.1), 0px 4px 5px -2px rgba(0, 0, 0, 0.12), 0px 10px 15px -5px rgba(0, 0, 0, 0.2)",}}
+                                size="lg"
+                                onClick={() => CommonService.onOpenDialog(setVisible3, [{callback: setValue3, value: ''}])}
+                                aria-haspopup
+                                aria-controls="overlay_panel"
+                            // onClick={() => CommonService.onOpenDialog(setVisible3, [{callback: setValue3, value: ''}])}
+                            //label={`${user.username} | Wyloguj się`}
+                                label={`Zmień dane użytkownika`}
+                                icon="pi pi pi-user"/>
+                    </div>
                 </div>
                 <GlobalStyle whiteColor/>
                 <DragDropContext
@@ -228,14 +294,15 @@ function Kanban() {
                                                   limit={board.max_card}
                                                   is_static={board.is_static}
                                                   setBoards={setBoards}
-                                                  index={index}/>
+                                                  index={index}
+                                                  users={users}
+                                                   />
                                 })}
                                 {provided.placeholder}
                             </BoardOfBoards>
                         )}
                     </Droppable>
                     <FreeUsersBoard>
-                        test
                     </FreeUsersBoard>
                 </DragDropContext>
             </WholeWebpage>
