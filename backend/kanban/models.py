@@ -1,6 +1,7 @@
 from django.contrib.auth.base_user import BaseUserManager
 from django.contrib.auth.models import AbstractUser
 from django.db import models
+from django.core.files.storage import FileSystemStorage
 
 
 class CoreModelManager(models.Manager):
@@ -251,11 +252,12 @@ class UserManager(CoreModelManager, BaseUserManager):
         user.save(using=self._db)
         return user
 
-
-
 class User(Timestamp, AbstractUser):
-    avatar = models.CharField(default="https://u.cubeupload.com/dawid8374/genericavatar.png", max_length=200)
+    avatar = models.CharField(default="http://localhost:8000/media/generic-avatar.png", max_length=200)
+    image = models.ImageField(default=None, blank=True, null=True)
     objects = UserManager()
+
+
 class Parameter(Timestamp, Dictionary):
     value = models.SmallIntegerField(default=0)
     objects = UserManager()

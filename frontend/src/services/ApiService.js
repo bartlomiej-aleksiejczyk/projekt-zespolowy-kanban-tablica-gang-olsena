@@ -3,7 +3,7 @@ class ApiService {
         this.axios = axios;
     }
 
-    getBoards(name) {
+    getBoards() {
         return this.axios.get(`http://localhost:8000/api/board/`).then(response => response.data);
     }
 

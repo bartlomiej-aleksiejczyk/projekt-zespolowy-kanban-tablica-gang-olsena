@@ -18,6 +18,7 @@ import { Dialog } from 'primereact/dialog';
 import {InputNumber} from 'primereact/inputnumber';
 import Card from "./Card";
 import UserAvatar from "./UserAvatar";
+import { FileUpload } from 'primereact/fileupload';
 
 
 const GlobalStyle = createGlobalStyle`
@@ -73,14 +74,27 @@ const Header = styled.h1`
   color: #ffffff;
 `;
 const AvatarMenu = styled.div`
-  display: block;
+  display: flex;
   text-align: center;
-  margin: 0 auto;
-  width: 100px;
-  height: 100px;
-  border-radius: 50%;
+  justify-content: center;
+  margin-top: 20px;
+  margin-bottom: 20px;
+
 
 `;
+const EditUserMenu = styled.div`
+  display: block;
+  text-align: center;
+`;
+const EditUserText = styled.h3`
+  text-align: center;
+  margin-bottom: 40px;
+`;
+const UploadContainer = styled.h3`
+  text-align: center;
+  margin-top: 40px;
+`;
+
 
 const WholeWebpage = styled.div`
 `;
@@ -102,14 +116,14 @@ function Kanban() {
     const [value4, setValue4] = useState('');
     const [users, setUsers] = useState('');
     const [remaining, setRemaining] = useState([]);
-    const renderFooter = (visible4) => {
-        return (
-            <div>
-                <Button label="Odrzuć" icon="pi pi-times" onClick={() =>rejectUserEdit()} autoFocus />
-                <Button label="Zatwierdź" icon="pi pi-check" onClick={() =>acceptUserEdit()} autoFocus />
-            </div>
-        );
-    }
+    // const renderFooter = (visible4) => {
+    //     return (
+    //         <div>
+    //             <Button label="Odrzuć" icon="pi pi-times" onClick={() =>rejectUserEdit()} autoFocus />
+    //             <Button label="Zatwierdź" icon="pi pi-check" onClick={() =>acceptUserEdit()} autoFocus />
+    //         </div>
+    //     );
+    // }
     const handleInputChangeLimit = (e) => {
         if(e.value!==null){
             setValue4(e.value);
@@ -152,6 +166,7 @@ function Kanban() {
         setVisible3(false);
         setValue('');
     }
+
     useEffect(() => {
         apiService.getUser(user.id).then(function(response_data) {
             setUserLogged(response_data.data);
@@ -177,6 +192,22 @@ function Kanban() {
             setRemaining(response_data.data);
         });
     }, []);
+
+    function onUpload() {
+        apiService.getBoards().then((response_data) => {
+            CommonService.toastCallback(response_data, setBoards);
+        });
+        apiService.getUsers().then((response_data) => {
+            CommonService.toastCallback(response_data, setUsers);
+        });
+        apiService.getUser(userLogged.id).then((response_data) => {
+            CommonService.toastCallback(response_data, setUserLogged);
+        });
+        apiService.getRemaining().then((response_data) => {
+            CommonService.toastCallback(response_data, setRemaining);
+        });
+    }
+
     async function onDragEnd(result) {
         const {destination, source, draggableId} = result;
         const draggableIde = draggableId.slice(0, -1)
@@ -217,18 +248,21 @@ function Kanban() {
                 });
             }
         }else if(result.type === "avatar") {
-            console.log(source)
-            let cardAvatarid = parseInt(((destination.droppableId)).slice(0, -2) );
-            let userId= (remaining[(source.index)]).id;
-            remaining.splice((source.index),1);
-            setRemaining(remaining);
-            await apiService.updateSingleCard(cardAvatarid, {
-                "user"       : userId
-            }).then((response_data) => {
-                CommonService.toastCallback(response_data, setBoards, setRemaining);
-            });
+            if (destination.droppableId === "wholeofthese") {
+                return
+            }
+            else {
+                let cardAvatarid = parseInt(((destination.droppableId)).slice(0, -2) );
+                let userId= (remaining[(source.index)]).id;
+                remaining.splice((source.index),1);
+                setRemaining(remaining);
+                await apiService.updateSingleCard(cardAvatarid, {
+                    "user"       : userId
+                }).then((response_data) => {
+                    CommonService.toastCallback(response_data, setBoards, setRemaining);
+                });
 
-        }
+        }}
     }
     return (
         <UserServiceProvider>
@@ -271,16 +305,30 @@ function Kanban() {
                         accept={acceptAddRow}
                         reject={rejectAddRow}
                     />
-                    <Dialog header="Edycja danych użytkownika" visible={visible3} style={{ width: '50vw' }} footer={renderFooter('displayBasic')} onHide={() => setVisible3(false)}>
-                        <div>
-                            <h4>
+                    <Dialog header="Edycja danych użytkownika" visible={visible3}  /*footer={renderFooter('displayBasic')}*/ onHide={() => setVisible3(false)}>
+                        <EditUserMenu>
+                            <EditUserText>
                                 Awatar użytkownika:
-                            </h4>
+                            </EditUserText>
                             <AvatarMenu>
                                 <Avatar  image={userLogged.avatar} size="xlarge" shape="circle" className="flex justify-content-center"/>
                             </AvatarMenu>
-                            <InputText style={{marginTop:"10px"}} id="awatar" type="text" placeholder="Wprowadź link do obrazka" onChange={(e) => setValue3(e.target.value)} className="w-full mb-3" />
-                        </div>
+                            <UploadContainer>
+                            <FileUpload name="avatar"
+                                        url={`http://localhost:8000/api/user/${user.id}/image/`}
+                                        maxFileSize={1000000}
+                                        accept={"image/*"}
+                                        onUpload={onUpload}
+                                        cancelLabel={"Anuluj"}
+                                        uploadLabel={"Prześlij plik"}
+                                        chooseLabel={"Wybierz plik"}
+                                        invalidFileSizeMessageDetail={"Maksymalny rozmiar pliku wynosi 1MB"}
+                                        invalidFileSizeMessageSummary={"Nieprawidłowy rozmiar pliku"}
+                                        mode={"basic"}
+                            />
+                            </UploadContainer>
+                            {/*<InputText style={{marginTop:"10px"}} id="awatar" type="text" placeholder="Wprowadź link do obrazka" onChange={(e) => setValue3(e.target.value)} className="w-full mb-3" />*/}
+                        </EditUserMenu>
                     </Dialog>
                     <div className="inline mr-3">
                         <Button style={{
@@ -383,8 +431,9 @@ function Kanban() {
                         <Droppable
                             key="unikalnyKlucz2"
                             droppableId="wholeofthese"
-                            direction="horizontal"
+                            direction="vertical"
                             type="avatar"
+                            disabledDroppable={true}
                         >
                             {provided => (
                         <UserAssignArea
