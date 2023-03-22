@@ -56,13 +56,35 @@ row_viewset = RowViewSet.as_view(
     )
 )
 
+card_item_viewset = BoardViewSet.as_view(
+    dict(
+        post='update_card_item'
+    )
+)
+
+single_card_item_viewset = CardViewSet.as_view(
+    dict(
+        post='update_card_item',
+        get='get_card_item',
+        delete='delete_card_item'
+    )
+)
+
 urlpatterns = [
+    # board
     path('board/', board_viewset),
     path('board/<int:pk>/', single_board_viewset),
     path('board/<int:pk>/move/', board_move_viewset),
+
+    # card
+    path('card/<int:pk>/', single_card_viewset),
     path('card/<int:pk>/', single_card_viewset),
     path('card/<int:pk>/move/', card_move_viewset),
     path('board/<int:pk>/card/', board_card_viewset),
+    path('card/<int:pk>/item/', card_item_viewset),
+    path('card/item/<int:pk>/', single_card_item_viewset),
+
+    # row
     path('row/<int:pk>/', single_row_viewset),
     path('row/', row_viewset),
 ]

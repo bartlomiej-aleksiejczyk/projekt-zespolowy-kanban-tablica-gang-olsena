@@ -4,9 +4,9 @@ from rest_framework import viewsets
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 
-from kanban.models import Board, Card
+from kanban.models import Board, Card, CardItem
 from kanban.serializers.board_serializer import BoardSerializer
-from kanban.serializers.card_serializer import CardSerializer
+from kanban.serializers.card_serializer import CardSerializer, CardItemSerializer
 
 
 class CardViewSet(viewsets.ViewSet):
@@ -72,5 +72,37 @@ class CardViewSet(viewsets.ViewSet):
                 success=True,
                 message="Zadanie zostało usunięte.",
                 data=BoardSerializer(Board.objects.all(), many=True).data
+            )
+        )
+
+    def update_card_item(self, request, pk=None):
+        data = request.data.copy()
+
+        card_item_instance = None
+        if pk:
+            card_item_instance = CardItem.objects.get_by_pk(pk=pk)
+
+        serializer = CardItemSerializer(data=data, instance=card_item_instance, partial=True)
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+
+        return Response(
+            dict(
+                success=True,
+                message="Podzadanie zostało {}.".format(card_item_instance and "zaktualizowane" or "dodane"),
+                data=CardItemSerializer(CardItem.objects.all(), many=True).data
+            )
+        )
+
+    def delete_card_item(self, request, pk):
+        card_item = CardItem.objects.get_by_pk(pk=pk, raise_exception=True)
+        card_item.deleted_at = datetime.datetime.now()
+        card_item.save()
+
+        return Response(
+            dict(
+                success=True,
+                message="Podzadanie zostało usunięte.",
+                data=CardItemSerializer(CardItem.objects.all(), many=True).data
             )
         )

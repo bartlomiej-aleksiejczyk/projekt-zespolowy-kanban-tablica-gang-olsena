@@ -51,10 +51,24 @@ class ApiService {
         return this.axios.delete(`http://localhost:8000/api/card/${taskId}/`, {pk: taskId}).then(response => response.data);
     }
 
+    newCardItem(cardId, name) {
+        return this.axios.post(`http://localhost:8000/api/card/${cardId}/item/`, {"name": name}).then(response => response.data);
+    }
+
+    updateCardItem(itemId, data) {
+        return this.axios.post(`http://localhost:8000/api/card/item/${itemId}`, data).then(response => response.data);
+    }
+
+    removeCardItem(itemId, ) {
+        return this.axios.delete(`http://localhost:8000/api/card/item/${itemId}/`).then(response => response.data);
+    }
+
     getUsers() {
         return this.axios.get(`http://localhost:8000/api/user/`).then(response => response.data);
 
     }
+
+
 
     loginUser(username, password) {
         return fetch("http://localhost:8000/api/token/", {

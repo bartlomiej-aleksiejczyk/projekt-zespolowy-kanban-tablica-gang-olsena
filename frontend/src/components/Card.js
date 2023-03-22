@@ -13,6 +13,7 @@ import {useUserService} from "../utils/UserServiceContext";
 import {Dropdown} from 'primereact/dropdown';
 import {Tooltip} from 'primereact/tooltip';
 import stc from 'string-to-color';
+import { Checkbox } from "primereact/checkbox";
 
 
 const CardStyle = styled.div`
@@ -50,6 +51,7 @@ function Card(props) {
     const [visible, setVisible] = useState(false);
     const [value, setValue] = useState('');
     const [editSelectedUser, setEditSelectedUser] = useState(props.data?.user_data);
+    const [cardItems, setCardItems] = useState(props.data?.item_data);
     const [users, setUsers] = useState('');
     const apiService = useUserService();
     const handleInputChange = (e) => {
@@ -76,25 +78,19 @@ function Card(props) {
     const reject = () => {
     }
     const acceptEditCard = () => {
-        if (editSelectedUser==null){
-            console.log("test")
-            apiService.updateCard(props.board, {
-                "id"         : props.backId,
-                "description": value,
-                "user"       : ""
-            }).then((response_data) => {
-                CommonService.toastCallback(response_data, props.setBoards);
-            });
-        }else{
-            apiService.updateCard(props.board, {
-                "id"         : props.backId,
-                "description": value,
-                "user"       : editSelectedUser.id
-            }).then((response_data) => {
-                CommonService.toastCallback(response_data, props.setBoards);
-            });
-        }
+        var user_id = "";
 
+        if(editSelectedUser != null) {
+            user_id = editSelectedUser.id;
+        }
+        apiService.updateCard(props.board, {
+            "id"         : props.backId,
+            "description": value,
+            "user"       : user_id,
+            "items": cardItems
+        }).then((response_data) => {
+            CommonService.toastCallback(response_data, props.setBoards);
+        });
     }
 
     const rejectEditCard = () => {
@@ -110,21 +106,32 @@ function Card(props) {
                 </div>
 
                 <UserChoiceBar>
-                <Button
-                    style={{marginTop:"13px", marginRight:"3px"}}
-                    onClick={() => setEditSelectedUser(null)}
-                    icon="pi pi-times"
-                    rounded
-                    text
-                    size="small"
-                    severity="danger"
-                    aria-label="Cancel"/>
+                    <Button
+                        style={{marginTop: "13px", marginRight: "3px"}}
+                        onClick={() => setEditSelectedUser(null)}
+                        icon="pi pi-times"
+                        rounded
+                        text
+                        size="small"
+                        severity="danger"
+                        aria-label="Cancel"/>
                     <Dropdown className="mt-3 w-full" value={(editSelectedUser)}
                               onChange={(e) => setEditSelectedUser(e.value)} options={(users)}
                               optionLabel="username"
                               placeholder="Wybierz użytkownika"
                     />
                 </UserChoiceBar>
+                {cardItems.map((card_item) => {
+                    console.log(card_item);
+                    return (
+                        <div key={card_item.id} className="flex align-items-center">
+                            <Checkbox inputId={card_item.id} name="card_item" value={card_item.is_done}
+                                      onChange={(e) => { card_item.is_done = e.value}}
+                                      checked={card_item.is_done}/>
+                            <label htmlFor={card_item.id} className="ml-2">{card_item.name}</label>
+                        </div>
+                    );
+                })}
             </div>
         )
     }
@@ -148,17 +155,21 @@ function Card(props) {
                             disabled={false}
                             onBlur={handleInputChange}/>
                     </Description>
-                    <div className="flex flex-column md:flex-row justify-content-end align-content-center flex-wrap px-2">
+                    <div
+                        className="flex flex-column md:flex-row justify-content-end align-content-center flex-wrap px-2">
                         <ConfirmDialog visible={visi}
                                        onHide={() => setVisi(false)}
                                        message={editCardDialog}
                                        header="Potwierdzenie edycji"
-                                       // icon="pi pi-pencil"
+                            // icon="pi pi-pencil"
                                        acceptLabel="Akceptuj"
                                        rejectLabel="Odrzuć"
                                        accept={acceptEditCard}
                                        reject={rejectEditCard}/>
-                        <Button onClick={() => CommonService.onOpenDialog(setVisi, [{callback: setValue, value: props.description}, {callback: setEditSelectedUser, value: props.data?.user_data}])}
+                        <Button onClick={() => CommonService.onOpenDialog(setVisi, [{
+                            callback: setValue,
+                            value   : props.description
+                        }, {callback: setEditSelectedUser, value: props.data?.user_data}])}
                                 icon="pi pi-pencil"
                                 rounded
                                 text

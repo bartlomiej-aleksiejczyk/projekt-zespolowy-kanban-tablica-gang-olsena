@@ -256,3 +256,13 @@ class User(Timestamp, AbstractUser):
     avatar = models.ImageField(default=None)
 
     objects = UserManager()
+
+class CardItem(Dictionary, Timestamp):
+    card = models.ForeignKey(
+        'kanban.Card',
+        related_name='card_item',
+        on_delete=models.DO_NOTHING
+    )
+    is_done = models.BooleanField(default=False)
+
+    objects = CoreModelManager()
