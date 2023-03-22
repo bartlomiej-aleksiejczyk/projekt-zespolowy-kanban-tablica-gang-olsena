@@ -6,7 +6,7 @@ from django.db import migrations
 def load_initial_data(apps,something):
     parameter_model = apps.get_model('kanban','Parameter')
     parameter_model.objects.create(
-        name="limit", value=2, id=0
+        name="limit", value=2, id=1
     )
 
 class Migration(migrations.Migration):
