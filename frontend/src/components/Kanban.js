@@ -79,8 +79,6 @@ const AvatarMenu = styled.div`
   justify-content: center;
   margin-top: 20px;
   margin-bottom: 20px;
-
-
 `;
 const EditUserMenu = styled.div`
   display: block;
@@ -95,9 +93,18 @@ const UploadContainer = styled.h3`
   margin-top: 40px;
 `;
 
-
 const WholeWebpage = styled.div`
 `;
+const emptyTemplate = () => {
+    return (
+        <div className="flex align-items-center flex-column">
+            <i className="pi pi-image mt-3 p-5" style={{ fontSize: '5em', borderRadius: '50%', backgroundColor: 'var(--surface-b)', color: 'var(--surface-d)' }}></i>
+            <span style={{ fontSize: '1.2em', color: 'var(--text-color-secondary)' }} className="my-5">
+                    Przeciągnij plik tutaj
+                </span>
+        </div>
+    );
+};
 
 function Kanban() {
     const [boards, setBoards] = useState([]);
@@ -206,6 +213,15 @@ function Kanban() {
         apiService.getRemaining().then((response_data) => {
             CommonService.toastCallback(response_data, setRemaining);
         });
+        {
+            window.PrimeToast.show({
+                severity: 'success',
+                summary : 'Powodzenie',
+                detail  : 'Awatar pomyślnie zmieniony',
+                life    : 3000
+            });
+        }
+
     }
 
     async function onDragEnd(result) {
@@ -318,13 +334,15 @@ function Kanban() {
                                         url={`http://localhost:8000/api/user/${user.id}/image/`}
                                         maxFileSize={1000000}
                                         accept={"image/*"}
+                                        key={Date.now()}
                                         onUpload={onUpload}
                                         cancelLabel={"Anuluj"}
                                         uploadLabel={"Prześlij plik"}
                                         chooseLabel={"Wybierz plik"}
+                                        emptyTemplate={emptyTemplate}
                                         invalidFileSizeMessageDetail={"Maksymalny rozmiar pliku wynosi 1MB"}
-                                        invalidFileSizeMessageSummary={"Nieprawidłowy rozmiar pliku"}
-                                        mode={"basic"}
+                                        invalidFileSizeMessageSummary={"Nieprawidłowy rozmiar pliku. "}
+                                        mode={"advanced"}
                             />
                             </UploadContainer>
                             {/*<InputText style={{marginTop:"10px"}} id="awatar" type="text" placeholder="Wprowadź link do obrazka" onChange={(e) => setValue3(e.target.value)} className="w-full mb-3" />*/}

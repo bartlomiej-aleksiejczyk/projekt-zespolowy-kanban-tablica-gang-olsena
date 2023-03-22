@@ -108,6 +108,7 @@ class Board(Dictionary, Timestamp):
 
 class Card(Timestamp):
     index = models.PositiveSmallIntegerField(default=0)
+    is_locked = models.BooleanField(default=False)
     board = models.ForeignKey(
         'kanban.Board',
         related_name='card_board',

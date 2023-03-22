@@ -8,7 +8,6 @@ from kanban.models import Board, User
 from user.serializers import UserSerializer, RegisterSerializer, MyTokenObtainPairSerializer
 from kanban.views.parameter_view import ParameterViewSet
 from kanban.views.helper import remaining_helper
-from kanban.forms import AvatarUpload
 from django.core.files.storage import FileSystemStorage
 
 class UserViewSet(viewsets.ViewSet):

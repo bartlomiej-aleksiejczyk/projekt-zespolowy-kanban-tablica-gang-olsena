@@ -182,6 +182,7 @@ function Row(props) {
                                     <Card key={card.id}
                                           backId={card.id}
                                           color={card.color}
+                                          locked={card.is_locked}
                                           dragId={(card.id).toString() + "c"}
                                           dropId={(card.id).toString() + "cd"}
                                           description={card.description}
