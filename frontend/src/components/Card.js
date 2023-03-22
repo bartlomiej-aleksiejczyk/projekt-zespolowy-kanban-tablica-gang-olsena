@@ -30,7 +30,7 @@ const CardStyle = styled.div`
   display: flex;
   flex-direction: column;
   flex-wrap: wrap;
-  -webkit-filter: ${props => props.locked ? "grayscale(0.5)":""} ;
+  -webkit-filter: ${props => props.locked ? "grayscale(0.7)":""} ;
   //Ta metoda to druciarstwo o wiele lepiej jest tuaj https://stackoverflow.com/questions/61635321/props-conditional-rendering-using-styled-components
   background-color: ${props => props.color};
   background: repeating-linear-gradient(
@@ -72,7 +72,7 @@ function Card(props) {
     const [lock, setLock] = useState(props.locked);
     const options = [
         { value: '#FFFFFF', style: {backgroundColor:`#FFFFFF`} },
-        { value: '#B2F199', style: {backgroundColor:`#B2F199`}},
+        { value: '#86e95e', style: {backgroundColor:`#86e95e`}},
         { value: '#99B3E6', style: {backgroundColor:`#99B3E6`}},
         { value: '#FFE680', style: {backgroundColor:`#FFE680`}},
         { value: '#F2B580', style: {backgroundColor:`#F2B580`}},
