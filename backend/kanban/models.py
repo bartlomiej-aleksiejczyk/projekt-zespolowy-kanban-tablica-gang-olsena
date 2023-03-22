@@ -1,6 +1,7 @@
 from django.contrib.auth.base_user import BaseUserManager
 from django.contrib.auth.models import AbstractUser
 from django.db import models
+from django.core.files.storage import FileSystemStorage
 
 
 class CoreModelManager(models.Manager):
@@ -61,10 +62,10 @@ class Board(Dictionary, Timestamp):
             return False, "Wprowadzono nieprawidłowy index."
 
         if old_index == 0 \
-            or new_index == 0 \
-            or old_index is None and new_index == self.get_last_index() + 1 \
-            or old_index and new_index == self.get_last_index() \
-            or old_index == self.get_last_index():
+                or new_index == 0 \
+                or old_index is None and new_index == self.get_last_index() + 1 \
+                or old_index and new_index == self.get_last_index() \
+                or old_index == self.get_last_index():
             return False, "Nie możesz przenieść tej tablicy w te miejsce."
 
         if old_index is not None:
@@ -107,6 +108,7 @@ class Board(Dictionary, Timestamp):
 
 class Card(Timestamp):
     index = models.PositiveSmallIntegerField(default=0)
+    is_locked = models.BooleanField(default=False)
     board = models.ForeignKey(
         'kanban.Board',
         related_name='card_board',
@@ -120,7 +122,7 @@ class Card(Timestamp):
         on_delete=models.DO_NOTHING
     )
     description = models.TextField()
-
+    color = models.CharField(max_length=7, default="#FFFFFF")
     user = models.ForeignKey(
         'kanban.User',
         related_name='card_user',
@@ -251,10 +253,14 @@ class UserManager(CoreModelManager, BaseUserManager):
         user.save(using=self._db)
         return user
 
-
 class User(Timestamp, AbstractUser):
-    avatar = models.ImageField(default=None)
+    avatar = models.CharField(default="http://localhost:8000/media/generic-avatar.png", max_length=200)
+    image = models.ImageField(default=None, blank=True, null=True)
+    objects = UserManager()
 
+
+class Parameter(Timestamp, Dictionary):
+    value = models.SmallIntegerField(default=0)
     objects = UserManager()
 
 class CardItem(Dictionary, Timestamp):

@@ -1,11 +1,10 @@
 import datetime
-
 from rest_framework import viewsets
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
-
 from kanban.models import Board, Card, CardItem
 from kanban.serializers.board_serializer import BoardSerializer
+from kanban.views.helper import remaining_helper
 from kanban.serializers.card_serializer import CardSerializer, CardItemSerializer
 
 
@@ -49,6 +48,22 @@ class CardViewSet(viewsets.ViewSet):
             )
         )
 
+    def update_card(self, request, pk):
+        data = request.data.copy()
+        card_instance = Card.objects.get_by_pk(pk=pk)
+        serializer = CardSerializer(data=data, instance=card_instance, partial=True)
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+
+        return Response(
+            dict(
+                success=True,
+                message="Karta została pomyślnie zaktualizowana",
+                data=BoardSerializer(Board.objects.all(), many=True).data,
+                data1=remaining_helper()
+            )
+        )
+
     def delete_card(self, request, pk):
         card = Card.objects.get_by_pk(pk=pk, raise_exception=True)
         card.deleted_at = datetime.datetime.now()
@@ -71,7 +86,8 @@ class CardViewSet(viewsets.ViewSet):
             dict(
                 success=True,
                 message="Zadanie zostało usunięte.",
-                data=BoardSerializer(Board.objects.all(), many=True).data
+                data=BoardSerializer(Board.objects.all(), many=True).data,
+                data1=remaining_helper()
             )
         )
 

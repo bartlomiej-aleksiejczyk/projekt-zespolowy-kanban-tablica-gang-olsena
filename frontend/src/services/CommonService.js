@@ -1,5 +1,6 @@
 const CommonService = {
-    toastCallback: function(response_data, successCallback) {
+    toastCallback: function(response_data, successCallback,successCallback1,successCallback2,successCallback3) {
+        console.log(response_data)
         if(response_data.success) {
             if(response_data.message && response_data.message.length > 0) {
                 window.PrimeToast.show({
@@ -18,7 +19,20 @@ const CommonService = {
             });
         }
         if(successCallback && response_data.data) {
+            console.log("1")
             successCallback(response_data.data);
+        }
+        if(successCallback1 && response_data.data1) {
+            console.log("1")
+            successCallback1(response_data.data1);
+        }
+        if(successCallback2 && response_data.data2) {
+            console.log("2")
+            successCallback2(response_data.data2);
+        }
+        if(successCallback3 && response_data.data3) {
+            console.log("2")
+            successCallback3(response_data.data3);
         }
     },
     onOpenDialog : (callback, setters) => {

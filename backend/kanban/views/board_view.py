@@ -3,10 +3,10 @@ import datetime
 from rest_framework import viewsets
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
-
-from kanban.models import Board, Card, Row
+from kanban.models import Board, Card, Row, CardItem
 from kanban.serializers.board_serializer import BoardSerializer
 from kanban.serializers.card_serializer import CardSerializer
+from kanban.views.helper import remaining_helper
 
 
 class BoardViewSet(viewsets.ViewSet):
@@ -44,6 +44,7 @@ class BoardViewSet(viewsets.ViewSet):
                 success=True,
                 message="Kolumna została {}.".format(board_instance and "zaktualizowana" or "dodana"),
                 data=BoardSerializer(Board.objects.all(), many=True).data
+
             )
         )
 
@@ -72,6 +73,22 @@ class BoardViewSet(viewsets.ViewSet):
         serializer.is_valid(raise_exception=True)
         serializer.save()
 
+        items = data.get('items', [])
+        print(items)
+        print([item['id'] for item in items if 'id' in item])
+        CardItem.objects.filter(card_id=card_id).exclude(id__in=[item['id'] for item in items if 'id' in item]).update(
+            deleted_at=datetime.datetime.now()
+        )
+        for item in items:
+            CardItem.objects.update_or_create(
+                id=item.get('id',None),
+                defaults=dict(
+                    card_id=item.get('card', card_id),
+                    name=item.get('name', ""),
+                    is_done=item.get('is_done', False)
+                )
+            )
+
         is_success, message = serializer.instance.move(index, pk, row_id)
 
         if not is_success:
@@ -86,7 +103,9 @@ class BoardViewSet(viewsets.ViewSet):
             dict(
                 success=True,
                 message="Zadanie zostało {}.".format(card_instance and "zaktualizowane" or "dodane"),
-                data=BoardSerializer(Board.objects.all(), many=True).data
+                data=BoardSerializer(Board.objects.all(), many=True).data,
+                data1=remaining_helper()
+
             )
         )
 
@@ -140,7 +159,7 @@ class BoardViewSet(viewsets.ViewSet):
 
     def delete_board(self, request, pk):
         board = Board.objects.get_by_pk(pk=pk, raise_exception=True)
-
+        cards = Card.objects.filter(board_id=pk)
         if board.is_static:
             return Response(
                 dict(
@@ -157,6 +176,9 @@ class BoardViewSet(viewsets.ViewSet):
             deleted_at__isnull=True
         ).order_by('index')
 
+        for card in cards:
+            card.deleted_at = datetime.datetime.now()
+            card.save()
         changed_index = board.index
         for board in boards:
             board.index = changed_index
@@ -167,6 +189,7 @@ class BoardViewSet(viewsets.ViewSet):
             dict(
                 success=True,
                 message="Kolumna została usunięta.",
-                data=BoardSerializer(Board.objects.all(), many=True).data
+                data=BoardSerializer(Board.objects.all(), many=True).data,
+                data1=remaining_helper()
             )
         )

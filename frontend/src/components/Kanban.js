@@ -2,7 +2,7 @@ import "primereact/resources/themes/lara-light-indigo/theme.css";
 import "primereact/resources/primereact.min.css";
 import "primeicons/primeicons.css";
 import styled, {createGlobalStyle} from 'styled-components';
-import React, {useState, useEffect, useContext} from 'react';
+import React, {useState, useEffect, useContext, useRef } from 'react';
 import {DragDropContext, Droppable} from 'react-beautiful-dnd';
 import Board from "./Board";
 import {Button} from 'primereact/button';
@@ -13,6 +13,12 @@ import ApiService from "../services/ApiService";
 import CommonService from "../services/CommonService";
 import {UserServiceProvider, useUserService} from '../utils/UserServiceContext';
 import AuthService from "../services/AuthService";
+import { Avatar } from 'primereact/avatar';
+import { Dialog } from 'primereact/dialog';
+import {InputNumber} from 'primereact/inputnumber';
+import Card from "./Card";
+import UserAvatar from "./UserAvatar";
+import { FileUpload } from 'primereact/fileupload';
 
 
 const GlobalStyle = createGlobalStyle`
@@ -24,13 +30,39 @@ const GlobalStyle = createGlobalStyle`
     scroll-margin-left: 0;
   }
 `
+const AssignmentLimitText = styled.h3`
+  text-align: center;
+  padding: 15px;
+  margin-top: 20px;
+`;
 
+const InputContainer = styled.div`
+  display: flex;
+  justify-content: center;
+`;
+const UserAssignArea = styled.div`
+  display: flex;
+  padding: 10px;
+  justify-content: center;
+  flex-wrap: wrap;
+`;
 const BoardOfBoards = styled.div`
   display: flex;
-  margin-left:280px;
+  margin-left:481px;
   margin-top: -160px;
   justify-content: space-around;
   position: absolute;
+`;
+const FreeUsersBoard = styled.div`
+  position: relative;
+  margin-top: 170px;
+  margin-left: 25px;
+  width:200px;
+  top: 100%;
+  box-sizing: border-box;
+  background-color: white;
+  border-radius: 6px;
+
 `;
 const Header = styled.h1`
   text-shadow: 3px 3px #4f46e5;
@@ -41,18 +73,156 @@ const Header = styled.h1`
   padding: 5px;
   color: #ffffff;
 `;
+const AvatarMenu = styled.div`
+  display: flex;
+  text-align: center;
+  justify-content: center;
+  margin-top: 20px;
+  margin-bottom: 20px;
+`;
+const EditUserMenu = styled.div`
+  display: block;
+  text-align: center;
+`;
+const EditUserText = styled.h3`
+  text-align: center;
+  margin-bottom: 40px;
+`;
+const UploadContainer = styled.h3`
+  text-align: center;
+  margin-top: 40px;
+`;
+
 const WholeWebpage = styled.div`
 `;
+const emptyTemplate = () => {
+    return (
+        <div className="flex align-items-center flex-column">
+            <i className="pi pi-image mt-3 p-5" style={{ fontSize: '5em', borderRadius: '50%', backgroundColor: 'var(--surface-b)', color: 'var(--surface-d)' }}></i>
+            <span style={{ fontSize: '1.2em', color: 'var(--text-color-secondary)' }} className="my-5">
+                    Przeciągnij plik tutaj
+                </span>
+        </div>
+    );
+};
 
 function Kanban() {
     const [boards, setBoards] = useState([]);
     const apiService = useUserService();
     let {user, logoutUser} = useContext(AuthService);
+    const [userLogged, setUserLogged] = useState('');
+    const [visible, setVisible] = useState(false);
+    const [value, setValue] = useState('');
+    const [visible1, setVisible1] = useState(false);
+    const [visible2, setVisible2] = useState(false);
+    const [visible3, setVisible3] = useState(false);
+    const [visible4, setVisible4] = useState(false);
+    const [value1, setValue1] = useState('');
+    const [value2, setValue2] = useState('');
+    const [value3, setValue3] = useState('');
+    const [value4, setValue4] = useState('');
+    const [users, setUsers] = useState('');
+    const [remaining, setRemaining] = useState([]);
+    // const renderFooter = (visible4) => {
+    //     return (
+    //         <div>
+    //             <Button label="Odrzuć" icon="pi pi-times" onClick={() =>rejectUserEdit()} autoFocus />
+    //             <Button label="Zatwierdź" icon="pi pi-check" onClick={() =>acceptUserEdit()} autoFocus />
+    //         </div>
+    //     );
+    // }
+    const handleInputChangeLimit = (e) => {
+        if(e.value!==null){
+            setValue4(e.value);
+            console.log(e.value)
+            apiService.updateParameter( 1,{"value": e.value}).then((response_data) => {
+                CommonService.toastCallback(response_data, setValue4(response_data.data.value),setRemaining)
+            });
+        }
+    }
+    const acceptAddBoard = () => {
+        apiService.newBoard(value).then((response_data) => {
+            CommonService.toastCallback(response_data, setBoards);
+            setValue('');
+        });
+    }
+    const acceptLogout = () => {
+        logoutUser();
+            setValue('');
+        }
+    const rejectAddBoard = () => {
+        setValue('');
+    }
+    const acceptAddRow = () => {
+        apiService.newRow(value1).then((response_data) => {
+            CommonService.toastCallback(response_data, setBoards);
+            setValue('');
+        });
+    }
+    const rejectAddRow = () => {
+        setValue('');
+    }
+    const acceptUserEdit = () => {
+        apiService.updateUser(user.id, {"avatar":value3}).then((response_data) => {
+            CommonService.toastCallback(response_data, setBoards,setUsers,setUserLogged, setRemaining)
+            setValue('');
+        });
+        setVisible3(false)
+    }
+    const rejectUserEdit = () => {
+        setVisible3(false);
+        setValue('');
+    }
+
+    useEffect(() => {
+        apiService.getUser(user.id).then(function(response_data) {
+            setUserLogged(response_data.data);
+        });
+    }, []);
+    useEffect(() => {
+        apiService.getParameter(1).then(function(response_data) {
+            setValue4(response_data.data.value);
+        });
+    }, []);
     useEffect(() => {
         apiService.getBoards().then((response_data) => {
             setBoards(response_data.data)
         });
     }, [apiService]);
+    useEffect(() => {
+        apiService.getUsers().then(function(response_data) {
+            setUsers(response_data.data);
+        });
+    }, []);
+    useEffect(() => {
+        apiService.getRemaining().then(function(response_data) {
+            setRemaining(response_data.data);
+        });
+    }, []);
+
+    function onUpload() {
+        apiService.getBoards().then((response_data) => {
+            CommonService.toastCallback(response_data, setBoards);
+        });
+        apiService.getUsers().then((response_data) => {
+            CommonService.toastCallback(response_data, setUsers);
+        });
+        apiService.getUser(userLogged.id).then((response_data) => {
+            CommonService.toastCallback(response_data, setUserLogged);
+        });
+        apiService.getRemaining().then((response_data) => {
+            CommonService.toastCallback(response_data, setRemaining);
+        });
+        {
+            window.PrimeToast.show({
+                severity: 'success',
+                summary : 'Powodzenie',
+                detail  : 'Awatar pomyślnie zmieniony',
+                life    : 3000
+            });
+        }
+
+    }
 
     async function onDragEnd(result) {
         const {destination, source, draggableId} = result;
@@ -93,37 +263,23 @@ function Kanban() {
                     CommonService.toastCallback(response_data, setBoards)
                 });
             }
-        }
-    }
+        }else if(result.type === "avatar") {
+            if (destination.droppableId === "wholeofthese") {
+                return
+            }
+            else {
+                let cardAvatarid = parseInt(((destination.droppableId)).slice(0, -2) );
+                let userId= (remaining[(source.index)]).id;
+                remaining.splice((source.index),1);
+                setRemaining(remaining);
+                await apiService.updateSingleCard(cardAvatarid, {
+                    "user"       : userId
+                }).then((response_data) => {
+                    CommonService.toastCallback(response_data, setBoards, setRemaining);
+                });
 
-    const acceptAddBoard = () => {
-        apiService.newBoard(value).then((response_data) => {
-            CommonService.toastCallback(response_data, setBoards);
-            setValue('');
-        });
+        }}
     }
-    const acceptLogout = () => {
-        logoutUser();
-            setValue('');
-        }
-    const rejectAddBoard = () => {
-        setValue('');
-    }
-    const acceptAddRow = () => {
-        apiService.newRow(value1).then((response_data) => {
-            CommonService.toastCallback(response_data, setBoards);
-            setValue('');
-        });
-    }
-    const rejectAddRow = () => {
-        setValue('');
-    }
-    const [visible, setVisible] = useState(false);
-    const [value, setValue] = useState('');
-    const [visible1, setVisible1] = useState(false);
-    const [visible2, setVisible2] = useState(false);
-    const [value1, setValue1] = useState('');
-    const [value2, setValue2] = useState('');
     return (
         <UserServiceProvider>
             <WholeWebpage>
@@ -165,6 +321,33 @@ function Kanban() {
                         accept={acceptAddRow}
                         reject={rejectAddRow}
                     />
+                    <Dialog header="Edycja danych użytkownika" visible={visible3}  /*footer={renderFooter('displayBasic')}*/ onHide={() => setVisible3(false)}>
+                        <EditUserMenu>
+                            <EditUserText>
+                                Awatar użytkownika:
+                            </EditUserText>
+                            <AvatarMenu>
+                                <Avatar  image={userLogged.avatar} size="xlarge" shape="circle" className="flex justify-content-center"/>
+                            </AvatarMenu>
+                            <UploadContainer>
+                            <FileUpload name="avatar"
+                                        url={`http://localhost:8000/api/user/${user.id}/image/`}
+                                        maxFileSize={1000000}
+                                        accept={"image/*"}
+                                        key={Date.now()}
+                                        onUpload={onUpload}
+                                        cancelLabel={"Anuluj"}
+                                        uploadLabel={"Prześlij plik"}
+                                        chooseLabel={"Wybierz plik"}
+                                        emptyTemplate={emptyTemplate}
+                                        invalidFileSizeMessageDetail={"Maksymalny rozmiar pliku wynosi 1MB"}
+                                        invalidFileSizeMessageSummary={"Nieprawidłowy rozmiar pliku. "}
+                                        mode={"advanced"}
+                            />
+                            </UploadContainer>
+                            {/*<InputText style={{marginTop:"10px"}} id="awatar" type="text" placeholder="Wprowadź link do obrazka" onChange={(e) => setValue3(e.target.value)} className="w-full mb-3" />*/}
+                        </EditUserMenu>
+                    </Dialog>
                     <div className="inline mr-3">
                         <Button style={{
                             boxShadow: "0px 1px 7px rgba(0, 0, 0, 0.1), 0px 4px 5px -2px rgba(0, 0, 0, 0.12), 0px 10px 15px -5px rgba(0, 0, 0, 0.2)"
@@ -193,8 +376,19 @@ function Kanban() {
                                 label={`Wyloguj się`}
                                 icon="pi pi-sign-out"/>
                     </div>
+                    <div className="inline mr-3">
 
-
+                        <Button style={{
+                            boxShadow: "0px 1px 7px rgba(0, 0, 0, 0.1), 0px 4px 5px -2px rgba(0, 0, 0, 0.12), 0px 10px 15px -5px rgba(0, 0, 0, 0.2)",}}
+                                size="lg"
+                                onClick={() => CommonService.onOpenDialog(setVisible3, [{callback: setValue3, value: ''}])}
+                                aria-haspopup
+                                aria-controls="overlay_panel"
+                            // onClick={() => CommonService.onOpenDialog(setVisible3, [{callback: setValue3, value: ''}])}
+                            //label={`${user.username} | Wyloguj się`}
+                                label={`Zmień dane użytkownika`}
+                                icon="pi pi pi-user"/>
+                    </div>
                 </div>
                 <GlobalStyle whiteColor/>
                 <DragDropContext
@@ -223,12 +417,61 @@ function Kanban() {
                                                   limit={board.max_card}
                                                   is_static={board.is_static}
                                                   setBoards={setBoards}
-                                                  index={index}/>
+                                                  setRemaining={setRemaining}
+                                                  index={index}
+                                                  users={users}
+                                                   />
                                 })}
                                 {provided.placeholder}
                             </BoardOfBoards>
                         )}
                     </Droppable>
+                    <FreeUsersBoard>
+                        <AssignmentLimitText>
+                            Limit przypisań:
+                        </AssignmentLimitText>
+
+                        <InputContainer
+                        >
+                            <InputNumber inputId="minmax-buttons" value={value4}
+                                                onValueChange={(e) => handleInputChangeLimit(e)}
+                                                mode="decimal"
+                                                showButtons min={1}
+                                                max={100}
+                                                size="1"
+                                                buttonLayout={"horizontal"}
+                                                incrementButtonIcon="pi pi-plus"
+                                                decrementButtonIcon="pi pi-minus"
+                                                allowEmpty={false}
+                                                inputStyle={{textAlign:"center"}}
+                            />
+                        </InputContainer>
+                        <Droppable
+                            key="unikalnyKlucz2"
+                            droppableId="wholeofthese"
+                            direction="vertical"
+                            type="avatar"
+                            disabledDroppable={true}
+                        >
+                            {provided => (
+                        <UserAssignArea
+                                {...provided.droppableProps}
+                                ref={provided.innerRef}
+                                >
+                            {remaining.map((avatar, indexDrag) =>
+                                <UserAvatar index={indexDrag}
+                                            key={indexDrag}
+                                            id={avatar.id}
+                                            dragId={(indexDrag).toString() + "a"}
+                                            username={avatar.username}
+                                            img={avatar.avatar} />
+                            )}
+                            {provided.placeholder}
+
+                        </UserAssignArea>
+                                )}
+                        </Droppable>
+                    </FreeUsersBoard>
                 </DragDropContext>
             </WholeWebpage>
         </UserServiceProvider>
