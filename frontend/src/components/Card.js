@@ -43,7 +43,15 @@ const CardStyle = styled.div`
         ${props => props.locked ? "#D4D6D7 20px" : `${props.color} 20px`}
 );
 `;
+const ButtonContainer = styled.div`
+  display:flex;
+  flex-direction: row;
+  flex-wrap: nowrap;
+  justify-content: space-between;
+  margin-bottom: -8px;
+  margin-top: 17px;
 
+`;
 const Description = styled.div`
   flex-direction: column;
   max-width: 220px;
@@ -54,14 +62,55 @@ const Description = styled.div`
   padding-right:8px;
 `;
 const UserChoiceBar = styled.div`
+  margin-top: -15px;
   display: flex;
   flex-direction: row;
   word-wrap: break-word;
 `;
-const AvatarImage = styled.img`
-  width: 40px;
-  height: 40px;
-  border-radius: 50%;
+const AvatarImage = styled.div`
+  min-width: 40px;
+  min-height: 40px;
+  display: inline-block;
+  margin-right: 10px;
+`;
+const ProgressDiv = styled.div`
+  min-width: 30px;
+  display: inline-block;
+`;
+const InsideProgressDiv = styled.div`
+  display: flex;
+  width: 100%;
+  flex-basis: 100%;
+  margin-top: 9px;
+`;
+const CardSmallButtons = styled.div`
+  display: inline-block;
+
+`;
+const ProgressAndButtons = styled.div`
+    display: flex;
+    flex-direction: column;
+  
+`;
+const EditMenu = styled.div`
+    margin-top: auto;
+  display: flex;
+    flex-direction: column;
+    align-items: self-start;
+    align-content: center;
+    flex-wrap: nowrap;
+  overflow:hidden;
+`;
+const EditMenuText = styled.div`
+    display: block;
+  
+    flex-direction: column;
+    align-items: self-start;
+    align-content: center;
+    flex-wrap: nowrap;
+      overflow: scroll;
+
+
 `;
 const DroppableDiv = styled.div`
 `;
@@ -142,9 +191,10 @@ function Card(props) {
             CommonService.toastCallback(response_data, props.setBoards);
         });
     }
-
+//Ta funkcja też do poprawy, prymitywnie "naprawia" ona problem że można modyfikować checkpointy a potem odrzucić, jednak jakieś modyfikację zostają
     const rejectEditCard = () => {
         setValue('');
+        apiService.getBoards().then((response_data) => {props.setBoards(response_data.data)});
     }
     const acceptAssignEdit = () => {
         apiService.updateCard(props.board, {
@@ -160,31 +210,15 @@ function Card(props) {
     const editCardDialog = () => {
         //let usersCp=users.unshift(null)
         return (
-            <div>
-                <div>
+            <EditMenu>
+                <EditMenuText>
                     <InputTextarea className="w-full" value={value} onChange={(e) => setValue(e.target.value)} rows={5}
                                    cols={30}/>
-                </div>
+                </EditMenuText>
                 <div className="card flex flex-row align-items-center gap-3 pt-3 pb-3 pl-2">
                     <MultiStateCheckbox value={value1} onChange={(e) => setValue1(e.value)} options={options}
                                         optionValue="value" empty={false}/>
                     <span>{value1}</span>
-                </div>
-                <UserChoiceBar>
-                    <Button
-                        style={{marginTop: "15px", marginRight: "3px"}}
-                        onClick={() => setEditSelectedUser(null)}
-                        icon="pi pi-times"
-                        rounded
-                        text
-                        size="small"
-                        severity="danger"
-                        aria-label="Cancel"/>
-                    <Dropdown className="mt-3 w-full" value={(editSelectedUser)}
-                              onChange={(e) => setEditSelectedUser(e.value)} options={(props.users)}
-                              optionLabel="username"
-                              placeholder="Wybierz użytkownika"
-                    />
                     <ToggleButton onLabel="Blokada"
                                   offLabel="Brak blokady"
                                   onIcon="pi pi-lock"
@@ -192,7 +226,23 @@ function Card(props) {
                                   checked={lock}
                                   onChange={(e) => handleLock(e.value)}
                     />
-                </UserChoiceBar>
+                    <UserChoiceBar>
+                        <Button
+                            style={{marginTop: "15px", marginRight: "3px"}}
+                            onClick={() => setEditSelectedUser(null)}
+                            icon="pi pi-times"
+                            rounded
+                            text
+                            size="small"
+                            severity="danger"
+                            aria-label="Cancel"/>
+                        <Dropdown className="mt-3 w-full" value={(editSelectedUser)}
+                                  onChange={(e) => setEditSelectedUser(e.value)} options={(props.users)}
+                                  optionLabel="username"
+                                  placeholder="Wybierz użytkownika"
+                        />
+                    </UserChoiceBar>
+                </div>
                 <div className="mt-3 flex justify-content-between align-items-center flex-wrap">
                     <h3>Lista podzadań
                         ({Math.round((cardItems.filter((x) => x.is_done).length / cardItems.length) * 100) || 0}%):</h3>
@@ -242,7 +292,7 @@ function Card(props) {
                         Brak danych
                     </div>
                 )}
-            </div>
+            </EditMenu>
         )
     }
 
@@ -278,17 +328,21 @@ function Card(props) {
                                         disabled={false}
                                         onBlur={handleInputChange}/>
                                 </Description>
-                                <div
-                                    className="flex flex-column md:flex-row justify-content-end align-items-center flex-wrap px-2">
-                                    <MultiStateCheckbox
-                                        icon="pi pi-lock"
-                                        value={lock}
-                                        empty={false}
-                                        options={options1}
-                                        onChange={e => handleLock(e.value)}
-                                        optionValue="value"
-                                    />
-                                    <ConfirmDialog visible={visible1}
+                                {/*<div*/}
+                                {/*    className="flex flex-column md:flex-row justify-content-end align-items-center flex-wrap px-2">*/}
+                                <ProgressAndButtons>
+                                <ButtonContainer>
+                                    {/*<MultiStateCheckbox*/}
+                                    {/*    icon="pi pi-lock"*/}
+                                    {/*    value={lock}*/}
+                                    {/*    empty={false}*/}
+                                    {/*    options={options1}*/}
+                                    {/*    onChange={e => handleLock(e.value)}*/}
+                                    {/*    optionValue="value"*/}
+                                    {/*/>*/}
+                                    <ConfirmDialog closeOnEscape={false}
+                                                   closable={false}
+                                                   visible={visible1}
                                                    onHide={() => setVisible1(false)}
                                                    message={editCardDialog}
                                                    header="Potwierdzenie edycji"
@@ -297,6 +351,7 @@ function Card(props) {
                                                    rejectLabel="Odrzuć"
                                                    accept={acceptEditCard}
                                                    reject={rejectEditCard}/>
+                                    <span className="p-buttonset" style={{scale:"0.7",whiteSpace:"nowrap",marginLeft:"-29px"}}>
                                     <Button className="ml-2" onClick={() => CommonService.onOpenDialog(setVisible1, [{
                                         callback: setValue,
                                         value   : props.description
@@ -305,9 +360,22 @@ function Card(props) {
                                         value   : props.data?.user_data
                                     }, {callback: setCardItems, value: props.data?.item_data}])}
                                             icon="pi pi-pencil"
-                                            rounded
-                                            text
+                                            size="small"
                                             aria-label="Cancel"/>
+                                        <ToggleButton style={{backgroundColor:'#4F46E5 !important'}}
+                                                      onLabel=""
+                                                      offLabel=""
+                                                      onIcon="pi pi-lock-open"
+                                                      offIcon="pi pi-lock"
+                                                      size="small"
+                                                      checked={!lock}
+                                                      onChange={(e) => handleLock(!(e.value))}
+                                        />
+                                        <Button onClick={() => (setVisible(true))}
+                                                icon="pi pi-times"
+                                                size="small"
+                                                aria-label="Cancel"/>
+                                    </span>
                                     <ConfirmDialog visible={visible}
                                                    onHide={() => setVisible(false)}
                                                    message="Czy na pewno chcesz usunąć zadanie?"
@@ -326,31 +394,40 @@ function Card(props) {
                                                    rejectLabel="Nie"
                                                    accept={acceptAssignEdit}
                                                    reject={rejectAssignEdit}/>
-                                    <Button onClick={() => (setVisible(true))}
-                                            icon="pi pi-times"
-                                            rounded
-                                            text
-                                        //size="small"
-                                            severity="danger"
-                                            aria-label="Cancel"/>
-                                    {props.data.item_data.length > 0 && (
-                                        <div>{props.data.subtask_done_percentage}%</div>
-                                    )}
-                                    {props.data.user_data &&
+
+
+                                    {props.data.user_data ?
                                     // <div>
                                     //     <Tooltip target=".user-avatar"/>
                                     //     <Avatar className="mt-2 user-avatar"
                                     //             label={userLabel}
                                     //             data-pr-tooltip={props.data.user_data.username}
                                     //             style={{backgroundColor: stc(props.data.user_data.username), color:
-                                    // 'white'}}/> </div> <AvatarImage src={props.data.user_data.avatar}/>
-                                    <Avatar className="p-overlay-badge" image={props.data.user_data.avatar}
+                                    // 'white'}}/> </div> <AvatarImage src={props.data.user_data.avatar}/>AvatarImage
+                                        <AvatarImage>
+                                        <Avatar className="p-overlay-badge" image={props.data.user_data.avatar}
                                             size="xlarge" shape="circle" style={{width: "40px", height: "40px"}}>
                                         <Badge value="X" style={{scale: "0.9", textAlign: "center"}}
                                                onClick={() => (setVisible2(true))}/>
-                                    </Avatar>
+
+                                        </Avatar>
+                                        </AvatarImage>
+                                        :
+                                        <AvatarImage>
+                                        </AvatarImage>
                                     }
-                                </div>
+                                </ButtonContainer>
+                                    <ProgressDiv>
+
+                                    {props.data.item_data.length > 0 && (
+                                        <InsideProgressDiv>
+                                            {/*{}%*/}
+                                            <ProgressBar value={props.data.subtask_done_percentage}  style={{ height: '16px', width: "100%"  }}></ProgressBar>
+                                        </InsideProgressDiv>
+                                    )}
+                                    </ProgressDiv>
+                                </ProgressAndButtons>
+                                {/*</div>*/}
                                 {provided.placeholder}
                             </DroppableDiv>
                         )}

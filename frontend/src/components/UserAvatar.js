@@ -27,16 +27,30 @@ const AvatarImage = styled.img`
   height: 40px;
   border-radius: 50%;
 `;
-
+//To już jest hiper druciarstwo
 function UserAvatar(props) {
-
+    function getStyle(style, snapshot) {
+        if (!snapshot.isDropAnimating) {
+            return style;
+        }
+        const { moveTo, curve, duration } = snapshot.dropAnimation;
+        // const translate = `translate(${moveTo.x+162.5}px, ${moveTo.y+20}px)`;
+        const translate = `translate(${moveTo.x+90}px, ${moveTo.y+17}px)`;
+        const rotate = 'rotate(0.5turn)';
+        return {
+            ...style,
+            transform: `${translate}`,
+            transition: `all ${curve} ${duration}s`,
+        };
+    }
     return (
             <Draggable draggableId={props.dragId}
                        index={props.index}>
-                {(provided) =>(
+                {(provided,snapshot) =>(
                 <AvatarContainer{...provided.dragHandleProps}
                                 {...provided.draggableProps}
                                 ref={provided.innerRef}
+                                style={getStyle(provided.draggableProps.style, snapshot)}
                 >
                     <AvatarImage src={props.img} />
                 </AvatarContainer>
