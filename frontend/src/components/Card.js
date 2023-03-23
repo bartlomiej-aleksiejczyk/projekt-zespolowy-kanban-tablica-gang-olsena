@@ -18,6 +18,7 @@ import {MultiStateCheckbox} from 'primereact/multistatecheckbox';
 import {ToggleButton} from 'primereact/togglebutton';
 import {Badge} from 'primereact/badge';
 import {Checkbox} from 'primereact/checkbox';
+import {ProgressBar} from 'primereact/progressbar';
 
 const CardStyle = styled.div`
   box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.03), 0px 0px 2px rgba(0, 0, 0, 0.06), 0px 2px 6px rgba(0, 0, 0, 0.12);
@@ -192,20 +193,22 @@ function Card(props) {
                                   onChange={(e) => handleLock(e.value)}
                     />
                 </UserChoiceBar>
-
-                {cardItems.length > 0 && (
+                <div className="mt-3 flex justify-content-between align-items-center flex-wrap">
+                    <h3>Lista podzadań
+                        ({Math.round((cardItems.filter((x) => x.is_done).length / cardItems.length) * 100) || 0}%):</h3>
+                    <Button
+                        icon="pi pi-plus"
+                        size="lg"
+                        rounded
+                        text
+                        aria-label="Filter"
+                        onClick={() => {
+                            cardItems.push({});
+                            setCardItems([...cardItems]);
+                        }}/>
+                </div>
+                {cardItems.length > 0 ? (
                     <div>
-                        <h3>Lista podzadań:</h3>
-                        <Button
-                                icon="pi pi-plus"
-                                size="lg"
-                                rounded
-                                text
-                                aria-label="Filter"
-                                onClick={() => {
-                                    cardItems.push({});
-                                    setCardItems([...cardItems]);
-                                }}/>
                         {cardItems.map((card_item, index) => {
                             return (
                                 <div key={card_item.id} className="flex align-items-center mt-3">
@@ -233,6 +236,10 @@ function Card(props) {
                                 </div>
                             );
                         })}
+                    </div>
+                ) : (
+                    <div className="text-center">
+                        Brak danych
                     </div>
                 )}
             </div>
@@ -272,8 +279,7 @@ function Card(props) {
                                         onBlur={handleInputChange}/>
                                 </Description>
                                 <div
-                                    className="flex flex-column md:flex-row justify-content-end align-content-center flex-wrap px-2">
-
+                                    className="flex flex-column md:flex-row justify-content-end align-items-center flex-wrap px-2">
                                     <MultiStateCheckbox
                                         icon="pi pi-lock"
                                         value={lock}
@@ -291,10 +297,13 @@ function Card(props) {
                                                    rejectLabel="Odrzuć"
                                                    accept={acceptEditCard}
                                                    reject={rejectEditCard}/>
-                                    <Button onClick={() => CommonService.onOpenDialog(setVisible1, [{
+                                    <Button className="ml-2" onClick={() => CommonService.onOpenDialog(setVisible1, [{
                                         callback: setValue,
                                         value   : props.description
-                                    }, {callback: setEditSelectedUser, value: props.data?.user_data}, {callback: setCardItems, value: props.data?.item_data}])}
+                                    }, {
+                                        callback: setEditSelectedUser,
+                                        value   : props.data?.user_data
+                                    }, {callback: setCardItems, value: props.data?.item_data}])}
                                             icon="pi pi-pencil"
                                             rounded
                                             text
@@ -324,7 +333,9 @@ function Card(props) {
                                         //size="small"
                                             severity="danger"
                                             aria-label="Cancel"/>
-
+                                    {props.data.item_data.length > 0 && (
+                                        <div>{props.data.subtask_done_percentage}%</div>
+                                    )}
                                     {props.data.user_data &&
                                     // <div>
                                     //     <Tooltip target=".user-avatar"/>

@@ -32,7 +32,6 @@ class RowViewSet(viewsets.ViewSet):
         )
     def get_row(self, request, pk):
         row = Row.objects.get_by_pk(pk=pk)
-        print(row)
         return Response(
             dict(
                 success=True,

@@ -21,6 +21,6 @@ class CardSerializer(serializers.ModelSerializer):
     @staticmethod
     def get_subtask_done_percentage(obj):
         try:
-            return "{:.2f}".format(Decimal(obj.card_item.filter(is_done=True).count() / obj.card_item.count()) * 100)
+            return int(obj.card_item.filter(is_done=True).count() / obj.card_item.count() * 100)
         except:
-            return "{:.2f}".format(0)
+            return 0

@@ -73,21 +73,21 @@ class BoardViewSet(viewsets.ViewSet):
         serializer.is_valid(raise_exception=True)
         serializer.save()
 
-        items = data.get('items', [])
-        print(items)
-        print([item['id'] for item in items if 'id' in item])
-        CardItem.objects.filter(card_id=card_id).exclude(id__in=[item['id'] for item in items if 'id' in item]).update(
-            deleted_at=datetime.datetime.now()
-        )
-        for item in items:
-            CardItem.objects.update_or_create(
-                id=item.get('id',None),
-                defaults=dict(
-                    card_id=item.get('card', card_id),
-                    name=item.get('name', ""),
-                    is_done=item.get('is_done', False)
-                )
+        items = data.get('items', None)
+
+        if items:
+            CardItem.objects.filter(card_id=card_id).exclude(id__in=[item['id'] for item in items if 'id' in item]).update(
+                deleted_at=datetime.datetime.now()
             )
+            for item in items:
+                CardItem.objects.update_or_create(
+                    id=item.get('id',None),
+                    defaults=dict(
+                        card_id=item.get('card', card_id),
+                        name=item.get('name', ""),
+                        is_done=item.get('is_done', False)
+                    )
+                )
 
         is_success, message = serializer.instance.move(index, pk, row_id)
 
