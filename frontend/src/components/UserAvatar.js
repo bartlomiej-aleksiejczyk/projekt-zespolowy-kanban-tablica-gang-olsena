@@ -53,6 +53,10 @@ function UserAvatar(props) {
                                 style={getStyle(provided.draggableProps.style, snapshot)}
                 >
                     <AvatarImage src={props.img} />
+                <div>
+
+
+                </div>
                 </AvatarContainer>
                 )}
             </Draggable>

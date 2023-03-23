@@ -410,11 +410,13 @@ function Card(props) {
                                     //             style={{backgroundColor: stc(props.data.user_data.username), color:
                                     // 'white'}}/> </div> <AvatarImage src={props.data.user_data.avatar}/>AvatarImage
                                         <AvatarImage>
-                                        <Avatar className="p-overlay-badge" image={props.data.user_data.avatar}
+                                            <Tooltip target=".p-overlay-badge user-avatar"/>
+                                            <Avatar className="p-overlay-badge user-avatar"
+                                                label={props.data.user_data.username}
+                                                image={props.data.user_data.avatar}
                                             size="xlarge" shape="circle" style={{width: "40px", height: "40px"}}>
                                         <Badge value="X" style={{scale: "0.9", textAlign: "center"}}
                                                onClick={() => (setVisible2(true))}/>
-
                                         </Avatar>
                                         </AvatarImage>
                                         :
