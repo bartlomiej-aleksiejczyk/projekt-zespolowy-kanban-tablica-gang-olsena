@@ -94,7 +94,9 @@ const ProgressAndButtons = styled.div`
 `;
 const EditMenu = styled.div`
     margin-top: auto;
-  display: flex;
+    height: auto;
+    width: 500px;
+    display: flex;
     flex-direction: column;
     align-items: self-start;
     align-content: center;
@@ -211,8 +213,11 @@ function Card(props) {
         //let usersCp=users.unshift(null)
         return (
             <EditMenu>
+                <div>
+
+                </div>
                 <EditMenuText>
-                    <InputTextarea className="w-full" value={value} onChange={(e) => setValue(e.target.value)} rows={5}
+                    <InputTextarea className="w-full" value={value} onChange={(e) => setValue(e.target.value)} rows={1}
                                    cols={30}/>
                 </EditMenuText>
                 <div className="card flex flex-row align-items-center gap-3 pt-3 pb-3 pl-2">
@@ -422,7 +427,7 @@ function Card(props) {
                                     {props.data.item_data.length > 0 && (
                                         <InsideProgressDiv>
                                             {/*{}%*/}
-                                            <ProgressBar value={props.data.subtask_done_percentage}  style={{ height: '16px', width: "100%"  }}></ProgressBar>
+                                            <ProgressBar value={props.data.subtask_done_percentage}  style={{ height: '16px', width: "100%", color:"black" }} ></ProgressBar>
                                         </InsideProgressDiv>
                                     )}
                                     </ProgressDiv>
