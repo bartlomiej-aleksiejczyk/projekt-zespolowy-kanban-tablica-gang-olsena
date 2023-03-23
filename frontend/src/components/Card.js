@@ -95,7 +95,7 @@ const ProgressAndButtons = styled.div`
 const EditMenu = styled.div`
     margin-top: auto;
     height: auto;
-    width: 500px;
+    width: 550px;
     display: flex;
     flex-direction: column;
     align-items: self-start;
@@ -220,7 +220,7 @@ function Card(props) {
                     <InputTextarea className="w-full" value={value} onChange={(e) => setValue(e.target.value)} rows={1}
                                    cols={30}/>
                 </EditMenuText>
-                <div className="card flex flex-row align-items-center gap-3 pt-3 pb-3 pl-2">
+                <div className="card flex flex-row align-items-center gap-5 pt-3 pb-3 pl-2">
                     <MultiStateCheckbox value={value1} onChange={(e) => setValue1(e.value)} options={options}
                                         optionValue="value" empty={false}/>
                     <span>{value1}</span>
@@ -232,20 +232,21 @@ function Card(props) {
                                   onChange={(e) => handleLock(e.value)}
                     />
                     <UserChoiceBar>
-                        <Button
-                            style={{marginTop: "15px", marginRight: "3px"}}
-                            onClick={() => setEditSelectedUser(null)}
-                            icon="pi pi-times"
-                            rounded
-                            text
-                            size="small"
-                            severity="danger"
-                            aria-label="Cancel"/>
-                        <Dropdown className="mt-3 w-full" value={(editSelectedUser)}
-                                  onChange={(e) => setEditSelectedUser(e.value)} options={(props.users)}
-                                  optionLabel="username"
-                                  placeholder="Wybierz użytkownika"
-                        />
+                        <h3>Przypisany użytkownik: {props.data.user_data?.username}</h3>
+                        {/*<Button*/}
+                        {/*    style={{marginTop: "15px", marginRight: "3px"}}*/}
+                        {/*    onClick={() => setEditSelectedUser(null)}*/}
+                        {/*    icon="pi pi-times"*/}
+                        {/*    rounded*/}
+                        {/*    text*/}
+                        {/*    size="small"*/}
+                        {/*    severity="danger"*/}
+                        {/*    aria-label="Cancel"/>*/}
+                        {/*<Dropdown className="mt-3 w-full" value={(editSelectedUser)}*/}
+                        {/*          onChange={(e) => setEditSelectedUser(e.value)} options={(props.users)}*/}
+                        {/*          optionLabel="username"*/}
+                        {/*          placeholder="Wybierz użytkownika"*/}
+                        {/*/>*/}
                     </UserChoiceBar>
                 </div>
                 <div className="mt-3 flex justify-content-between align-items-center flex-wrap">

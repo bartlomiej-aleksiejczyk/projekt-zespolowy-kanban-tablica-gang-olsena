@@ -293,7 +293,7 @@ function Kanban() {
                     <ConfirmDialog visible={visible2}
                                    onHide={() => setVisible2(false)}
                                    message={`Czy na pewno chcesz wylogować się z konta: ${user.username}?`}
-                                   header="Potwierdzenie usunięcia"
+                                   header="Potwierdzenie wylogowania"
                                    icon="pi pi-sign-out"
                                    acceptLabel="Tak"
                                    rejectLabel="Nie"
