@@ -45,6 +45,9 @@ class ApiService {
     updateSingleCard(pk, data) {
         return this.axios.post(`http://localhost:8000/api/card/${pk}/`, data).then(response => response.data);
     }
+    appendUserCard(pk, data) {
+        return this.axios.post(`http://localhost:8000/api/card/${pk}/users/`, data).then(response => response.data);
+    }
 
     moveCard(pk, index, board, row) {
         return this.axios.post(`http://localhost:8000/api/card/${pk}/move/`, {"index": index, "board": board, "row": row}).then(response => response.data);

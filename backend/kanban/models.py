@@ -130,6 +130,10 @@ class Card(Timestamp):
         blank=True,
         on_delete=models.DO_NOTHING
     )
+    users = models.ManyToManyField(
+        'kanban.User',
+        related_name='card_users',
+        blank=True)
 
     objects = CoreModelManager()
 

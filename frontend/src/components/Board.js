@@ -15,17 +15,13 @@ import {useUserService} from "../utils/UserServiceContext";
 
 const BoardStyle = styled.div`
   box-shadow: 0px 1px 7px rgba(0, 0, 0, 0.1), 0px 4px 5px -2px rgba(0, 0, 0, 0.12), 0px 10px 15px -5px rgba(0, 0, 0, 0.2);
-  max-width: 250px;
   min-width: 250px;
-  zIndex : 1;
   margin-right: 6px;
   margin-top: 180px;
-  margin-bottom: auto;
+  margin-bottom: 45px;
   border-radius: 6px;
   display: flex;
-  flex-wrap: wrap;
   flex-direction: column;
-  align-items: center;
   transition: background-color 2s ease;
   background-color: ${props =>
     props.boardOverflow ? '#800000' : 'white'};
@@ -46,7 +42,6 @@ const LabelDummy = styled.label`
 
 const Title = styled.h2`
   text-align: center;
-  max-width: 205px;
   min-width: 205px;
   height: 35px;
   padding: 0px;
@@ -58,8 +53,10 @@ const Title = styled.h2`
 `;
 
 const RowStyle = styled.section`
-  
-  align-items: center;
+  width: inherit;
+  display: flex;
+  flex-direction: column;
+  justify-content: start;
 
 `;
 const CardButtons = styled.div`

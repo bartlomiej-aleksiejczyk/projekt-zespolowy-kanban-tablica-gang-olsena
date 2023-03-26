@@ -13,9 +13,9 @@ class RemainingSerializer(serializers.ModelSerializer):
 
     @staticmethod
     def get_remaining_assignments(obj):
-        occurrences = Card.objects.filter(user=obj, deleted_at__isnull=True).count()
+        occurrences = Card.objects.filter(users=obj, deleted_at__isnull=True).count()
         limit = (Parameter.objects.get_by_pk(1)).value
         return limit - occurrences
     @staticmethod
     def get_assignments(obj):
-        return Card.objects.filter(user=obj, deleted_at__isnull=True).count()
+        return Card.objects.filter(users=obj, deleted_at__isnull=True).count()

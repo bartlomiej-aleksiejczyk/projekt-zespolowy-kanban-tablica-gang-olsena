@@ -10,17 +10,36 @@ import {InputText} from 'primereact/inputtext';
 import {ToggleButton} from 'primereact/togglebutton';
 import {useUserService} from "../utils/UserServiceContext";
 
+const CardsStyle = styled.div`
+  max-width: 710px;
+  min-width: 228px;
+  margin-top: 3px;
+  margin-left: 11.5px;
+  margin-right: auto;
+  width: auto;
+  margin-bottom: 3px;
+  min-height: 247px;
+  max-height: 247px;
+  overflow: auto;
+  background-color:white;
+  transition: background-color 0.4s;
+  display: inline-flex;
+  
+  // background-color: {props =>
+  //   props.rowOverflow ? '#800000' : 'white'};
+  // color: {props =>
+  //   props.rowOverflow ? 'white' : 'inherit'};
+`;
 const RowsStyle = styled.div`
   //box-shadow: 0px 1px 7px rgba(0, 0, 0, 0.1), 0px 4px 5px -2px rgba(0, 0, 0, 0.12), 0px 10px 15px -5px rgba(0, 0, 0, 0.2);
-  max-width: 245px;
+  max-width: 710px;
   min-width: 245px;
-  max-height: 240px;
-  min-height: 240px;
+  max-height: 250px;
+  min-height: 250px;
   zIndex : 1;
   margin-top: 3px;
   margin-right: 2px;
   margin-bottom: 3px;
-  border-radius: 6px;
   display: flex;
   flex-wrap: wrap;
   flex-direction: column;
@@ -30,39 +49,19 @@ const RowsStyle = styled.div`
 `;
 const RowsStyleExtension = styled.div`
   //box-shadow: 0px 1px 7px rgba(0, 0, 0, 0.1), 0px 4px 5px -2px rgba(0, 0, 0, 0.12), 0px 10px 15px -5px rgba(0, 0, 0, 0.2);
-  max-width: 250px;
+  max-width: 720px;
   min-width: 250px;
   max-height: 250px;
   min-height: 60px;
   //border: 3px solid #b7b3ea;
-  border-radius: 6px;
   background-color: #c4c0f1;
   margin-top: 3px;
 `;
 
-const CardsStyle = styled.div`
-  max-width: 242px;
-  min-width: 242px;
-  margin-top: 3px;
-  position: absolute;
-  margin-left: 6px;
-  margin-bottom: 3px;
-  min-height: 235px;
-  max-height: 235px;
-  overflow: auto;
-  border-radius: 6px;
-  border: 3px solid #b7b3ea;
-  background-color:white;
-  transition: background-color 0.4s;
-  // background-color: {props =>
-  //   props.rowOverflow ? '#800000' : 'white'};
-  // color: {props =>
-  //   props.rowOverflow ? 'white' : 'inherit'};
-`;
+
 const RowSide = styled.div`
   position: absolute;
   margin-left: -250px;
-  min-width: 246px;
   min-width: 246px;
   z-index: 10;
 `;
@@ -79,12 +78,11 @@ const RowSideCollapsable = styled.div`
 
 `;
 const RowCollapsable = styled.div`
-  max-width: 250px;
+  content: "my tooltip";
   min-width: 250px;
-  max-height: 260px;
+  max-height: 250px;
   min-height: 60px;
   margin-bottom: 3px;
-  border-radius: 6px;
   background-color: white;
   margin-top: 3px;
 `;
@@ -172,7 +170,10 @@ function Row(props) {
                                    accept={acceptRowDelete}
                                    reject={() => {}}/>
                     <Droppable droppableId={props.droppableId}
-                               type="card">
+                               type="card"
+                               direction="horizontal"
+
+                    >
                         {(provided) => (
                             <CardsStyle
                                 rowOverflow={(props.limit < (props.cards).length) && (props.limit != null)}

@@ -19,19 +19,19 @@ import {ToggleButton} from 'primereact/togglebutton';
 import {Badge} from 'primereact/badge';
 import {Checkbox} from 'primereact/checkbox';
 import {ProgressBar} from 'primereact/progressbar';
+import CardUsers from "./CardUsers";
 
 const CardStyle = styled.div`
   box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.03), 0px 0px 2px rgba(0, 0, 0, 0.06), 0px 2px 6px rgba(0, 0, 0, 0.12);
   max-width: 228px;
   min-width: 228px;
+  max-height:200px;
   border: ${props => props.locked ? "2px solid #b7b3ea" : "2px solid #b7b3ea"};
   border-radius: 6px;
   padding: 4px;
   margin-top: 3px;
   margin-left: 5px;
-  display: flex;
-  flex-direction: column;
-  flex-wrap: wrap;
+  overflow: hidden;
   -webkit-filter: ${props => props.locked ? "grayscale(0.7)" : ""} ;
   //Ta metoda to druciarstwo o wiele lepiej jest tuaj https://stackoverflow.com/questions/61635321/props-conditional-rendering-using-styled-components
   background-color: ${props => props.color};
@@ -54,10 +54,11 @@ const ButtonContainer = styled.div`
 `;
 const Description = styled.div`
   flex-direction: column;
-  max-width: 220px;
-  min-width: 220px;
+  max-width: 210px;
+  min-width: 210px;
   word-wrap: break-word;
   flex-wrap: wrap;
+  margin-top: 6px;
   padding-left: 8px;
   padding-right:8px;
 `;
@@ -83,13 +84,15 @@ const InsideProgressDiv = styled.div`
   flex-basis: 100%;
   margin-top: 9px;
 `;
-const CardSmallButtons = styled.div`
+const Avatars = styled.div`
   display: inline-block;
 
 `;
 const ProgressAndButtons = styled.div`
+    margin-top: auto;
     display: flex;
     flex-direction: column;
+    margin-bottom: 10px;
   
 `;
 const EditMenu = styled.div`
@@ -115,6 +118,11 @@ const EditMenuText = styled.div`
 
 `;
 const DroppableDiv = styled.div`
+  height: 200px;
+  width: inherit;
+  display: flex;
+  flex-direction: column;
+  overflow: auto;
 `;
 
 function Card(props) {
@@ -337,6 +345,21 @@ function Card(props) {
                                 {/*<div*/}
                                 {/*    className="flex flex-column md:flex-row justify-content-end align-items-center flex-wrap px-2">*/}
                                 <ProgressAndButtons>
+                                    <Avatars>
+                                        {(props.data.users_data).map((cardUser) =>
+                                            <CardUsers
+                                                setBoards={props.setBoards}
+                                                setRemaining={props.setRemaining}
+                                                board={props.board}
+                                                allUsers={props.data.users}
+                                                cardId={props.backId}
+                                                key={cardUser.id}
+                                                id={cardUser.id}
+                                                username={cardUser.username}
+                                                img={cardUser.avatar}
+                                            />
+                                            )}
+                                    </Avatars>
                                 <ButtonContainer>
                                     {/*<MultiStateCheckbox*/}
                                     {/*    icon="pi pi-lock"*/}

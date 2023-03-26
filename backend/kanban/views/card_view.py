@@ -9,7 +9,7 @@ from kanban.serializers.card_serializer import CardSerializer, CardItemSerialize
 
 
 class CardViewSet(viewsets.ViewSet):
-    permission_classes = (IsAuthenticated,)
+    # permission_classes = (IsAuthenticated,)
 
     def get_card(self, request, pk):
         card = Card.objects.get_by_pk(pk=pk)
@@ -120,5 +120,34 @@ class CardViewSet(viewsets.ViewSet):
                 success=True,
                 message="Podzadanie zostało usunięte.",
                 data=CardItemSerializer(CardItem.objects.all(), many=True).data
+            )
+        )
+
+    def add_user_card(self, request, pk):
+        card_instance = Card.objects.get_by_pk(pk=pk)
+        new_user = (request.data.get('users'))
+        users = ((CardSerializer(card_instance).data['users']))
+        if new_user in users:
+            return Response(
+                dict(
+                    success=False,
+                    message="Ten użytkownik już jest w przypisany do tego zadania",
+                    data=BoardSerializer(Board.objects.all(), many=True).data,
+                    data1=remaining_helper()
+                )
+            )
+        data = dict(request.data)
+        users.append(new_user)
+        data['users'] = users
+        serializer = CardSerializer(data=data, instance=card_instance, partial=True)
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+
+        return Response(
+            dict(
+                success=True,
+                message="Karta została pomyślnie zaktualizowana",
+                data=BoardSerializer(Board.objects.all(), many=True).data,
+                data1=remaining_helper()
             )
         )

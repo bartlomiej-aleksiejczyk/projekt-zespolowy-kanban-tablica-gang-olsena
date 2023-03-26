@@ -82,6 +82,12 @@ single_card_item_viewset = CardViewSet.as_view(
     )
 )
 
+user_board_viewset = CardViewSet.as_view(
+    dict(
+        post='add_user_card'
+    )
+)
+
 urlpatterns = [
     # board
     path('board/', board_viewset),
@@ -95,6 +101,7 @@ urlpatterns = [
     path('board/<int:pk>/card/', board_card_viewset),
     path('card/<int:pk>/item/', card_item_viewset),
     path('card/item/<int:pk>/', single_card_item_viewset),
+    path('card/<int:pk>/users/', user_board_viewset),
 
     # row
     path('row/<int:pk>/', single_row_viewset),

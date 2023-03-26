@@ -271,9 +271,10 @@ function Kanban() {
                 let cardAvatarid = parseInt(((destination.droppableId)).slice(0, -2) );
                 let userId= (remaining[(source.index)]).id;
                 remaining.splice((source.index),1);
+
                 setRemaining(remaining);
-                apiService.updateSingleCard(cardAvatarid, {
-                    "user"       : userId
+                apiService.appendUserCard(cardAvatarid, {
+                    "users"       : userId
                 }).then((response_data) => {
                     CommonService.toastCallback(response_data, setBoards, setRemaining);
                 });
