@@ -73,7 +73,6 @@ const AvatarImage = styled.div`
   min-width: 40px;
   min-height: 40px;
   display: inline-block;
-  margin-right: 10px;
 `;
 const ProgressDiv = styled.div`
   min-width: 30px;
@@ -86,7 +85,13 @@ const InsideProgressDiv = styled.div`
   margin-top: 9px;
 `;
 const Avatars = styled.div`
-  display: inline-block;
+  height: 70px;
+  width: 130px;
+  margin-left: -24px;
+  display: inline-flex;
+  flex-direction: row;
+  overflow: auto;
+  margin-right: -10px;
 
 `;
 const ProgressAndButtons = styled.div`
@@ -378,21 +383,7 @@ function Card(props) {
                                     </div>
                                 )}
                                 <ProgressAndButtons>
-                                    <Avatars>
-                                        {(props.data.users_data).map((cardUser) =>
-                                            <CardUsers
-                                                setBoards={props.setBoards}
-                                                setRemaining={props.setRemaining}
-                                                board={props.board}
-                                                allUsers={props.data.users}
-                                                cardId={props.backId}
-                                                key={cardUser.id}
-                                                id={cardUser.id}
-                                                username={cardUser.username}
-                                                img={cardUser.avatar}
-                                            />
-                                            )}
-                                    </Avatars>
+
                                 <ButtonContainer>
                                     {/*<MultiStateCheckbox*/}
                                     {/*    icon="pi pi-lock"*/}
@@ -402,6 +393,7 @@ function Card(props) {
                                     {/*    onChange={e => handleLock(e.value)}*/}
                                     {/*    optionValue="value"*/}
                                     {/*/>*/}
+
                                     <ConfirmDialog closeOnEscape={false}
                                                    closable={false}
                                                    visible={visible1}
@@ -458,28 +450,43 @@ function Card(props) {
                                                    reject={rejectAssignEdit}/>
 
 
-                                    {props.data.user_data ?
-                                    // <div>
-                                    //     <Tooltip target=".user-avatar"/>
-                                    //     <Avatar className="mt-2 user-avatar"
-                                    //             label={userLabel}
-                                    //             data-pr-tooltip={props.data.user_data.username}
-                                    //             style={{backgroundColor: stc(props.data.user_data.username), color:
-                                    // 'white'}}/> </div> <AvatarImage src={props.data.user_data.avatar}/>AvatarImage
-                                        <AvatarImage>
-                                            <Tooltip target=".p-overlay-badge user-avatar"/>
-                                            <Avatar className="p-overlay-badge user-avatar"
-                                                label={props.data.user_data.username}
-                                                image={props.data.user_data.avatar}
-                                            size="xlarge" shape="circle" style={{width: "40px", height: "40px"}}>
-                                        <Badge value="X" style={{scale: "0.9", textAlign: "center"}}
-                                               onClick={() => (setVisible2(true))}/>
-                                        </Avatar>
-                                        </AvatarImage>
-                                        :
-                                        <AvatarImage>
-                                        </AvatarImage>
-                                    }
+                                    {/*{props.data.user_data ?*/}
+                                    {/*// <div>*/}
+                                    {/*//     <Tooltip target=".user-avatar"/>*/}
+                                    {/*//     <Avatar className="mt-2 user-avatar"*/}
+                                    {/*//             label={userLabel}*/}
+                                    {/*//             data-pr-tooltip={props.data.user_data.username}*/}
+                                    {/*//             style={{backgroundColor: stc(props.data.user_data.username), color:*/}
+                                    {/*// 'white'}}/> </div> <AvatarImage src={props.data.user_data.avatar}/>AvatarImage*/}
+                                    {/*//     <AvatarImage>*/}
+                                    {/*//         <Tooltip target=".p-overlay-badge user-avatar"/>*/}
+                                    {/*//         <Avatar className="p-overlay-badge user-avatar"*/}
+                                    {/*//             label={props.data.user_data.username}*/}
+                                    {/*//             image={props.data.user_data.avatar}*/}
+                                    {/*//         size="xlarge" shape="circle" style={{width: "40px", height: "40px"}}>*/}
+                                    {/*//     <Badge value="X" style={{scale: "0.9", textAlign: "center"}}*/}
+                                    {/*//            onClick={() => (setVisible2(true))}/>*/}
+                                    {/*//     </Avatar>*/}
+                                    {/*//     </AvatarImage>*/}
+                                    {/*//     :*/}
+                                    {/*//     <AvatarImage>*/}
+                                    {/*//     </AvatarImage>*/}
+                                    {/*// }*/}
+                                    <Avatars>
+                                        {(props.data.users_data).map((cardUser) =>
+                                            <CardUsers
+                                                setBoards={props.setBoards}
+                                                setRemaining={props.setRemaining}
+                                                board={props.board}
+                                                allUsers={props.data.users}
+                                                cardId={props.backId}
+                                                key={cardUser.id}
+                                                id={cardUser.id}
+                                                username={cardUser.username}
+                                                img={cardUser.avatar}
+                                            />
+                                        )}
+                                    </Avatars>
                                 </ButtonContainer>
                                     <ProgressDiv>
 
