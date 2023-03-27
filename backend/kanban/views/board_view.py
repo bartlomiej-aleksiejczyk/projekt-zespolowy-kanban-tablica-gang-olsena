@@ -73,21 +73,25 @@ class BoardViewSet(viewsets.ViewSet):
         serializer.is_valid(raise_exception=True)
         serializer.save()
 
-        items = data.get('items', None)
-
-        if items:
-            CardItem.objects.filter(card_id=card_id).exclude(id__in=[item['id'] for item in items if 'id' in item]).update(
-                deleted_at=datetime.datetime.now()
-            )
-            for item in items:
-                CardItem.objects.update_or_create(
-                    id=item.get('id',None),
-                    defaults=dict(
-                        card_id=item.get('card', card_id),
-                        name=item.get('name', ""),
-                        is_done=item.get('is_done', False)
-                    )
+        items = data.get('items', [])
+        # ten bug, który nas straszyl w czwartek rano został rozwiązany tak, że zneutralizowałem warunek "if items:"
+        # A błąd byl taki, że aby usunąć podzadania poniższa pętla musi przebiec, tylko warunek jest tak skonstruowany, że
+        # w przypadku usunięcia wszystkiego pętla się nie załącza bo items jest None, czyli warunek nie spełniony
+        # więc działało to tylko dla niepustego rezultatu usunięcia
+        # if items:
+        CardItem.objects.filter(card_id=card_id).exclude(id__in=[item['id'] for item in items if 'id' in item]).update(
+            deleted_at=datetime.datetime.now()
+        )
+        for item in items:
+            CardItem.objects.update_or_create(
+                id=item.get('id', None),
+                defaults=dict(
+                    card_id=item.get('card', card_id),
+                    name=item.get('name', ""),
+                    is_done=item.get('is_done', False)
                 )
+            )
+        # tu był koniec warunku
 
         is_success, message = serializer.instance.move(index, pk, row_id)
 
@@ -175,10 +179,14 @@ class BoardViewSet(viewsets.ViewSet):
             index__gte=board.index,
             deleted_at__isnull=True
         ).order_by('index')
-
+        first_board = Board.objects.all().order_by('index').first()
+        first_row = Row.objects.first()
         for card in cards:
-            card.deleted_at = datetime.datetime.now()
+            card.board = first_board
+            card.row = first_row
+            card.index = 0
             card.save()
+            card.move(0, first_board, first_row)
         changed_index = board.index
         for board in boards:
             board.index = changed_index

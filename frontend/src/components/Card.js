@@ -20,6 +20,7 @@ import {Badge} from 'primereact/badge';
 import {Checkbox} from 'primereact/checkbox';
 import {ProgressBar} from 'primereact/progressbar';
 import CardUsers from "./CardUsers";
+import { v4 as uuidv4 } from 'uuid';
 
 const CardStyle = styled.div`
   box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.03), 0px 0px 2px rgba(0, 0, 0, 0.06), 0px 2px 6px rgba(0, 0, 0, 0.12);
@@ -268,6 +269,11 @@ function Card(props) {
                         aria-label="Filter"
                         onClick={() => {
                             cardItems.push({});
+                            //Poniższe dodano, zeby nie walił errorami
+                            if (cardItems.length-1===1){
+                                cardItems[0].key=uuidv4()
+                            }
+                            else cardItems[cardItems.length-1].key=uuidv4()
                             setCardItems([...cardItems]);
                         }}/>
                 </div>
@@ -281,6 +287,7 @@ function Card(props) {
                                                   cardItems[index].is_done = !e.value;
 
                                                   setCardItems([...cardItems]);
+
                                               }}
                                               checked={card_item.is_done}/>
                                     <InputText className="ml-3" value={card_item.name} onChange={(e) => {
@@ -342,8 +349,34 @@ function Card(props) {
                                         disabled={false}
                                         onBlur={handleInputChange}/>
                                 </Description>
-                                {/*<div*/}
-                                {/*    className="flex flex-column md:flex-row justify-content-end align-items-center flex-wrap px-2">*/}
+                                {cardItems.length > 0 ? (
+                                    <div>
+                                        {cardItems.map((card_item, index) => {
+                                            return (
+                                                <div key={card_item.id} className="flex align-items-center mt-3">
+                                                    <Checkbox inputId={card_item.id} name="card_item" value={card_item.is_done}
+                                                              onChange={(e) => {
+                                                                  cardItems[index].is_done = !e.value;
+                                                                  // setCardItems([...cardItems]);
+                                                                  apiService.updateCard(props.board, {
+                                                                      "id"         : props.backId,
+                                                                      "items"      : cardItems
+                                                                  }).then((response_data) => {
+                                                                      CommonService.toastCallback(response_data, props.setBoards);
+                                                                  });
+                                                              }}
+                                                              checked={card_item.is_done}/>
+                                                    <span style={{marginLeft:"4px"}}>{card_item.name}</span>
+
+                                                </div>
+                                            );
+                                        })}
+                                    </div>
+                                ) : (
+                                    <div className="text-center">
+                                        <h5 style={{marginTop:"50px"}}> Brak podzadań</h5>
+                                    </div>
+                                )}
                                 <ProgressAndButtons>
                                     <Avatars>
                                         {(props.data.users_data).map((cardUser) =>

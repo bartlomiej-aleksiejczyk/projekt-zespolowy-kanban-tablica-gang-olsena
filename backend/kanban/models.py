@@ -271,7 +271,10 @@ class CardItem(Dictionary, Timestamp):
     card = models.ForeignKey(
         'kanban.Card',
         related_name='card_item',
+        null=False,
+        blank=True,
         on_delete=models.DO_NOTHING
+
     )
     is_done = models.BooleanField(default=False)
 

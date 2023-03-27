@@ -11,7 +11,6 @@ from kanban.views.helper import remaining_helper
 class RowViewSet(viewsets.ViewSet):
     permission_classes = (IsAuthenticated,)
 
-
     def update_row(self, request, pk=None):
         data = request.data.copy()
 
@@ -30,6 +29,7 @@ class RowViewSet(viewsets.ViewSet):
                 data=BoardSerializer(Board.objects.all(), many=True).data
             )
         )
+
     def get_row(self, request, pk):
         row = Row.objects.get_by_pk(pk=pk)
         return Response(
@@ -49,14 +49,27 @@ class RowViewSet(viewsets.ViewSet):
 
     def delete_row(self, request, pk):
         row = Row.objects.get_by_pk(pk=pk, raise_exception=True)
+        if row.id == Row.objects.first().id:
+            print("test")
+            return Response(
+                dict(
+                    success=False,
+                    message="Nie można usunąć rzędu, gdyż pierwszy rząd jest chroniony.",
+                    data=BoardSerializer(Board.objects.all(), many=True).data,
+                    data1=remaining_helper()
+                )
+            )
         cards = Card.objects.filter(row_id=pk)
-
         row.deleted_at = datetime.datetime.now()
         row.save()
+        first_board = Board.objects.all().order_by('index').first()
+        first_row = Row.objects.first()
         for card in cards:
-            card.deleted_at = datetime.datetime.now()
+            card.board = first_board
+            card.row = first_row
+            card.index = 0
             card.save()
-
+            card.move(0, first_board, first_row)
         return Response(
             dict(
                 success=True,
