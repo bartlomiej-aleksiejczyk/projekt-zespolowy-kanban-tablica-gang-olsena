@@ -15,6 +15,7 @@ class CardSerializer(serializers.ModelSerializer):
     user_data = UserSerializer(source='user', read_only=True)
     users_data = UserSerializer(source='users', many=True, read_only=True)
     item_data = CardItemSerializer(source='card_item', many=True, read_only=True)
+    child_data = CardItemSerializer(source='parent_card', many=True, read_only=True)
     subtask_done_percentage = serializers.SerializerMethodField()
 
     class Meta:

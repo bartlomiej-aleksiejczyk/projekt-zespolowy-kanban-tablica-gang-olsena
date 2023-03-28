@@ -109,6 +109,13 @@ class Board(Dictionary, Timestamp):
 class Card(Timestamp):
     index = models.PositiveSmallIntegerField(default=0)
     is_locked = models.BooleanField(default=False)
+    is_card_completed = models.BooleanField(default=False)
+
+    def save(self):
+        if card_item:
+            self.is_card_completed = self.x + self.y + self.z
+        super(Card, self).save()
+
     board = models.ForeignKey(
         'kanban.Board',
         related_name='card_board',
@@ -117,6 +124,13 @@ class Card(Timestamp):
     row = models.ForeignKey(
         'kanban.Row',
         related_name='card_row',
+        null=True,
+        blank=True,
+        on_delete=models.DO_NOTHING
+    )
+    parent_card = models.ForeignKey(
+        'kanban.Card',
+        related_name='parent_card',
         null=True,
         blank=True,
         on_delete=models.DO_NOTHING
@@ -257,6 +271,7 @@ class UserManager(CoreModelManager, BaseUserManager):
         user.save(using=self._db)
         return user
 
+
 class User(Timestamp, AbstractUser):
     avatar = models.CharField(default="http://localhost:8000/media/generic-avatar.png", max_length=200)
     image = models.ImageField(default=None, blank=True, null=True)
@@ -266,6 +281,7 @@ class User(Timestamp, AbstractUser):
 class Parameter(Timestamp, Dictionary):
     value = models.SmallIntegerField(default=0)
     objects = UserManager()
+
 
 class CardItem(Dictionary, Timestamp):
     card = models.ForeignKey(
