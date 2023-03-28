@@ -53,7 +53,9 @@ class BoardViewSet(viewsets.ViewSet):
         card_id = data.get('id')
         index = int(data.get('index', 0))
         row_id = data.get('row')
-
+        parent = data.get('parent_card')
+        children = Card.objects.filter(parent_card=card_id)
+        print(children)
         card_instance = None
         if card_id:
             card_instance = Card.objects.get_by_pk(pk=card_id)
@@ -61,6 +63,15 @@ class BoardViewSet(viewsets.ViewSet):
 
             if row_id is None:
                 row_id = card_instance.row_id
+            if parent and children:
+                return Response(
+                    dict(
+                        success=False,
+                        message="Nie można dodać rodzica dla karty która ma dzieci",
+                        data=BoardSerializer(Board.objects.all(), many=True).data,
+                        data1=remaining_helper()
+                    )
+                )
 
         if row_id is None:
             row_id = Row.objects.first().id
@@ -74,11 +85,15 @@ class BoardViewSet(viewsets.ViewSet):
         serializer.save()
 
         items = data.get('items', [])
+
+
+
         # ten bug, który nas straszyl w czwartek rano został rozwiązany tak, że zneutralizowałem warunek "if items:"
         # A błąd byl taki, że aby usunąć podzadania poniższa pętla musi przebiec, tylko warunek jest tak skonstruowany, że
         # w przypadku usunięcia wszystkiego pętla się nie załącza bo items jest None, czyli warunek nie spełniony
         # więc działało to tylko dla niepustego rezultatu usunięcia
         # if items:
+
         CardItem.objects.filter(card_id=card_id).exclude(id__in=[item['id'] for item in items if 'id' in item]).update(
             deleted_at=datetime.datetime.now()
         )

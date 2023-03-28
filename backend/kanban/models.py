@@ -112,8 +112,11 @@ class Card(Timestamp):
     is_card_completed = models.BooleanField(default=False)
 
     def save(self):
-        if card_item:
-            self.is_card_completed = self.x + self.y + self.z
+        items = CardItem.objects.filter(card_id=self.id)
+        print(items )
+        if items:
+            all_completed = not items.filter(is_done=False).exists()
+            self.is_card_completed = all_completed
         super(Card, self).save()
 
     board = models.ForeignKey(
@@ -130,7 +133,7 @@ class Card(Timestamp):
     )
     parent_card = models.ForeignKey(
         'kanban.Card',
-        related_name='parent_card',
+        related_name='card_parent_card',
         null=True,
         blank=True,
         on_delete=models.DO_NOTHING
