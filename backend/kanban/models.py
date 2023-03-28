@@ -154,7 +154,10 @@ class Card(Timestamp):
     restricted_boards = models.ManyToManyField(
         'kanban.Board',
         related_name='card_board_restricted',
-        blank=True)
+        blank=True,
+        null = False,
+
+    )
 
     objects = CoreModelManager()
 

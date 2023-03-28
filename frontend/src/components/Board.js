@@ -83,13 +83,14 @@ function Board(props) {
 
     const accept = () => {
         apiService.removeBoard((props.backId)).then((response_data) => {
-            CommonService.toastCallback(response_data, props.setBoards, props.setRemaining)
+            CommonService.toastCallback(response_data, props.setBoards, props.setRemaining);
+            setCallRestrictionUpdate(true);
         });
     }
 
     const acceptAddCard = () => {
         apiService.newCard(props.backId, value).then((response_data) => {
-            CommonService.toastCallback(response_data, props.setBoards)
+            CommonService.toastCallback(response_data, props.setBoards,props.setCardsChoice)
             setValue('');
         });
     }
@@ -111,6 +112,8 @@ function Board(props) {
     const [value, setValue] = useState('');
     const [value2, setValue2] = useState(props.limit);
     const [value3, setValue3] = useState(props.name);
+    const [callRestrictionUpdate, setCallRestrictionUpdate] = useState(false);
+
     return (
         <Draggable key={props.backId}
                    draggableId={props.dragId}
@@ -212,7 +215,12 @@ function Board(props) {
                                  name={row.name}
                                  users={props.users}
                                  setBoards={props.setBoards}
+                                 boards={props.boards}
                                  setRemaining={props.setRemaining}
+                                 cardsChoice={props.cardsChoice}
+                                 setCardsChoice={props.setCardsChoice}
+                                 callRestrictionUpdate={callRestrictionUpdate}
+                                 setCallRestrictionUpdate={setCallRestrictionUpdate}
                             />
                         )}
                     </RowStyle>

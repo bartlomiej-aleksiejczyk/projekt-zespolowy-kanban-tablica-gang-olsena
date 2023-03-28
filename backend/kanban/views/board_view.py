@@ -51,12 +51,15 @@ class BoardViewSet(viewsets.ViewSet):
     def update_board_card(self, request, pk):
         data = request.data.copy()
         card_id = data.get('id')
+        board_new = data.get('board')
         index = int(data.get('index', 0))
         row_id = data.get('row')
         parent = data.get('parent_card')
-        restricted_boards = data.get('restricted_boards')
+        restricted_boards = data.get('restricted_boards', [])
+        print(restricted_boards)
+        restricted_boards_old =list(Card.objects.filter(id=card_id).values_list('restricted_boards',flat=True))[1:]
         children = Card.objects.filter(parent_card=card_id)
-        print(children)
+        print(restricted_boards)
         card_instance = None
         if ((Board.objects.filter(index=0)).values_list('id')[0][0]) in restricted_boards:
             return Response(
@@ -65,7 +68,19 @@ class BoardViewSet(viewsets.ViewSet):
                     message="Nie można zabrać dostępu do pierwszej kolumny",
                     data=BoardSerializer(Board.objects.all(), many=True).data,
                     data1=remaining_helper(),
-                    data2=CardSerializer(Card.objects.all(), many=True).data
+                    data2=CardSerializer(Card.objects.all(), many=True).data,
+                    data3=restricted_boards_old
+                )
+            )
+        if board_new in restricted_boards:
+            return Response(
+                dict(
+                    success=False,
+                    message="Nie można przenieść zadania, gdyż kolumna jest na liście zabronionych",
+                    data=BoardSerializer(Board.objects.all(), many=True).data,
+                    data1=remaining_helper(),
+                    data2=CardSerializer(Card.objects.all(), many=True).data,
+                    data3=restricted_boards_old
 
                 )
             )
@@ -73,10 +88,11 @@ class BoardViewSet(viewsets.ViewSet):
             return Response(
                 dict(
                     success=False,
-                    message="Nie można przenieść karty, gdyż kolumna jest na liście zabronionych kolumn",
+                    message="Nie można dodać kolumny do listy, gdyż karta znajduje się w tej kolumnie",
                     data=BoardSerializer(Board.objects.all(), many=True).data,
                     data1=remaining_helper(),
-                    data2=CardSerializer(Card.objects.all(), many=True).data
+                    data2=CardSerializer(Card.objects.all(), many=True).data,
+                    data3=restricted_boards_old
 
                 )
             )
@@ -93,15 +109,14 @@ class BoardViewSet(viewsets.ViewSet):
                         message="Nie można dodać rodzica dla karty która ma dzieci",
                         data=BoardSerializer(Board.objects.all(), many=True).data,
                         data1=remaining_helper(),
-                        data2=CardSerializer(Card.objects.all(), many=True).data
+                        data2=CardSerializer(Card.objects.all(), many=True).data,
+                        data3=restricted_boards_old
 
                     )
                 )
 
         if row_id is None:
             row_id = Row.objects.first().id
-
-        Board.objects.get_by_pk(pk=pk)
         data['board'] = pk
         data['index'] = index
         data['row'] = row_id
@@ -164,7 +179,8 @@ class BoardViewSet(viewsets.ViewSet):
         return Response(
             dict(
                 success=True,
-                data=BoardSerializer(Board.objects.all(), many=True).data
+                data=BoardSerializer(Board.objects.all(), many=True).data,
+                data1=CardSerializer(Card.objects.all(), many=True).data
             )
         )
 
@@ -202,6 +218,10 @@ class BoardViewSet(viewsets.ViewSet):
     def delete_board(self, request, pk):
         board = Board.objects.get_by_pk(pk=pk, raise_exception=True)
         cards = Card.objects.filter(board_id=pk)
+        cards = (Card.objects.filter(restricted_boards=pk))
+        for card in cards:
+            card.restricted_boards.remove(pk)
+            card.save()
         if board.is_static:
             return Response(
                 dict(

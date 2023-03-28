@@ -23,7 +23,22 @@ class CardViewSet(viewsets.ViewSet):
 
     def move_card(self, request, pk):
         card = Card.objects.get_by_pk(pk=pk)
+        restricted_boards=list(Card.objects.filter(id=pk).values_list('restricted_boards',flat=True))
+        board_new = request.data.get('board')
+        print(restricted_boards)
+        print(board_new)
 
+        if board_new in restricted_boards:
+            return Response(
+                dict(
+                    success=False,
+                    message="Nie można przenieść zadania, gdyż kolumna jest na liście zabronionych",
+                    data=BoardSerializer(Board.objects.all(), many=True).data,
+                    data1=remaining_helper(),
+                    data2=CardSerializer(Card.objects.all(), many=True).data
+
+                )
+            )
         is_success, message = card.move(
             request.data.get('index', card.index),
             request.data.get('board', card.board_id),

@@ -19,8 +19,10 @@ import {ToggleButton} from 'primereact/togglebutton';
 import {Badge} from 'primereact/badge';
 import {Checkbox} from 'primereact/checkbox';
 import {ProgressBar} from 'primereact/progressbar';
+import {MultiSelect} from 'primereact/multiselect'
 import CardUsers from "./CardUsers";
 import { v4 as uuidv4 } from 'uuid';
+import board from "./Board";
 
 const CardStyle = styled.div`
   box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.03), 0px 0px 2px rgba(0, 0, 0, 0.06), 0px 2px 6px rgba(0, 0, 0, 0.12);
@@ -43,6 +45,25 @@ const CardStyle = styled.div`
         ${props => props.locked ? "#D4D6D7 10px" : `${props.color} 10px`},
         ${props => props.locked ? "#D4D6D7 20px" : `${props.color} 20px`}
 );
+`;
+const ChildBar = styled.div`
+  display: block;
+  min-height: 25px;
+  max-height: 25px;
+  background-color: #d5d495;
+`;
+const ParentBar = styled.div`
+  display: block;
+  min-height: 25px;
+  max-height: 25px;
+  background-color: #d5d495;
+`;
+const RestrictedBoardsBar = styled.div`
+  display: block;
+  min-height: 25px;
+  max-height: 25px;
+  background-color: #ce919f;
+
 `;
 const ButtonContainer = styled.div`
   display:flex;
@@ -150,8 +171,11 @@ function Card(props) {
         {value: true, icon: 'pi pi-lock'},
     ];
     const [editSelectedUser, setEditSelectedUser] = useState(props.data?.user_data);
+    const [parent, setParent] = useState(props.parentCard);
     const [cardItems, setCardItems] = useState(props.data?.item_data);
     const [users, setUsers] = useState('');
+    const [restrictedBoards,setRestrictedBoards] = useState(props.restrictedBoardsData);
+
     const apiService = useUserService();
     const handleLock = (value) => {
         setLock(value)
@@ -163,8 +187,6 @@ function Card(props) {
             },
             () => {setLock(props.locked)}
         );
-
-
     }
     const handleUnlock = (e) => {
         setLock(e.value)
@@ -180,31 +202,32 @@ function Card(props) {
             "id"         : props.backId,
             "description": e.target.innerHTML
         }).then((response_data) => {
-            CommonService.toastCallback(response_data, props.setBoards)
+            CommonService.toastCallback(response_data, props.setBoards,props.setCardsChoice,props.setCardsChoice)
         });
     }
     const accept = () => {
         apiService.removeCard((props.backId)).then((response_data) => {
-            CommonService.toastCallback(response_data, props.setBoards, props.setRemaining)
+            CommonService.toastCallback(response_data, props.setBoards, props.setRemaining,props.setCardsChoice)
         });
     }
 
     const reject = () => {
     }
     const acceptEditCard = () => {
-        var user_id = "";
+        let parentAux = "";
 
-        if(editSelectedUser != null) {
-            user_id = editSelectedUser.id;
+        if(parent != null) {
+            parentAux = parent;
         }
         apiService.updateCard(props.board, {
             "id"         : props.backId,
             "description": value,
-            "user"       : user_id,
             "color"      : value1,
-            "items"      : cardItems
+            "items"      : cardItems,
+            "parent_card": parentAux,
+            "restricted_boards":restrictedBoards,
         }).then((response_data) => {
-            CommonService.toastCallback(response_data, props.setBoards);
+            CommonService.toastCallback(response_data, props.setBoards, props.setRemaining, props.setCardsChoice,setRestrictedBoards);
         });
     }
 //Ta funkcja też do poprawy, prymitywnie "naprawia" ona problem że można modyfikować checkpointy a potem odrzucić, jednak jakieś modyfikację zostają
@@ -213,16 +236,29 @@ function Card(props) {
         apiService.getBoards().then((response_data) => {props.setBoards(response_data.data)});
     }
     const acceptAssignEdit = () => {
+        if (props.boards[0].id in restrictedBoards){
+            setRestrictedBoards([])
+        }
         apiService.updateCard(props.board, {
             "id"  : props.backId,
             "user": "",
         }).then((response_data) => {
-            CommonService.toastCallback(response_data, props.setBoards, props.setRemaining);
+            CommonService.toastCallback(response_data, props.setBoards, props.setRemaining,props.setCardsChoice);
         });
     }
     const rejectAssignEdit = () => {
         setVisible2(false);
     }
+    useEffect(() => {
+
+        if (props.callRestrictionUpdate === true) {
+            return () => {
+                setRestrictedBoards(props.restrictedBoardsData)
+                props.setCallRestrictionUpdate(false);
+            };
+
+        }
+    });
     const editCardDialog = () => {
         //let usersCp=users.unshift(null)
         return (
@@ -245,24 +281,28 @@ function Card(props) {
                                   checked={lock}
                                   onChange={(e) => handleLock(e.value)}
                     />
+
                     <UserChoiceBar>
-                        <h3>Przypisany użytkownik: {props.data.user_data?.username}</h3>
-                        {/*<Button*/}
-                        {/*    style={{marginTop: "15px", marginRight: "3px"}}*/}
-                        {/*    onClick={() => setEditSelectedUser(null)}*/}
-                        {/*    icon="pi pi-times"*/}
-                        {/*    rounded*/}
-                        {/*    text*/}
-                        {/*    size="small"*/}
-                        {/*    severity="danger"*/}
-                        {/*    aria-label="Cancel"/>*/}
-                        {/*<Dropdown className="mt-3 w-full" value={(editSelectedUser)}*/}
-                        {/*          onChange={(e) => setEditSelectedUser(e.value)} options={(props.users)}*/}
-                        {/*          optionLabel="username"*/}
-                        {/*          placeholder="Wybierz użytkownika"*/}
-                        {/*/>*/}
+                        <Button
+                            style={{marginTop: "15px", marginRight: "3px"}}
+                            onClick={() => setParent(null)}
+                            icon="pi pi-times"
+                            rounded
+                            text
+                            size="small"
+                            severity="danger"
+                            aria-label="Cancel"/>
+                        <Dropdown className="mt-3 w-full" value={parent}
+                                  onChange={(e) => setParent(e.value)} options={(props.cardsChoice)}
+                                  optionLabel="description"
+                                  optionValue="id"
+                                  placeholder="Wybierz rodzica"
+                        />
                     </UserChoiceBar>
+                    {/*(props.cardsChoice.find(o => o.id === props.backId).restricted_boards)*/}
                 </div>
+                <MultiSelect value={restrictedBoards} onChange={(e) => setRestrictedBoards(e.value)} options={props.boards} optionLabel="name" showSelectAll="false"
+                             placeholder="Wybierz tablicę do wykluczenia" optionValue="id" className="w-full md:w-20rem" />
                 <div className="mt-3 flex justify-content-between align-items-center flex-wrap">
                     <h3>Lista podzadań
                         ({Math.round((cardItems.filter((x) => x.is_done).length / cardItems.length) * 100) || 0}%):</h3>
@@ -273,12 +313,8 @@ function Card(props) {
                         text
                         aria-label="Filter"
                         onClick={() => {
-                            cardItems.push({});
+                            cardItems.push({key:uuidv4()});
                             //Poniższe dodano, zeby nie walił errorami
-                            if (cardItems.length-1===1){
-                                cardItems[0].key=uuidv4()
-                            }
-                            else cardItems[cardItems.length-1].key=uuidv4()
                             setCardItems([...cardItems]);
                         }}/>
                 </div>
@@ -345,6 +381,19 @@ function Card(props) {
                             <DroppableDiv
                                 {...provided.droppableId}
                                 ref={provided.innerRef}>
+                                <ChildBar>
+                                    <i className="pi pi-circle-fill"></i>
+                                    Rodzic:
+                                </ChildBar>
+                                <ParentBar>
+                                    <i className="pi pi-sitemap"></i>
+                                    Zadanie jest rodzicem
+                                </ParentBar>
+                                <RestrictedBoardsBar>
+                                    <i className="pi pi-ban pl "></i>
+                                    Kolumny: <MultiSelect id="p-chips-token-label" value={restrictedBoards} onChange={(e) => setRestrictedBoards(e.value)} options={props.boards} optionLabel="name" showSelectAll="false"
+                                                          disabled="true" placeholder="Wybierz tablicę do wykluczenia" optionValue="id" className="w-full md:w-20rem" />
+                                </RestrictedBoardsBar>
                                 <Description
                                     className='tasks-container'>
                                     <ContentEditable
@@ -354,7 +403,7 @@ function Card(props) {
                                         disabled={false}
                                         onBlur={handleInputChange}/>
                                 </Description>
-                                {cardItems.length > 0 ? (
+                                {(cardItems.length > 0)&&(props.childData.length===0) ? (
                                     <div>
                                         {cardItems.map((card_item, index) => {
                                             return (
@@ -379,9 +428,34 @@ function Card(props) {
                                     </div>
                                 ) : (
                                     <div className="text-center">
-                                        <h5 style={{marginTop:"50px"}}> Brak podzadań</h5>
+                                        {(props.childData.length=== 0) &&
+                                            <h5 style={{marginTop: "50px"}}> Brak podzadań</h5>
+                                        }
                                     </div>
                                 )}
+                                {(props.childData.length>0)&&
+                                    <div>
+                                        {props.childData.map((childCard, index) => {
+                                            return (
+                                                <div key={childCard.id} className="flex align-items-center mt-3">
+                                                    <Checkbox inputId={childCard.id} name="card_item" value={childCard.is_card_completed} disabled={childCard.has_items}
+                                                              onChange={(e) => {
+                                                                  // setCardItems([...cardItems]);
+                                                                  apiService.updateCard(childCard.board, {
+                                                                      "id"         : childCard.id,
+                                                                      "is_card_completed"      : !e.value,
+                                                                  }).then((response_data) => {
+                                                                      CommonService.toastCallback(response_data, props.setBoards);
+                                                                  });
+                                                              }}
+                                                              checked={childCard.is_card_completed}/>
+                                                    <span style={{marginLeft:"4px"}}>{childCard.description}</span>
+
+                                                </div>
+                                            );
+                                        })}
+                                    </div>
+                                }
                                 <ProgressAndButtons>
 
                                 <ButtonContainer>
@@ -484,18 +558,29 @@ function Card(props) {
                                                 id={cardUser.id}
                                                 username={cardUser.username}
                                                 img={cardUser.avatar}
+
                                             />
                                         )}
                                     </Avatars>
                                 </ButtonContainer>
                                     <ProgressDiv>
 
-                                    {props.data.item_data.length > 0 && (
+                                    {(props.data.item_data.length > 0&&(props.childData.length===0)) && (
                                         <InsideProgressDiv>
                                             {/*{}%*/}
                                             <ProgressBar value={props.data.subtask_done_percentage}  style={{ height: '16px', width: "100%", color:"black" }} ></ProgressBar>
                                         </InsideProgressDiv>
                                     )}
+                                        {props.childData.length > 0 &&
+                                            <InsideProgressDiv>
+                                                {/*{}%*/}
+                                                <ProgressBar value={props.data.subtask_done_percentage} style={{
+                                                    height: '16px',
+                                                    width: "100%",
+                                                    color: "black"
+                                                }}></ProgressBar>
+                                            </InsideProgressDiv>
+                                        }
                                     </ProgressDiv>
                                 </ProgressAndButtons>
                                 {/*</div>*/}

@@ -181,6 +181,7 @@ function Row(props) {
                                 {...provided.droppableId}>
                                 {(props.cards).map((card, indexDrag) =>
                                     <Card key={card.id}
+                                          index={card.index}
                                           backId={card.id}
                                           color={card.color}
                                           locked={card.is_locked}
@@ -191,9 +192,19 @@ function Row(props) {
                                           data={card}
                                           name={card.name}
                                           board={card.board}
+                                          row={card.row}
+                                          boards={props.boards}
                                           users={props.users}
+                                          restrictedBoardsData={card.restricted_boards}
+                                          parentCard={card.parent_card}
+                                          childData={card.child_data}
                                           setBoards={props.setBoards}
                                           setRemaining={props.setRemaining}
+                                          cardsChoice={props.cardsChoice}
+                                          setCardsChoice={props.setCardsChoice}
+                                          callRestrictionUpdate={props.callRestrictionUpdate}
+                                          setCallRestrictionUpdate={props.setCallRestrictionUpdate}
+
                                     />
                                 )}
                                 {provided.placeholder}

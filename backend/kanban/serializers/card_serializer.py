@@ -16,7 +16,7 @@ class CardItemSerializer(serializers.ModelSerializer):
 
 class CardChildSerializer(serializers.ModelSerializer):
     subtask_done_percentage = serializers.SerializerMethodField()
-
+    has_items = serializers.SerializerMethodField()
     class Meta:
         model = Card
         exclude = ('deleted_at',)
@@ -27,7 +27,9 @@ class CardChildSerializer(serializers.ModelSerializer):
             return int(obj.card_item.filter(is_done=True).count() / obj.card_item.count() * 100)
         except:
             return 0
-
+    @staticmethod
+    def get_has_items(obj):
+        return obj.card_item.exists()
 
 class CardSerializer(serializers.ModelSerializer):
     user_data = UserSerializer(source='user', read_only=True)
@@ -44,6 +46,11 @@ class CardSerializer(serializers.ModelSerializer):
     @staticmethod
     def get_subtask_done_percentage(obj):
         try:
-            return int(obj.card_item.filter(is_done=True).count() / obj.card_item.count() * 100)
+            if Card.objects.filter(parent_card=obj.id).exists():
+                print("test")
+                result =int(Card.objects.filter(parent_card=obj.id,is_card_completed=True).count() / Card.objects.filter(parent_card=obj.id).count() * 100)
+            else:
+                result=int(obj.card_item.filter(is_done=True).count() / obj.card_item.count() * 100)
+            return result
         except:
             return 0

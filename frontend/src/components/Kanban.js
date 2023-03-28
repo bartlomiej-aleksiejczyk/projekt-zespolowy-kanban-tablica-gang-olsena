@@ -123,6 +123,8 @@ function Kanban() {
     const [value4, setValue4] = useState('');
     const [users, setUsers] = useState('');
     const [remaining, setRemaining] = useState([]);
+    const [cardsChoice, setCardsChoice] = useState([]);
+
     // const renderFooter = (visible4) => {
     //     return (
     //         <div>
@@ -187,6 +189,8 @@ function Kanban() {
     useEffect(() => {
         apiService.getBoards().then((response_data) => {
             setBoards(response_data.data)
+            setCardsChoice(response_data.data1)
+
         });
     }, [apiService]);
     useEffect(() => {
@@ -421,6 +425,8 @@ function Kanban() {
                                                   setRemaining={setRemaining}
                                                   index={index}
                                                   users={users}
+                                                  cardsChoice={cardsChoice}
+                                                  setCardsChoice={setCardsChoice}
                                                    />
                                 })}
                                 {provided.placeholder}
