@@ -54,9 +54,32 @@ class BoardViewSet(viewsets.ViewSet):
         index = int(data.get('index', 0))
         row_id = data.get('row')
         parent = data.get('parent_card')
+        restricted_boards = data.get('restricted_boards')
         children = Card.objects.filter(parent_card=card_id)
         print(children)
         card_instance = None
+        if ((Board.objects.filter(index=0)).values_list('id')[0][0]) in restricted_boards:
+            return Response(
+                dict(
+                    success=False,
+                    message="Nie można zabrać dostępu do pierwszej kolumny",
+                    data=BoardSerializer(Board.objects.all(), many=True).data,
+                    data1=remaining_helper(),
+                    data2=CardSerializer(Card.objects.all(), many=True).data
+
+                )
+            )
+        if pk in restricted_boards:
+            return Response(
+                dict(
+                    success=False,
+                    message="Nie można przenieść karty, gdyż kolumna jest na liście zabronionych kolumn",
+                    data=BoardSerializer(Board.objects.all(), many=True).data,
+                    data1=remaining_helper(),
+                    data2=CardSerializer(Card.objects.all(), many=True).data
+
+                )
+            )
         if card_id:
             card_instance = Card.objects.get_by_pk(pk=card_id)
             index = card_instance.index
@@ -69,7 +92,9 @@ class BoardViewSet(viewsets.ViewSet):
                         success=False,
                         message="Nie można dodać rodzica dla karty która ma dzieci",
                         data=BoardSerializer(Board.objects.all(), many=True).data,
-                        data1=remaining_helper()
+                        data1=remaining_helper(),
+                        data2=CardSerializer(Card.objects.all(), many=True).data
+
                     )
                 )
 
@@ -85,8 +110,6 @@ class BoardViewSet(viewsets.ViewSet):
         serializer.save()
 
         items = data.get('items', [])
-
-
 
         # ten bug, który nas straszyl w czwartek rano został rozwiązany tak, że zneutralizowałem warunek "if items:"
         # A błąd byl taki, że aby usunąć podzadania poniższa pętla musi przebiec, tylko warunek jest tak skonstruowany, że

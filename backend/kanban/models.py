@@ -111,13 +111,13 @@ class Card(Timestamp):
     is_locked = models.BooleanField(default=False)
     is_card_completed = models.BooleanField(default=False)
 
-    def save(self):
+    def save(self,*args, **kwargs):
         items = CardItem.objects.filter(card_id=self.id)
         print(items )
         if items:
             all_completed = not items.filter(is_done=False).exists()
             self.is_card_completed = all_completed
-        super(Card, self).save()
+        super(Card, self).save(*args, **kwargs)
 
     board = models.ForeignKey(
         'kanban.Board',
@@ -150,6 +150,10 @@ class Card(Timestamp):
     users = models.ManyToManyField(
         'kanban.User',
         related_name='card_users',
+        blank=True)
+    restricted_boards = models.ManyToManyField(
+        'kanban.Board',
+        related_name='card_board_restricted',
         blank=True)
 
     objects = CoreModelManager()

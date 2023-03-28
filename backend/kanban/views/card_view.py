@@ -66,7 +66,11 @@ class CardViewSet(viewsets.ViewSet):
 
     def delete_card(self, request, pk):
         card = Card.objects.get_by_pk(pk=pk, raise_exception=True)
-        card.deleted_at = datetime.datetime.now()
+        children = Card.objects.filter(parent_card=pk)
+        for child in children:
+            child.parent_card = None
+            child.save()
+        card.deleted_at = datetime .datetime.now()
         card.save()
 
         cards = Card.objects.filter(
@@ -87,7 +91,8 @@ class CardViewSet(viewsets.ViewSet):
                 success=True,
                 message="Zadanie zostało usunięte.",
                 data=BoardSerializer(Board.objects.all(), many=True).data,
-                data1=remaining_helper()
+                data1=remaining_helper(),
+                data2=CardSerializer(Card.objects.all(), many=True).data
             )
         )
 
@@ -112,10 +117,6 @@ class CardViewSet(viewsets.ViewSet):
 
     def delete_card_item(self, request, pk):
         card_item = CardItem.objects.get_by_pk(pk=pk, raise_exception=True)
-        children = Card.objects.filter(parent_card=pk)
-        for child in children:
-            child.parent_card=None
-            child.save()
         card_item.deleted_at = datetime.datetime.now()
         card_item.save()
 

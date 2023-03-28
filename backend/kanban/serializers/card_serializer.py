@@ -1,16 +1,22 @@
 from decimal import Decimal
 
 from rest_framework import serializers
-from kanban.models import Card, CardItem
+from kanban.models import Card, CardItem, Board
 from user.serializers import UserSerializer
 
-
+class BoardSerializerPartial(serializers.ModelSerializer):
+    class Meta:
+        model = Board
+        exclude = ('deleted_at',)
 class CardItemSerializer(serializers.ModelSerializer):
     class Meta:
         model = CardItem
         exclude = ('deleted_at',)
+
+
 class CardChildSerializer(serializers.ModelSerializer):
     subtask_done_percentage = serializers.SerializerMethodField()
+
     class Meta:
         model = Card
         exclude = ('deleted_at',)
@@ -22,12 +28,14 @@ class CardChildSerializer(serializers.ModelSerializer):
         except:
             return 0
 
+
 class CardSerializer(serializers.ModelSerializer):
     user_data = UserSerializer(source='user', read_only=True)
     users_data = UserSerializer(source='users', many=True, read_only=True)
     item_data = CardItemSerializer(source='card_item', many=True, read_only=True)
     child_data = CardChildSerializer(source='card_parent_card', many=True, read_only=True)
     subtask_done_percentage = serializers.SerializerMethodField()
+    restricted_boards_data = BoardSerializerPartial(source='restricted_boards', many=True, read_only=True)
 
     class Meta:
         model = Card
