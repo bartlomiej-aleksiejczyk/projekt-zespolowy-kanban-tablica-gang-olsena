@@ -22,13 +22,15 @@ import {ProgressBar} from 'primereact/progressbar';
 import {MultiSelect} from 'primereact/multiselect'
 import CardUsers from "./CardUsers";
 import { v4 as uuidv4 } from 'uuid';
+import { Dialog } from 'primereact/dialog';
+
 import board from "./Board";
 
 const CardStyle = styled.div`
   box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.03), 0px 0px 2px rgba(0, 0, 0, 0.06), 0px 2px 6px rgba(0, 0, 0, 0.12);
   max-width: 228px;
   min-width: 228px;
-  max-height:200px;
+  max-height:290px;
   border: ${props => props.locked ? "2px solid #b7b3ea" : "2px solid #b7b3ea"};
   border-radius: 6px;
   padding: 4px;
@@ -139,7 +141,7 @@ const Avatars = styled.div`
   display: inline-flex;
   flex-direction: row;
   overflow: auto;
-  margin-right: -10px;
+  margin-right: -1px;
 
 `;
 const ProgressAndButtons = styled.div`
@@ -172,7 +174,7 @@ const EditMenuText = styled.div`
 
 `;
 const DroppableDiv = styled.div`
-  height: 200px;
+  height:290px ;
   width: inherit;
   display: flex;
   flex-direction: column;
@@ -255,12 +257,19 @@ function Card(props) {
             "restricted_boards":restrictedBoards,
         }).then((response_data) => {
             CommonService.toastCallback(response_data, props.setBoards, props.setRemaining, props.setCardsChoice,setRestrictedBoards);
+            setVisible1(false);
         });
     }
-//Ta funkcja też do poprawy, prymitywnie "naprawia" ona problem że można modyfikować checkpointy a potem odrzucić, jednak jakieś modyfikację zostają
+//Ta funkcja też do poprawy, prymitywnie "naprawia" ona problem że można modyfikować checkpointy a potem odrzucić, jednak jakieś modyfikację zostają, ale problem polega
+    //że nie jest async więć zbyt szybko aktualizuje się chya
     const rejectEditCard = () => {
-        setValue('');
-        apiService.getBoards().then((response_data) => {props.setBoards(response_data.data)});
+         apiService.getBoards().then((response_data) => {props.setBoards(response_data.data); setCardItems(props.data.item_data)});
+        setValue1(props.color);
+        setLock(props.locked);
+        setVisible1(false);
+        setRestrictedBoards(props.restrictedBoardsData);
+        setCardItems(props.data?.item_data);
+        setParent(props.parentCard);
     }
     const acceptAssignEdit = () => {
         if (props.boards[0].id in restrictedBoards){
@@ -286,10 +295,22 @@ function Card(props) {
 
         }
     });
+    const footerContent = (
+        <div>
+            <Button label="Anuluj" icon="pi pi-times" onClick={rejectEditCard} className="p-button-text" />
+            <Button label="Akceptuj" icon="pi pi-check" onClick={acceptEditCard} autoFocus />
+        </div>
+    );
     const editCardDialog = () => {
         //let usersCp=users.unshift(null)
         return (
             <EditMenu>
+                <Dialog header="Okno edycji postaci"
+                        visible={visible1}
+                        style={{ width: '50vw' }}
+                        onHide={() => rejectEditCard}
+                        closable={false}
+                        footer={footerContent}>
                 <div>
 
                 </div>
@@ -333,17 +354,19 @@ function Card(props) {
                 <div className="mt-3 flex justify-content-between align-items-center flex-wrap">
                     <h3>Lista podzadań
                         ({Math.round((cardItems.filter((x) => x.is_done).length / cardItems.length) * 100) || 0}%):</h3>
-                    <Button
-                        icon="pi pi-plus"
-                        size="lg"
-                        rounded
-                        text
-                        aria-label="Filter"
-                        onClick={() => {
-                            cardItems.push({key:uuidv4()});
-                            //Poniższe dodano, zeby nie walił errorami
-                            setCardItems([...cardItems]);
-                        }}/>
+                    {props.childData.length === 0 &&
+                        <Button
+                            icon="pi pi-plus"
+                            size="lg"
+                            rounded
+                            text
+                            aria-label="Filter"
+                            onClick={() => {
+                                cardItems.push({key: uuidv4()});
+                                //Poniższe dodano, zeby nie walił errorami
+                                setCardItems([...cardItems]);
+                            }}/>
+                    }
                 </div>
                 {(cardItems.length > 0)&&(props.childData.length===0) ? (
                     <div>
@@ -406,7 +429,9 @@ function Card(props) {
                         })}
                     </div>
                 }
+                </Dialog>
             </EditMenu>
+
         )
     }
 
@@ -424,7 +449,7 @@ function Card(props) {
                           ref={provided.innerRef}
                           color={props.color}
                           locked={props.locked}
-                          onDoubleClick={() => console.log(props.parentName[0].length)}
+                          // onDoubleClick={() => console.log(props.parentName[0].length)}
                 >
                     <Droppable
                         droppableId={props.dropId}
@@ -437,7 +462,9 @@ function Card(props) {
                                 {props.parentCard&&
                                 <ChildBar>
                                     <i className="pi pi-circle-fill"></i>
-                                    Ma rodzica: {(props.parentName[0].length >11? props.parentName[0].substring(0, 11-3) + "..." :props.parentName[0].substring(0, props.parentName[0].length-4))}
+                                    Ma rodzica: {(props.parentName?
+                                    (props.parentName[0].length >11? props.parentName[0].substring(0, 11-3) + "..." :
+                                    props.parentName[0]):"")}
                                 </ChildBar>}
                                 {props.childData.length>0&&
                                     <ParentBar>
@@ -462,7 +489,7 @@ function Card(props) {
                                         disabled={false}
                                         onBlur={handleInputChange}/>
                                 </Description>
-                                {(cardItems.length > 0)&&(props.childData.length===0) ? (
+                                {(cardItems.length > 0)&&(props.childData.length===0) && (
                                     <div>
                                         {cardItems.map((card_item, index) => {
                                             return (
@@ -484,13 +511,6 @@ function Card(props) {
                                                 </div>
                                             );
                                         })}
-                                    </div>
-                                ) : (
-                                    <div className="text-center">
-                                        {(props.childData.length=== 0) &&
-                                            <div> </div>
-                                            /*<h5 style={{marginTop: "50px"}}> Brak podzadań</h5>*/
-                                        }
                                     </div>
                                 )}
                                 {(props.childData.length>0)&&
@@ -538,7 +558,8 @@ function Card(props) {
                                                    acceptLabel="Akceptuj"
                                                    rejectLabel="Odrzuć"
                                                    accept={acceptEditCard}
-                                                   reject={rejectEditCard}/>
+                                                   reject={rejectEditCard}
+                                    />
                                     <span className="p-buttonset" style={{scale:"0.7",whiteSpace:"nowrap",marginLeft:"-29px"}}>
                                     <Button className="ml-2" onClick={() => CommonService.onOpenDialog(setVisible1, [{
                                         callback: setValue,

@@ -18,8 +18,8 @@ const CardsStyle = styled.div`
   margin-right: auto;
   width: auto;
   margin-bottom: 3px;
-  min-height: 247px;
-  max-height: 247px;
+  min-height: 305px;
+  max-height: 305px;
   overflow: auto;
   background-color:white;
   transition: background-color 0.4s;
@@ -34,8 +34,8 @@ const RowsStyle = styled.div`
   //box-shadow: 0px 1px 7px rgba(0, 0, 0, 0.1), 0px 4px 5px -2px rgba(0, 0, 0, 0.12), 0px 10px 15px -5px rgba(0, 0, 0, 0.2);
   max-width: 710px;
   min-width: 245px;
-  max-height: 250px;
-  min-height: 250px;
+  max-height: 310px;
+  min-height: 310px;
   zIndex : 1;
   margin-top: 3px;
   margin-right: 2px;
@@ -51,7 +51,7 @@ const RowsStyleExtension = styled.div`
   //box-shadow: 0px 1px 7px rgba(0, 0, 0, 0.1), 0px 4px 5px -2px rgba(0, 0, 0, 0.12), 0px 10px 15px -5px rgba(0, 0, 0, 0.2);
   max-width: 720px;
   min-width: 250px;
-  max-height: 250px;
+  max-height: 310px;
   min-height: 60px;
   //border: 3px solid #b7b3ea;
   background-color: #c4c0f1;
@@ -80,7 +80,7 @@ const RowSideCollapsable = styled.div`
 const RowCollapsable = styled.div`
   content: "my tooltip";
   min-width: 250px;
-  max-height: 250px;
+  max-height: 310px;
   min-height: 60px;
   margin-bottom: 3px;
   background-color: white;

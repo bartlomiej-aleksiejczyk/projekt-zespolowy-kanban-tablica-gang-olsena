@@ -133,6 +133,12 @@ function Kanban() {
     //         </div>
     //     );
     // }
+    const footerContent = (
+        <div>
+            <Button label="Odrzuć" icon="pi pi-times" onClick={() => setVisible(false)} className="p-button-text" />
+            <Button label="Akceptuj" icon="pi pi-check" onClick={() => setVisible(false)} autoFocus />
+        </div>
+    );
     const handleInputChangeLimit = (e) => {
         if(e.value!==null){
             setValue4(e.value);
