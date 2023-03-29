@@ -1,19 +1,9 @@
-import React, {useState, useEffect} from 'react'
+import React from 'react'
 import styled from "styled-components";
 import {Draggable} from "react-beautiful-dnd";
-import ContentEditable from 'react-contenteditable';
 import 'primeicons/primeicons.css';
-import {Button} from 'primereact/button';
-import {ConfirmDialog} from 'primereact/confirmdialog';
-import {InputText} from 'primereact/inputtext';
-import ApiService from "../services/ApiService";
-import {Avatar} from 'primereact/avatar';
-import CommonService from "../services/CommonService";
-import {useUserService} from "../utils/UserServiceContext";
-import {Dropdown} from 'primereact/dropdown';
 import {Tooltip} from 'primereact/tooltip';
-import stc from 'string-to-color';
-import { MultiStateCheckbox } from 'primereact/multistatecheckbox';
+
 
 const AvatarContainer = styled.div`
   flex-direction: column;
@@ -51,8 +41,9 @@ function UserAvatar(props) {
                                 {...provided.draggableProps}
                                 ref={provided.innerRef}
                                 style={getStyle(provided.draggableProps.style, snapshot)}
-                >
-                    <AvatarImage src={props.img} />
+                >{props.username}
+                    <Tooltip target=".user-avatar"/>
+                    <AvatarImage className="user-avatar" src={props.img} data-pr-tooltip={props.username} />
                 <div>
 
 

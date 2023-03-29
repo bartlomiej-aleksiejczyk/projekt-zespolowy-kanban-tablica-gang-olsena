@@ -1,9 +1,7 @@
 from django.urls import path
 from rest_framework_simplejwt.views import TokenRefreshView, TokenVerifyView
 from user.views import UserViewSet, MyTokenObtainPairView
-from django.conf import settings
-from django.conf.urls.static import static
-from django import forms
+
 user_viewset = UserViewSet.as_view(
     dict(
         get='get',

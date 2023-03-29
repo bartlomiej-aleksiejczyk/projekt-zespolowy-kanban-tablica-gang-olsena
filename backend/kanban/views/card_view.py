@@ -9,7 +9,7 @@ from kanban.serializers.card_serializer import CardSerializer, CardItemSerialize
 
 
 class CardViewSet(viewsets.ViewSet):
-    # permission_classes = (IsAuthenticated,)
+    permission_classes = (IsAuthenticated,)
 
     def get_card(self, request, pk):
         card = Card.objects.get_by_pk(pk=pk)
@@ -25,8 +25,6 @@ class CardViewSet(viewsets.ViewSet):
         card = Card.objects.get_by_pk(pk=pk)
         restricted_boards=list(Card.objects.filter(id=pk).values_list('restricted_boards',flat=True))
         board_new = request.data.get('board')
-        print(restricted_boards)
-        print(board_new)
 
         if board_new in restricted_boards:
             return Response(
@@ -66,6 +64,7 @@ class CardViewSet(viewsets.ViewSet):
     def update_card(self, request, pk):
         data = request.data.copy()
         card_instance = Card.objects.get_by_pk(pk=pk)
+
         serializer = CardSerializer(data=data, instance=card_instance, partial=True)
         serializer.is_valid(raise_exception=True)
         serializer.save()
@@ -147,7 +146,7 @@ class CardViewSet(viewsets.ViewSet):
     def add_user_card(self, request, pk):
         card_instance = Card.objects.get_by_pk(pk=pk)
         new_user = (request.data.get('users'))
-        users = ((CardSerializer(card_instance).data['users']))
+        users = CardSerializer(card_instance).data['users']
         if new_user in users:
             return Response(
                 dict(
@@ -160,6 +159,7 @@ class CardViewSet(viewsets.ViewSet):
         data = dict(request.data)
         users.append(new_user)
         data['users'] = users
+
         serializer = CardSerializer(data=data, instance=card_instance, partial=True)
         serializer.is_valid(raise_exception=True)
         serializer.save()

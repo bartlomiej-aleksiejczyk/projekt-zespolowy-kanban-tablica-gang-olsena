@@ -12,7 +12,7 @@ from kanban.serializers.remaining_user_assignment_serializer import RemainingSer
 from kanban.views.helper import remaining_helper
 
 class ParameterViewSet(viewsets.ViewSet):
-    # permission_classes = (IsAuthenticated,)
+    permission_classes = (IsAuthenticated,)
 
     def get_parameter(self, request, pk):
         parameter = Parameter.objects.get_by_pk(pk=pk)
