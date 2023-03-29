@@ -1,8 +1,5 @@
 from rest_framework import serializers
-from kanban.models import Card, Parameter, Board, User
-from user.serializers import UserSerializer
-from kanban.serializers.parameter_serializer import ParameterSerializer
-
+from kanban.models import Card, Parameter, User
 
 class RemainingSerializer(serializers.ModelSerializer):
     remaining_assignments = serializers.SerializerMethodField()

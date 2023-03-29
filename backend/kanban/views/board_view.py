@@ -56,12 +56,17 @@ class BoardViewSet(viewsets.ViewSet):
         row_id = data.get('row')
         parent = data.get('parent_card')
         restricted_boards = data.get('restricted_boards', [])
-        print(restricted_boards)
+
         restricted_boards_old =list(Card.objects.filter(id=card_id).values_list('restricted_boards',flat=True))[1:]
         children = Card.objects.filter(parent_card=card_id)
-        print(restricted_boards)
+
         card_instance = None
-        if ((Board.objects.filter(index=0)).values_list('id')[0][0]) in restricted_boards:
+        first_board_id = Board.objects.filter(index=0).first()
+
+        if first_board_id:
+            first_board_id = first_board_id.id
+
+        if first_board_id in restricted_boards:
             return Response(
                 dict(
                     success=False,
@@ -126,12 +131,6 @@ class BoardViewSet(viewsets.ViewSet):
 
         items = data.get('items', [])
 
-        # ten bug, który nas straszyl w czwartek rano został rozwiązany tak, że zneutralizowałem warunek "if items:"
-        # A błąd byl taki, że aby usunąć podzadania poniższa pętla musi przebiec, tylko warunek jest tak skonstruowany, że
-        # w przypadku usunięcia wszystkiego pętla się nie załącza bo items jest None, czyli warunek nie spełniony
-        # więc działało to tylko dla niepustego rezultatu usunięcia
-        # if items:
-
         CardItem.objects.filter(card_id=card_id).exclude(id__in=[item['id'] for item in items if 'id' in item]).update(
             deleted_at=datetime.datetime.now()
         )
@@ -144,7 +143,6 @@ class BoardViewSet(viewsets.ViewSet):
                     is_done=item.get('is_done', False)
                 )
             )
-        # tu był koniec warunku
 
         is_success, message = serializer.instance.move(index, pk, row_id)
 
@@ -218,7 +216,7 @@ class BoardViewSet(viewsets.ViewSet):
     def delete_board(self, request, pk):
         board = Board.objects.get_by_pk(pk=pk, raise_exception=True)
         cards = Card.objects.filter(board_id=pk)
-        cards = (Card.objects.filter(restricted_boards=pk))
+        cards = Card.objects.filter(restricted_boards=pk)
         for card in cards:
             card.restricted_boards.remove(pk)
             card.save()
@@ -237,7 +235,9 @@ class BoardViewSet(viewsets.ViewSet):
             index__gte=board.index,
             deleted_at__isnull=True
         ).order_by('index')
+
         first_board = Board.objects.all().order_by('index').first()
+
         first_row = Row.objects.first()
         for card in cards:
             card.board = first_board
