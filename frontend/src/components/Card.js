@@ -310,7 +310,9 @@ function Card(props) {
                         style={{ width: '50vw' }}
                         onHide={() => rejectEditCard}
                         closable={false}
-                        footer={footerContent}>
+                        footer={footerContent}
+                        blockScroll="true"
+                >
                 <div>
 
                 </div>

@@ -217,7 +217,7 @@ class BoardViewSet(viewsets.ViewSet):
 
     def delete_board(self, request, pk):
         board = Board.objects.get_by_pk(pk=pk, raise_exception=True)
-        cards = Card.objects.filter(board_id=pk)
+        cards_move = Card.objects.filter(board_id=pk)
         cards = (Card.objects.filter(restricted_boards=pk))
         for card in cards:
             card.restricted_boards.remove(pk)
@@ -239,7 +239,7 @@ class BoardViewSet(viewsets.ViewSet):
         ).order_by('index')
         first_board = Board.objects.all().order_by('index').first()
         first_row = Row.objects.first()
-        for card in cards:
+        for card in cards_move:
             card.board = first_board
             card.row = first_row
             card.index = 0
