@@ -48,21 +48,48 @@ const CardStyle = styled.div`
 `;
 const ChildBar = styled.div`
   display: block;
-  min-height: 25px;
-  max-height: 25px;
-  background-color: #d5d495;
+  min-height: 30px;
+  border-radius: 7px;
+  padding: 2px;
+  background-color: #b0fcea;
+  border-width: 1px;
+  margin-left: 3px;
+  margin-right: 3px;
+  margin-bottom: 3px;
+  border-color: #77EECFFF;
+  border-style: solid;
 `;
 const ParentBar = styled.div`
   display: block;
-  min-height: 25px;
-  max-height: 25px;
-  background-color: #d5d495;
+  min-height: 30px;
+  border-radius: 7px;
+  padding: 2px;
+  background-color: #b0fcea;
+  border-width: 1px;
+  margin-left: 3px;
+  margin-right: 3px;
+  margin-bottom: 3px;
+  border-color: #77EECFFF;
+  border-style: solid;
 `;
 const RestrictedBoardsBar = styled.div`
   display: block;
   min-height: 25px;
-  max-height: 25px;
-  background-color: #ce919f;
+  margin-bottom: 20px;
+  margin-left: 3px;
+  margin-right: 3px;
+
+`;
+const RestrictedAndLabel= styled.div`
+  display: flex;
+  flex-direction: row;
+  min-height: 25px;
+  max-height: 50px;
+
+  background-color: #ff0090;
+  border-radius: 7px;
+  color: black;
+
 
 `;
 const ButtonContainer = styled.div`
@@ -70,7 +97,7 @@ const ButtonContainer = styled.div`
   flex-direction: row;
   flex-wrap: nowrap;
   justify-content: space-between;
-  margin-bottom: -8px;
+  margin-bottom: -25px;
   margin-top: 17px;
 
 `;
@@ -301,7 +328,7 @@ function Card(props) {
                     </UserChoiceBar>
                     {/*(props.cardsChoice.find(o => o.id === props.backId).restricted_boards)*/}
                 </div>
-                <MultiSelect value={restrictedBoards} onChange={(e) => setRestrictedBoards(e.value)} options={props.boards} optionLabel="name" showSelectAll="false"
+                <MultiSelect style={{backgroundColor: "#ff466e !important", color:"black !important"}} value={restrictedBoards} onChange={(e) => setRestrictedBoards(e.value)} options={props.boards} optionLabel="name" showSelectAll="false"
                              placeholder="Wybierz tablicę do wykluczenia" optionValue="id" className="w-full md:w-20rem" />
                 <div className="mt-3 flex justify-content-between align-items-center flex-wrap">
                     <h3>Lista podzadań
@@ -318,7 +345,7 @@ function Card(props) {
                             setCardItems([...cardItems]);
                         }}/>
                 </div>
-                {cardItems.length > 0 ? (
+                {(cardItems.length > 0)&&(props.childData.length===0) ? (
                     <div>
                         {cardItems.map((card_item, index) => {
                             return (
@@ -351,9 +378,34 @@ function Card(props) {
                     </div>
                 ) : (
                     <div className="text-center">
-                        Brak danych
+                        {(props.childData.length=== 0) &&
+                            <div>Brak danych</div>
+                        }
                     </div>
                 )}
+                {(props.childData.length>0)&&
+                    <div>
+                        {props.childData.map((childCard, index) => {
+                            return (
+                                <div key={childCard.id} className="flex align-items-center mt-3">
+                                    <Checkbox inputId={childCard.id} name="card_item" value={childCard.is_card_completed} disabled={childCard.has_items}
+                                              onChange={(e) => {
+                                                  // setCardItems([...cardItems]);
+                                                  apiService.updateCard(childCard.board, {
+                                                      "id"         : childCard.id,
+                                                      "is_card_completed"      : !e.value,
+                                                  }).then((response_data) => {
+                                                      CommonService.toastCallback(response_data, props.setBoards);
+                                                  });
+                                              }}
+                                              checked={childCard.is_card_completed}/>
+                                    <span style={{marginLeft:"4px"}}>{childCard.description}</span>
+
+                                </div>
+                            );
+                        })}
+                    </div>
+                }
             </EditMenu>
         )
     }
@@ -372,7 +424,8 @@ function Card(props) {
                           ref={provided.innerRef}
                           color={props.color}
                           locked={props.locked}
-                          onDoubleClick={() => console.log(props.data.user_data)}>
+                          onDoubleClick={() => console.log(props.parentName[0].length)}
+                >
                     <Droppable
                         droppableId={props.dropId}
                         direction="horizontal"
@@ -381,19 +434,25 @@ function Card(props) {
                             <DroppableDiv
                                 {...provided.droppableId}
                                 ref={provided.innerRef}>
+                                {props.parentCard&&
                                 <ChildBar>
                                     <i className="pi pi-circle-fill"></i>
-                                    Rodzic:
-                                </ChildBar>
-                                <ParentBar>
+                                    Ma rodzica: {(props.parentName[0].length >11? props.parentName[0].substring(0, 11-3) + "..." :props.parentName[0].substring(0, props.parentName[0].length-4))}
+                                </ChildBar>}
+                                {props.childData.length>0&&
+                                    <ParentBar>
                                     <i className="pi pi-sitemap"></i>
-                                    Zadanie jest rodzicem
-                                </ParentBar>
-                                <RestrictedBoardsBar>
-                                    <i className="pi pi-ban pl "></i>
-                                    Kolumny: <MultiSelect id="p-chips-token-label" value={restrictedBoards} onChange={(e) => setRestrictedBoards(e.value)} options={props.boards} optionLabel="name" showSelectAll="false"
-                                                          disabled="true" placeholder="Wybierz tablicę do wykluczenia" optionValue="id" className="w-full md:w-20rem" />
-                                </RestrictedBoardsBar>
+                                     Zadanie jest rodzicem
+                                </ParentBar>}
+                                {props.restrictedBoardsData.length>0&&
+                                    <RestrictedBoardsBar>
+                                        <RestrictedAndLabel>
+                                        {/*<i className="pi pi-ban"></i>*/}
+                                        {/*Kolumny: */}
+                                            <MultiSelect id="p-chips-token-label" dropdownIcon="pi pi-ban" filter="Kolumny"  value={restrictedBoards} onChange={(e) => setRestrictedBoards(e.value)} options={props.boards} optionLabel="name" showSelectAll="false"
+                                                              disabled="false" placeholder="Wybierz tablicę do wykluczenia" optionValue="id" className="w-full md:w-20rem" />
+                                        </RestrictedAndLabel>
+                                    </RestrictedBoardsBar>}
                                 <Description
                                     className='tasks-container'>
                                     <ContentEditable
@@ -429,7 +488,8 @@ function Card(props) {
                                 ) : (
                                     <div className="text-center">
                                         {(props.childData.length=== 0) &&
-                                            <h5 style={{marginTop: "50px"}}> Brak podzadań</h5>
+                                            <div> </div>
+                                            /*<h5 style={{marginTop: "50px"}}> Brak podzadań</h5>*/
                                         }
                                     </div>
                                 )}

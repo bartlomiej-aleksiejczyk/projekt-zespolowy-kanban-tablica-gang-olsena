@@ -204,7 +204,7 @@ function Row(props) {
                                           setCardsChoice={props.setCardsChoice}
                                           callRestrictionUpdate={props.callRestrictionUpdate}
                                           setCallRestrictionUpdate={props.setCallRestrictionUpdate}
-
+                                          parentName={card.parent_name}
                                     />
                                 )}
                                 {provided.placeholder}

@@ -38,7 +38,7 @@ class CardSerializer(serializers.ModelSerializer):
     child_data = CardChildSerializer(source='card_parent_card', many=True, read_only=True)
     subtask_done_percentage = serializers.SerializerMethodField()
     restricted_boards_data = BoardSerializerPartial(source='restricted_boards', many=True, read_only=True)
-
+    parent_name = serializers.SerializerMethodField()
     class Meta:
         model = Card
         exclude = ('deleted_at',)
@@ -54,3 +54,9 @@ class CardSerializer(serializers.ModelSerializer):
             return result
         except:
             return 0
+    @staticmethod
+    def get_parent_name(obj):
+        try:
+            return Card.objects.filter(id=(obj.parent_card).id).values_list('description',flat=True)
+        except:
+            return []
