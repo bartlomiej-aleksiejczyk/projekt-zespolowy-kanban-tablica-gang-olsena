@@ -10,7 +10,7 @@ from kanban.views.helper import remaining_helper
 
 
 class BoardViewSet(viewsets.ViewSet):
-    # permission_classes = (IsAuthenticated,)
+    permission_classes = (IsAuthenticated,)
 
     def update_board(self, request, pk=None):
         data = request.data.copy()
