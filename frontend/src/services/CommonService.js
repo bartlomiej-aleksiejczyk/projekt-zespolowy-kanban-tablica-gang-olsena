@@ -23,7 +23,7 @@ const CommonService = {
             successCallback(response_data.data);
         }
         if(successCallback1 && response_data.data1) {
-            console.log("1")
+            console.log("data1")
             successCallback1(response_data.data1);
         }
         if(successCallback2 && response_data.data2) {

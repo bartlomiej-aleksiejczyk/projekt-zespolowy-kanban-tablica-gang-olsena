@@ -107,6 +107,18 @@ class BoardViewSet(viewsets.ViewSet):
 
             if row_id is None:
                 row_id = card_instance.row_id
+            if parent ==card_id:
+                return Response(
+                    dict(
+                        success=False,
+                        message="Karta nie może być dla siebie samej rodzicem",
+                        data=BoardSerializer(Board.objects.all(), many=True).data,
+                        data1=remaining_helper(),
+                        data2=CardSerializer(Card.objects.all(), many=True).data,
+                        data3=restricted_boards_old
+
+                    )
+                )
             if parent and children:
                 return Response(
                     dict(
@@ -159,9 +171,11 @@ class BoardViewSet(viewsets.ViewSet):
                 success=True,
                 message="Zadanie zostało {}.".format(card_instance and "zaktualizowane" or "dodane"),
                 data=BoardSerializer(Board.objects.all(), many=True).data,
-                data1=remaining_helper()
+                data1=remaining_helper(),
+                data2=CardSerializer(Card.objects.all(), many=True).data
 
-            )
+
+        )
         )
 
     def get_board(self, request, pk):
@@ -216,7 +230,7 @@ class BoardViewSet(viewsets.ViewSet):
     def delete_board(self, request, pk):
         board = Board.objects.get_by_pk(pk=pk, raise_exception=True)
         cards_move = Card.objects.filter(board_id=pk)
-        cards = (Card.objects.filter(restricted_boards=pk))
+        cards = (Card.objects.filter(restricted_boards__in=[pk]))
         for card in cards:
             card.restricted_boards.remove(pk)
             card.save()

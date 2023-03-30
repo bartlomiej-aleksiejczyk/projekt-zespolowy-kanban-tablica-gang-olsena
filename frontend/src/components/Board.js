@@ -66,6 +66,15 @@ const CardButtons = styled.div`
 `;
 
 function Board(props) {
+
+    const [visible, setVisible] = useState(false);
+    const [visible2, setVisible2] = useState(false);
+    const [visi, setVisi] = useState(false);
+    const [value, setValue] = useState('');
+    const [value2, setValue2] = useState(props.limit);
+    const [value3, setValue3] = useState(props.name);
+    const [callRestrictionUpdate, setCallRestrictionUpdate] = useState(false);
+
     const apiService = useUserService();
 
 
@@ -82,16 +91,18 @@ function Board(props) {
     }
 
     const accept = () => {
+
         apiService.removeBoard((props.backId)).then((response_data) => {
             CommonService.toastCallback(response_data, props.setBoards, props.setRemaining);
-            setCallRestrictionUpdate(true);
         });
+    setCallRestrictionUpdate(true)
+        console.log(callRestrictionUpdate)
     }
 
     const acceptAddCard = () => {
         apiService.newCard(props.backId, value).then((response_data) => {
-            CommonService.toastCallback(response_data, props.setBoards,props.setCardsChoice)
-            setValue('');
+            CommonService.toastCallback(response_data, props.setBoards,props.setRemaining,props.setCardsChoice,)
+;
         });
     }
     const rejectAddCard = () => {
@@ -99,20 +110,18 @@ function Board(props) {
     }
     const acceptEditBoard = () => {
         apiService.updateBoard(props.backId, {"name": value3}).then((response_data) => {
-            CommonService.toastCallback(response_data, props.setBoards)
+            CommonService.toastCallback(response_data, props.setBoards);
+            setCallRestrictionUpdate(true);
+            console.log("props.callRestrictionUpdate");
+            console.log(callRestrictionUpdate)
+
         });
 
     }
     const rejectEditBoard = () => {
         setValue3(props.name);
     }
-    const [visible, setVisible] = useState(false);
-    const [visible2, setVisible2] = useState(false);
-    const [visi, setVisi] = useState(false);
-    const [value, setValue] = useState('');
-    const [value2, setValue2] = useState(props.limit);
-    const [value3, setValue3] = useState(props.name);
-    const [callRestrictionUpdate, setCallRestrictionUpdate] = useState(false);
+
 
     return (
         <Draggable key={props.backId}

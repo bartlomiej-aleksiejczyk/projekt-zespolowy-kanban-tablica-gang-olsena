@@ -74,8 +74,9 @@ class CardViewSet(viewsets.ViewSet):
                 success=True,
                 message="Karta została pomyślnie zaktualizowana",
                 data=BoardSerializer(Board.objects.all(), many=True).data,
-                data1=remaining_helper()
-            )
+                data1=remaining_helper(),
+                data2 = CardSerializer(Card.objects.all(), many=True).data
+        )
         )
 
     def delete_card(self, request, pk):
@@ -84,7 +85,7 @@ class CardViewSet(viewsets.ViewSet):
         for child in children:
             child.parent_card = None
             child.save()
-        card.deleted_at = datetime .datetime.now()
+        card.deleted_at = datetime.datetime.now()
         card.save()
 
         cards = Card.objects.filter(

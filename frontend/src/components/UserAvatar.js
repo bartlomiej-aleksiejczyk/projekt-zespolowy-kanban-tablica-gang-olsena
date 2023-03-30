@@ -25,7 +25,7 @@ function UserAvatar(props) {
         }
         const { moveTo, curve, duration } = snapshot.dropAnimation;
         // const translate = `translate(${moveTo.x+162.5}px, ${moveTo.y+20}px)`;
-        const translate = `translate(${moveTo.x+90}px, ${moveTo.y+17}px)`;
+        const translate = `translate(${moveTo.x+80}px, ${moveTo.y+97}px)`;
         const rotate = 'rotate(0.5turn)';
         return {
             ...style,
@@ -41,7 +41,8 @@ function UserAvatar(props) {
                                 {...provided.draggableProps}
                                 ref={provided.innerRef}
                                 style={getStyle(provided.draggableProps.style, snapshot)}
-                >{props.username}
+                >
+                    {props.username}
                     <Tooltip target=".user-avatar"/>
                     <AvatarImage className="user-avatar" src={props.img} data-pr-tooltip={props.username} />
                 <div>

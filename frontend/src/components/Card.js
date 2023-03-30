@@ -289,16 +289,15 @@ function Card(props) {
     const rejectAssignEdit = () => {
         setVisible2(false);
     }
-    useEffect(() => {
 
-        if(props.callRestrictionUpdate === true) {
-            return () => {
-                setRestrictedBoards(props.restrictedBoardsData)
-                props.setCallRestrictionUpdate(false);
-            };
-
-        }
-    });
+    //Generalnie tak się z tego co wiem nie powinno pisać, use effect jest do synchronizacji z zewnętrznymi rzeczami
+    //Jest to zły wzorzec, ale nie mam lepszego pomysłu
+    React.useEffect(() => {
+        setRestrictedBoards(props.restrictedBoardsData);
+    }, [props.restrictedBoardsData])
+    React.useEffect(() => {
+        props.setCardsChoice(props.cardsChoice);
+    }, [props.cardsChoice])
     const footerContent = (
         <div>
             <Button label="Anuluj" icon="pi pi-times" onClick={rejectEditCard} className="p-button-text"/>
@@ -326,16 +325,16 @@ function Card(props) {
                                        cols={30}/>
                     </EditMenuText>
                     <div className="flex">
+                        <Button
+                            onClick={() => setParent(null)}
+                            icon="pi pi-times"
+                            rounded
+                            text
+                            size="small"
+                            severity="danger"
+                            aria-label="Cancel"/>
                         <UserChoiceBar className="w-6">
-                            <Button
-                                style={{marginTop: "15px", marginRight: "3px"}}
-                                onClick={() => setParent(null)}
-                                icon="pi pi-times"
-                                rounded
-                                text
-                                size="small"
-                                severity="danger"
-                                aria-label="Cancel"/>
+
                             <Dropdown className="mt-3 w-full" value={parent}
                                       onChange={(e) => setParent(e.value)} options={(props.cardsChoice)}
                                       optionLabel="description"
@@ -464,7 +463,7 @@ function Card(props) {
                           ref={provided.innerRef}
                           color={props.color}
                           locked={props.locked}
-                    // onDoubleClick={() => console.log(props.parentName[0].length)}
+                    onDoubleClick={() => props.setCallRestrictionUpdate(true)}
                 >
                     <Droppable
                         droppableId={props.dropId}
@@ -478,7 +477,7 @@ function Card(props) {
                                 <ChildBar>
                                     <i className="pi pi-circle-fill"></i>
                                     Ma rodzica: {(props.parentName ?
-                                    (props.parentName[0].length > 11 ? props.parentName[0].substring(0, 11 - 3) + "..." :
+                                    (props.parentName[0].length > 9 ? props.parentName[0].substring(0, 9 - 3) + "..." :
                                         props.parentName[0]) : "")}
                                 </ChildBar>}
                                 {props.childData.length > 0 &&

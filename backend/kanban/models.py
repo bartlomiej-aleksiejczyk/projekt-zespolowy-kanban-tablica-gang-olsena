@@ -210,7 +210,7 @@ class Row(Dictionary, Timestamp):
     is_collapsed = models.BooleanField(default=False)
 
     class Meta:
-        ordering = ['-id']
+        ordering = ['id']
 
     def get_last_index(self):
         last_board = Row.objects.all().order_by('-index').first()
