@@ -125,7 +125,7 @@ class CardViewSet(viewsets.ViewSet):
         return Response(
             dict(
                 success=True,
-                message=(card_item_instance if "apiCardItemUpdated" else "apiCardItemAdded"),
+                message=(card_item_instance and "apiCardItemUpdated" or "apiCardItemAdded"),
                 data=CardItemSerializer(CardItem.objects.all(), many=True).data
             )
         )

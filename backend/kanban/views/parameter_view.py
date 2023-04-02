@@ -59,7 +59,7 @@ class ParameterViewSet(viewsets.ViewSet):
             return Response(
                 dict(
                     success=True,
-                    message=(parameter_instance if "apiParameterUpdated" else "apiParameterAdded"),
+                    message=(parameter_instance and "apiParameterUpdated" or "apiParameterAdded"),
                     data=ParameterSerializer(Parameter.objects.get_by_pk(pk=1)).data,
                     data1=remaining_helper()
                 )

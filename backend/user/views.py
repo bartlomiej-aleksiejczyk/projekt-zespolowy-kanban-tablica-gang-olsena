@@ -84,7 +84,7 @@ class UserViewSet(viewsets.ViewSet):
         return Response(
             dict(
                 success=True,
-                message=(user_instance if "apiUserUpdated" else "apiUserAdded"),
+                message=(user_instance and "apiUserUpdated" or  "apiUserAdded"),
                 data=BoardSerializer(Board.objects.all(), many=True).data,
                 data1=UserSerializer(User.objects.all(), many=True).data,
                 data2=UserSerializer(User.objects.get_by_pk(pk=pk)).data,
