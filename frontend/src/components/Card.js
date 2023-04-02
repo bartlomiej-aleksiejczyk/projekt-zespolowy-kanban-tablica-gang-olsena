@@ -482,7 +482,7 @@ function Card(props) {
                                 {props.parentCard &&
                                 <ChildBar>
                                     <i className="pi pi-circle-fill"></i>
-                                    Ma rodzica: {(props.parentName ?
+                                    {t("cardHasAParent")} {(props.parentName ?
                                     (props.parentName[0].length > 9 ? props.parentName[0].substring(0, 9 - 3) + "..." :
                                         props.parentName[0]) : "")}
                                 </ChildBar>}

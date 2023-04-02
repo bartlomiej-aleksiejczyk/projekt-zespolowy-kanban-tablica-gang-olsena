@@ -11,7 +11,7 @@ import ApiService from "../services/ApiService";
 import CommonService from "../services/CommonService";
 import Row from "./Row";
 import {useUserService} from "../utils/UserServiceContext";
-
+import { useTranslation } from 'react-i18next';
 
 const BoardStyle = styled.div`
   box-shadow: 0px 1px 7px rgba(0, 0, 0, 0.1), 0px 4px 5px -2px rgba(0, 0, 0, 0.12), 0px 10px 15px -5px rgba(0, 0, 0, 0.2);
@@ -66,7 +66,7 @@ const CardButtons = styled.div`
 `;
 
 function Board(props) {
-
+    const { t, i18n } = useTranslation();
     const [visible, setVisible] = useState(false);
     const [visible2, setVisible2] = useState(false);
     const [visi, setVisi] = useState(false);
@@ -158,10 +158,10 @@ function Board(props) {
                     }
                     <ConfirmDialog visible={visi} onHide={() => setVisi(false)}
                                    message=<InputText value={value} onChange={(e) => setValue(e.target.value)}/>
-                    header="Wpisz zadanie:"
+                    header={t("BoardNewCard")}
                     icon="pi pi-check-square"
-                    acceptLabel="Akceptuj"
-                    rejectLabel="Odrzuć"
+                    acceptLabel={t("accept")}
+                    rejectLabel={t("reject")}
                     accept={acceptAddCard}
                     reject={rejectAddCard}
                     />
@@ -182,10 +182,10 @@ function Board(props) {
                                 onClick={() => CommonService.onOpenDialog(setVisi, [{callback: setValue, value: ''}])}/>
                         <ConfirmDialog visible={visible2} onHide={() => setVisible2(false)}
                                        message=<InputText value={value3} onChange={(e) => setValue3(e.target.value)}/>
-                        header="Edytuj kolumnę:"
+                        header={t("BoardEditColumn")}
                         icon="pi pi-pencil"
-                        acceptLabel="Akceptuj"
-                        rejectLabel="Odrzuć"
+                        acceptLabel={t("accept")}
+                        rejectLabel={t("reject")}
                         accept={acceptEditBoard}
                         reject={rejectEditBoard}
                         />
@@ -193,11 +193,11 @@ function Board(props) {
                         <span>
                             <ConfirmDialog visible={visible}
                                            onHide={() => setVisible(false)}
-                                           message="Czy na pewno chcesz usunąć kolumnę?"
-                                           header="Potwierdzenie usunięcia"
+                                           message={t("BoardRemoveConfirmationDetail")}
+                                           header={t("BoardRemoveConfirmation")}
                                            icon="pi pi-trash"
-                                           acceptLabel="Tak"
-                                           rejectLabel="Nie"
+                                           acceptLabel={t("yes")}
+                                           rejectLabel={t("no")}
                                            accept={accept}
                                            reject={() => {}}/>
                             <Button style={{marginLeft: "20px"}}

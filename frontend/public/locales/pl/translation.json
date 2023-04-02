@@ -78,6 +78,12 @@
   "kanbanButtonChangeUserData": "Zmień dane użytkownika",
   "kanbanUserAssignmentLimit": "Limit przypisań:",
 
+  "Board.js":"SECTION",
+  "BoardNewCard": "Wpisz nazwę zadania:",
+  "BoardEditColumn": "Edytuj kolumnę:",
+  "BoardRemoveConfirmation": "Potwierdzenei usunięcia",
+  "BoardRemoveConfirmationDetail": "Czy na pewno chcesz usunąć kolumnę?",
+
   "Row.js":"SECTION",
   "rowEditHeader": "Edytuj rząd:",
   "rowRemoveConfirmationMessage": "Czy na pewno chcesz usunąć rząd?",
@@ -94,7 +100,9 @@
   "cardRestrictBoard": "Wybierz tablicę do wykluczenia",
   "cardRemoveHeader": "Potwierdzenie usunięcia",
   "cardRemoveDialogMessage": "Czy na pewno chcesz usunąć zadanie?",
-  "cardRemoveUserAssignmentDialog": "Czy na pewno chcesz przypisanie użytkownika?"
+  "cardRemoveUserAssignmentDialog": "Czy na pewno chcesz przypisanie użytkownika?",
+  "cardHasAParent": "Ma rodzica: "
+
 
 }
 
