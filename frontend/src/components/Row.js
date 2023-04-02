@@ -9,6 +9,8 @@ import {ConfirmDialog} from 'primereact/confirmdialog';
 import {InputText} from 'primereact/inputtext';
 import {ToggleButton} from 'primereact/togglebutton';
 import {useUserService} from "../utils/UserServiceContext";
+import { useTranslation } from 'react-i18next';
+import LanguageChoose from "./LanguageChoose";
 
 const CardsStyle = styled.div`
   max-width: 710px;
@@ -88,6 +90,7 @@ const RowCollapsable = styled.div`
 `;
 
 function Row(props) {
+    const { t, i18n } = useTranslation();
     const [value3, setValue3] = useState(props.name);
     const [visible1, setVisible1] = useState(false);
     const [visible2, setVisible2] = useState(false);
@@ -153,20 +156,20 @@ function Row(props) {
                     <ConfirmDialog visible={visible2}
                                    onHide={() => setVisible2(false)}
                                    message=<InputText value={value3} onChange={(e) => setValue3(e.target.value)}/>
-                    header="Edytuj rząd:"
+                    header={t("rowEditHeader")}
                     icon="pi pi-pencil"
-                    acceptLabel="Akceptuj"
-                    rejectLabel="Odrzuć"
+                    acceptLabel={t("accept")}
+                    rejectLabel={t("reject")}
                     accept={acceptEditRow}
                     reject={rejectEditRow}
                     />
                     <ConfirmDialog visible={visible1}
                                    onHide={() => setVisible1(false)}
-                                   message="Czy na pewno chcesz usunąć rząd?"
-                                   header="Potwierdzenie usunięcia"
+                                   message={t("rowRemoveConfirmationMessage")}
+                                   header={t("rowRemoveConfirmationHeader")}
                                    icon="pi pi-trash"
-                                   acceptLabel="Tak"
-                                   rejectLabel="Nie"
+                                   acceptLabel={t("yes")}
+                                   rejectLabel={t("no")}
                                    accept={acceptRowDelete}
                                    reject={() => {}}/>
                     <Droppable droppableId={props.droppableId}

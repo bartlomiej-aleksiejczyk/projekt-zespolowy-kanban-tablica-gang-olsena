@@ -1,20 +1,22 @@
+import i18n from 'i18next';
+
 const CommonService = {
+
     toastCallback: function(response_data, successCallback,successCallback1,successCallback2,successCallback3) {
-        console.log(response_data)
         if(response_data.success) {
             if(response_data.message && response_data.message.length > 0) {
                 window.PrimeToast.show({
                     severity: 'success',
-                    summary : 'Powodzenie',
-                    detail  : response_data.message,
+                    summary : i18n.t("succes"),
+                    detail  : i18n.t(response_data.message),
                     life    : 3000
                 });
             }
         } else {
             window.PrimeToast.show({
                 severity: 'warn',
-                summary : 'Ostrzeżenie',
-                detail  : response_data.message,
+                summary : i18n.t("warning"),
+                detail  : i18n.t(response_data.message),
                 life    : 3000
             });
         }

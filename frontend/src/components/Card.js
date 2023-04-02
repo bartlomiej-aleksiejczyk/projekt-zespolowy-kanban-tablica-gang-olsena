@@ -23,7 +23,8 @@ import {MultiSelect} from 'primereact/multiselect'
 import CardUsers from "./CardUsers";
 import {v4 as uuidv4} from 'uuid';
 import {Dialog} from 'primereact/dialog';
-
+import { useTranslation } from 'react-i18next';
+import LanguageChoose from "./LanguageChoose";
 import board from "./Board";
 
 const CardStyle = styled.div`
@@ -182,6 +183,7 @@ const DroppableDiv = styled.div`
 `;
 
 function Card(props) {
+    const { t, i18n } = useTranslation();
     const [visible2, setVisible2] = useState(false);
     const [visible1, setVisible1] = useState(false);
     const [visible, setVisible] = useState(false);
@@ -300,15 +302,15 @@ function Card(props) {
     }, [props.cardsChoice])
     const footerContent = (
         <div>
-            <Button label="Anuluj" icon="pi pi-times" onClick={rejectEditCard} className="p-button-text"/>
-            <Button label="Akceptuj" icon="pi pi-check" onClick={acceptEditCard} autoFocus/>
+            <Button label={t("reject")} icon="pi pi-times" onClick={rejectEditCard} className="p-button-text"/>
+            <Button label={t("accept")} icon="pi pi-check" onClick={acceptEditCard} autoFocus/>
         </div>
     );
     const editCardDialog = () => {
         //let usersCp=users.unshift(null)
         return (
             <EditMenu>
-                <Dialog header="Okno edycji postaci"
+                <Dialog header={t("cardEditDialog")}
                         visible={visible1}
                         style={{width: '50vw'}}
                         onHide={() => rejectEditCard}
@@ -339,13 +341,17 @@ function Card(props) {
                                       onChange={(e) => setParent(e.value)} options={(props.cardsChoice)}
                                       optionLabel="description"
                                       optionValue="id"
-                                      placeholder="Wybierz rodzica"
+                                      placeholder={t("cardEditDialogChooseParent")}
                             />
                         </UserChoiceBar>
                         <MultiSelect style={{backgroundColor: "#ff466e !important", color: "black !important"}}
-                                     value={restrictedBoards} onChange={(e) => setRestrictedBoards(e.value)}
-                                     options={props.boards} optionLabel="name" showSelectAll="false"
-                                     placeholder="Wybierz tablicę do wykluczenia" optionValue="id"
+                                     value={restrictedBoards}
+                                     onChange={(e) => setRestrictedBoards(e.value)}
+                                     options={props.boards}
+                                     optionLabel="name"
+                                     showSelectAll="false"
+                                     placeholder={t("cardRestrictColumnDialog")}
+                                     optionValue="id"
                                      className="w-6 ml-3"/>
                     </div>
                     <div className="card flex flex-row align-items-center gap-3 pt-3 pb-3 pl-2">
@@ -355,8 +361,8 @@ function Card(props) {
                             <span className="pl-3">{value1}</span>
                         </div>
                         <ToggleButton className="w-6"
-                                      onLabel="Blokada"
-                                      offLabel="Brak blokady"
+                                      onLabel={t("cardLocked")}
+                                      offLabel={t("cardUnlocked")}
                                       onIcon="pi pi-lock"
                                       offIcon="pi pi-lock-open"
                                       checked={lock}
@@ -414,7 +420,7 @@ function Card(props) {
                     ) : (
                         <div className="text-center">
                             {(props.childData.length === 0) &&
-                            <div>Brak danych</div>
+                            <div>{t("cardNoData")}</div>
                             }
                         </div>
                     )}
@@ -424,7 +430,8 @@ function Card(props) {
                             return (
                                 <div key={childCard.id} className="flex align-items-center mt-3">
                                     <Checkbox inputId={childCard.id} name="card_item"
-                                              value={childCard.is_card_completed} disabled={childCard.has_items}
+                                              value={childCard.is_card_completed}
+                                              disabled={childCard.has_items}
                                               onChange={(e) => {
                                                   // setCardItems([...cardItems]);
                                                   apiService.updateCard(childCard.board, {
@@ -482,7 +489,7 @@ function Card(props) {
                                 {props.childData.length > 0 &&
                                 <ParentBar>
                                     <i className="pi pi-sitemap"></i>
-                                    Zadanie jest rodzicem
+                                    {t("cardIsParent")}
                                 </ParentBar>}
                                 {props.restrictedBoardsData.length > 0 &&
                                 <RestrictedBoardsBar>
@@ -492,9 +499,13 @@ function Card(props) {
                                         <MultiSelect id="p-chips-token-label" dropdownIcon="pi pi-ban" filter="Kolumny"
                                                      value={restrictedBoards}
                                                      onChange={(e) => setRestrictedBoards(e.value)}
-                                                     options={props.boards} optionLabel="name" showSelectAll="false"
-                                                     disabled="false" placeholder="Wybierz tablicę do wykluczenia"
-                                                     optionValue="id" className="w-full md:w-20rem"/>
+                                                     options={props.boards}
+                                                     optionLabel="name"
+                                                     showSelectAll="false"
+                                                     disabled="false"
+                                                     placeholder={t("cardRestrictBoard")}
+                                                     optionValue="id"
+                                                     className="w-full md:w-20rem"/>
                                     </RestrictedAndLabel>
                                 </RestrictedBoardsBar>}
                                 <Description
@@ -608,20 +619,20 @@ function Card(props) {
                                     </span>
                                         <ConfirmDialog visible={visible}
                                                        onHide={() => setVisible(false)}
-                                                       message="Czy na pewno chcesz usunąć zadanie?"
-                                                       header="Potwierdzenie usunięcia"
+                                                       message={t("cardRemoveDialogMessage")}
+                                                       header={t("cardRemoveHeader")}
                                                        icon="pi pi-trash"
-                                                       acceptLabel="Tak"
-                                                       rejectLabel="Nie"
+                                                       acceptLabel={t("yes")}
+                                                       rejectLabel={t("no")}
                                                        accept={accept}
                                                        reject={reject}/>
                                         <ConfirmDialog visible={visible2}
                                                        onHide={() => setVisible2(false)}
-                                                       message="Czy na pewno chcesz przypisanie użytkownika?"
-                                                       header="Potwierdzenie usunięcia"
+                                                       message={t("cardRemoveUserAssignmentDialog")}
+                                                       header={t("cardRemoveHeader")}
                                                        icon="pi pi-trash"
-                                                       acceptLabel="Tak"
-                                                       rejectLabel="Nie"
+                                                       acceptLabel={t("yes")}
+                                                       rejectLabel={t("no")}
                                                        accept={acceptAssignEdit}
                                                        reject={rejectAssignEdit}/>
 

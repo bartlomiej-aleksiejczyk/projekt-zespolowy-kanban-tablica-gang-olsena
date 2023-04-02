@@ -14,7 +14,8 @@ import {Tooltip} from 'primereact/tooltip';
 import stc from 'string-to-color';
 import { MultiStateCheckbox } from 'primereact/multistatecheckbox';
 import {Badge} from 'primereact/badge';
-
+import { useTranslation } from 'react-i18next';
+import LanguageChoose from "./LanguageChoose";
 
 const AvatarContainer = styled.div`
   flex-direction: column;
@@ -33,6 +34,7 @@ const AvatarImage = styled.img`
 `;
 //To już jest hiper druciarstwo
 function UserAvatar(props) {
+    const { t, i18n } = useTranslation();
     const [visible2, setVisible2] = useState(false);
     const apiService = useUserService();
     const rejectAssignEdit = () => {
@@ -53,11 +55,11 @@ function UserAvatar(props) {
                 <AvatarContainer>
                     <ConfirmDialog visible={visible2}
                                    onHide={() => setVisible2(false)}
-                                   message="Czy na pewno chcesz przypisanie użytkownika?"
-                                   header="Potwierdzenie usunięcia"
+                                   message={t("cardRemoveUserAssignmentDialog")}
+                                   header={t("cardRemoveHeader")}
                                    icon="pi pi-trash"
-                                   acceptLabel="Tak"
-                                   rejectLabel="Nie"
+                                   acceptLabel={t("yes")}
+                                   rejectLabel={t("no")}
                                    accept={acceptAssignEdit}
                                    reject={rejectAssignEdit}/>
                     <Avatar className="p-overlay-badge user-avatar"

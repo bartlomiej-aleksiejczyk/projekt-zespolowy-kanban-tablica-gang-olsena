@@ -25,7 +25,7 @@ class RowViewSet(viewsets.ViewSet):
         return Response(
             dict(
                 success=True,
-                message="Rząd został {}.".format(row_instance and "zaktualizowany" or "dodany"),
+                message=(row_instance and "apiRowUpdated" or "apiRowAdded"),
                 data=BoardSerializer(Board.objects.all(), many=True).data
             )
         )
@@ -54,7 +54,7 @@ class RowViewSet(viewsets.ViewSet):
             return Response(
                 dict(
                     success=False,
-                    message="Nie można usunąć rzędu, gdyż pierwszy rząd jest chroniony.",
+                    message="apiLastRowDeleteError",
                     data=BoardSerializer(Board.objects.all(), many=True).data,
                     data1=remaining_helper()
                 )
@@ -73,7 +73,7 @@ class RowViewSet(viewsets.ViewSet):
         return Response(
             dict(
                 success=True,
-                message="Rząd został usunięty.",
+                message="apiRowDeleted",
                 data=BoardSerializer(Board.objects.all(), many=True).data,
                 data1=remaining_helper()
             )

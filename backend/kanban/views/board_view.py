@@ -42,7 +42,7 @@ class BoardViewSet(viewsets.ViewSet):
         return Response(
             dict(
                 success=True,
-                message="Kolumna została {}.".format(board_instance and "zaktualizowana" or "dodana"),
+                message=(board_instance and "apiColumnUpdated" or "apiColumnAdded"),
                 data=BoardSerializer(Board.objects.all(), many=True).data
 
             )
@@ -70,7 +70,7 @@ class BoardViewSet(viewsets.ViewSet):
             return Response(
                 dict(
                     success=False,
-                    message="Nie można zabrać dostępu do pierwszej kolumny",
+                    message="apiColumnOnRestrictedListIsFirstError",
                     data=BoardSerializer(Board.objects.all(), many=True).data,
                     data1=remaining_helper(),
                     data2=CardSerializer(Card.objects.all(), many=True).data,
@@ -81,7 +81,7 @@ class BoardViewSet(viewsets.ViewSet):
             return Response(
                 dict(
                     success=False,
-                    message="Nie można przenieść zadania, gdyż kolumna jest na liście zabronionych",
+                    message="apiColumnOnRestrictedListError",
                     data=BoardSerializer(Board.objects.all(), many=True).data,
                     data1=remaining_helper(),
                     data2=CardSerializer(Card.objects.all(), many=True).data,
@@ -93,7 +93,7 @@ class BoardViewSet(viewsets.ViewSet):
             return Response(
                 dict(
                     success=False,
-                    message="Nie można dodać kolumny do listy, gdyż karta znajduje się w tej kolumnie",
+                    message="apiColumnOnRestrictedListIsCurrentPositionError",
                     data=BoardSerializer(Board.objects.all(), many=True).data,
                     data1=remaining_helper(),
                     data2=CardSerializer(Card.objects.all(), many=True).data,
@@ -111,7 +111,7 @@ class BoardViewSet(viewsets.ViewSet):
                 return Response(
                     dict(
                         success=False,
-                        message="Karta nie może być dla siebie samej rodzicem",
+                        message="apiBoardCardSelfParentError",
                         data=BoardSerializer(Board.objects.all(), many=True).data,
                         data1=remaining_helper(),
                         data2=CardSerializer(Card.objects.all(), many=True).data,
@@ -123,7 +123,7 @@ class BoardViewSet(viewsets.ViewSet):
                 return Response(
                     dict(
                         success=False,
-                        message="Nie można dodać rodzica dla karty która ma dzieci",
+                        message="apiBoardCardParentToParentError",
                         data=BoardSerializer(Board.objects.all(), many=True).data,
                         data1=remaining_helper(),
                         data2=CardSerializer(Card.objects.all(), many=True).data,
@@ -169,7 +169,7 @@ class BoardViewSet(viewsets.ViewSet):
         return Response(
             dict(
                 success=True,
-                message="Zadanie zostało {}.".format(card_instance and "zaktualizowane" or "dodane"),
+                message=(card_instance and "apiBoardCardUpdated" or "apiBoardCardAdded"),
                 data=BoardSerializer(Board.objects.all(), many=True).data,
                 data1=remaining_helper(),
                 data2=CardSerializer(Card.objects.all(), many=True).data
@@ -238,7 +238,7 @@ class BoardViewSet(viewsets.ViewSet):
             return Response(
                 dict(
                     success=False,
-                    message="Nie możesz usunąć tej tablicy."
+                    message="apiColumnDeleteError"
                 )
             )
 
@@ -268,7 +268,7 @@ class BoardViewSet(viewsets.ViewSet):
         return Response(
             dict(
                 success=True,
-                message="Kolumna została usunięta.",
+                message="apiColumnDelete",
                 data=BoardSerializer(Board.objects.all(), many=True).data,
                 data1=remaining_helper()
             )

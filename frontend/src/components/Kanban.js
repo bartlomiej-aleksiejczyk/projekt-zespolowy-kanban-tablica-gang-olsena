@@ -141,8 +141,8 @@ function Kanban() {
     // }
     const footerContent = (
         <div>
-            <Button label={t("kanbanUserDataChangeDialogReject")} icon="pi pi-times" onClick={() => setVisible(false)} className="p-button-text" />
-            <Button label={t("kanbanUserDataChangeDialogAccept")} icon="pi pi-check" onClick={() => setVisible(false)} autoFocus />
+            <Button label={t("reject")} icon="pi pi-times" onClick={() => setVisible(false)} className="p-button-text" />
+            <Button label={t("accept")} icon="pi pi-check" onClick={() => setVisible(false)} autoFocus />
         </div>
     );
     const handleInputChangeLimit = (e) => {
@@ -232,8 +232,8 @@ function Kanban() {
         {
             window.PrimeToast.show({
                 severity: 'success',
-                summary : 'Powodzenie',
-                detail  : 'Awatar pomyślnie zmieniony',
+                summary : t("succes"),
+                detail  : t("kanbanMessageSucces"),
                 life    : 3000
             });
         }
@@ -310,21 +310,21 @@ function Kanban() {
                 }}>
                     <ConfirmDialog visible={visible2}
                                    onHide={() => setVisible2(false)}
-                                   message={`Czy na pewno chcesz wylogować się z konta: ${user.username}?`}
-                                   header="Potwierdzenie wylogowania"
+                                   message={`${t("kanbanLogoutConfirmWindowMessage")} ${user.username}?`}
+                                   header={t("kanbanLogoutConfirmWindowHeader")}
                                    icon="pi pi-sign-out"
-                                   acceptLabel="Tak"
-                                   rejectLabel="Nie"
+                                   acceptLabel={t("yes")}
+                                   rejectLabel={t("no")}
                                    accept={acceptLogout}
                                    reject={() => {}}/>
                     <ConfirmDialog
                         visible={visible}
                         onHide={() => setVisible(false)}
                         message={<InputText value={value} onChange={(e) => setValue(e.target.value)}/>}
-                        header="Wpisz nazwe kolumny:"
+                        header={t("kanbanNewColumnConfirmationDialog")}
                         icon="pi pi-table"
-                        acceptLabel="Akceptuj"
-                        rejectLabel="Odrzuć"
+                        acceptLabel={t("accept")}
+                        rejectLabel={t("reject")}
                         accept={acceptAddBoard}
                         reject={rejectAddBoard}
                     />
@@ -332,17 +332,17 @@ function Kanban() {
                         visible={visible1}
                         onHide={() => setVisible1(false)}
                         message={<InputText value1={value} onChange={(e) => setValue1(e.target.value)}/>}
-                        header="Wpisz nazwe rzędu:"
+                        header={t("kanbanNewRowConfirmationWindow")}
                         icon="pi pi-table"
-                        acceptLabel="Akceptuj"
-                        rejectLabel="Odrzuć"
+                        acceptLabel={t("accept")}
+                        rejectLabel={t("reject")}
                         accept={acceptAddRow}
                         reject={rejectAddRow}
                     />
-                    <Dialog header="Edycja danych użytkownika" visible={visible3}  /*footer={renderFooter('displayBasic')}*/ onHide={() => setVisible3(false)}>
+                    <Dialog header={t("kanbanChangeUserDataDialog")} visible={visible3}  /*footer={renderFooter('displayBasic')}*/ onHide={() => setVisible3(false)}>
                         <EditUserMenu>
                             <EditUserText>
-                                Awatar użytkownika:
+                                {t("kanbanChangeUserDataDialogAvatar")}
                             </EditUserText>
                             <AvatarMenu>
                                 <Avatar  image={userLogged.avatar} size="xlarge" shape="circle" className="flex justify-content-center"/>
@@ -354,12 +354,12 @@ function Kanban() {
                                         accept={"image/*"}
                                         key={Date.now()}
                                         onUpload={onUpload}
-                                        cancelLabel={"Anuluj"}
-                                        uploadLabel={"Prześlij plik"}
-                                        chooseLabel={"Wybierz plik"}
+                                        cancelLabel={t("kanbanChangeUserDataDialogCancel")}
+                                        uploadLabel={t("kanbanChangeUserDataDialogUpload")}
+                                        chooseLabel={t("kanbanChangeUserDataDialogChoose")}
                                         emptyTemplate={emptyTemplate(t)}
-                                        invalidFileSizeMessageDetail={"Maksymalny rozmiar pliku wynosi 1MB"}
-                                        invalidFileSizeMessageSummary={"Nieprawidłowy rozmiar pliku. "}
+                                        invalidFileSizeMessageDetail={t("kanbanChangeUserDataDialogInvalidSizeMessageDetail")}
+                                        invalidFileSizeMessageSummary={t("kanbanChangeUserDataDialogInvalidSizeMessage")}
                                         mode={"advanced"}
                             />
                             </UploadContainer>
@@ -373,7 +373,7 @@ function Kanban() {
                         }}
                                 size="lg"
                                 onClick={() => CommonService.onOpenDialog(setVisible1, [{callback: setValue1, value: ''}])}
-                                label="Nowy rząd"
+                                label={t("kanbanButtonNewRow")}
                                 icon="pi pi-plus"/>
                     </div>
                     <div className="inline mr-3">
@@ -382,7 +382,7 @@ function Kanban() {
                         }}
                                 size="lg"
                                 onClick={() => CommonService.onOpenDialog(setVisible, [{callback: setValue, value: ''}])}
-                                label="Nowa kolumna"
+                                label={t("kanbanButtonNewColumn")}
                                 icon="pi pi-plus"/>
                     </div>
                     <div className="inline mr-3">
@@ -392,7 +392,7 @@ function Kanban() {
                                 size="lg"
                                 onClick={() => CommonService.onOpenDialog(setVisible2, [{callback: setValue2, value: ''}])}
                                 //label={`${user.username} | Wyloguj się`}
-                                label={`Wyloguj się`}
+                                label={t("kanbanButtonLogout")}
                                 icon="pi pi-sign-out"/>
                     </div>
                     <div className="inline mr-3">
@@ -405,7 +405,7 @@ function Kanban() {
                                 aria-controls="overlay_panel"
                             // onClick={() => CommonService.onOpenDialog(setVisible3, [{callback: setValue3, value: ''}])}
                             //label={`${user.username} | Wyloguj się`}
-                                label={`Zmień dane użytkownika`}
+                                label={t("kanbanButtonChangeUserData")}
                                 icon="pi pi pi-user"/>
                     </div>
                 </div>
@@ -449,7 +449,7 @@ function Kanban() {
                     </Droppable>
                     <FreeUsersBoard>
                         <AssignmentLimitText>
-                            Limit przypisań:
+                            {t("kanbanUserAssignmentLimit")}
                         </AssignmentLimitText>
 
                         <InputContainer

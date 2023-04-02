@@ -68,7 +68,7 @@ class UserViewSet(viewsets.ViewSet):
             return Response(
                 dict(
                     success=True,
-                    message="Zaktualizowano awatar",
+                    message="apiUserAvatarUpdated",
                     data=BoardSerializer(Board.objects.all(), many=True).data,
                     data1=UserSerializer(User.objects.all(), many=True).data,
                     data2=UserSerializer(User.objects.get_by_pk(pk=pk)).data,
@@ -84,7 +84,7 @@ class UserViewSet(viewsets.ViewSet):
         return Response(
             dict(
                 success=True,
-                message="Użytkownik został {}.".format(user_instance and "zaktualizowany" or "dodany"),
+                message=(user_instance if "apiUserUpdated" else "apiUserAdded"),
                 data=BoardSerializer(Board.objects.all(), many=True).data,
                 data1=UserSerializer(User.objects.all(), many=True).data,
                 data2=UserSerializer(User.objects.get_by_pk(pk=pk)).data,

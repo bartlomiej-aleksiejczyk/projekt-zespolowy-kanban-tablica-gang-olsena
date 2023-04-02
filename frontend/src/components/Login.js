@@ -68,7 +68,7 @@ function Login(props) {
     if (username.length <= 0){
           window.PrimeToast.show({
               severity: 'warn',
-              summary: t("loginErrorMessageSummary"),
+              summary: t("error"),
               detail: t("loginErrorMessage"),
               life: 3000
           });
@@ -94,11 +94,11 @@ function Login(props) {
               </div>
           <form onSubmit={handleSubmit}>
               <div>
-                  <label htmlFor="username" className="block text-900 font-large mb-3">{t("LoginUsername")}:</label>
-                  <InputText id="username" type="text" placeholder={t("LoginUsernameInput")} className="w-full mb-3" />
-                  <label htmlFor="password" className="block text-900 font-large mb-3">{t("LoginPassoword")}</label>
-                  <InputText  type="password" id="password" placeholder={t("LoginPassowordInput")} className="w-full mb-5" />
-                  <Button type="submit" label={t("LoginButton")} icon="pi pi-user" className="w-full" />
+                  <label htmlFor="username" className="block text-900 font-large mb-3">{t("loginUsername")}</label>
+                  <InputText id="username" type="text" placeholder={t("loginUsernameInput")} className="w-full mb-3" />
+                  <label htmlFor="password" className="block text-900 font-large mb-3">{t("loginPassoword")}</label>
+                  <InputText  type="password" id="password" placeholder={t("loginPassowordInput")} className="w-full mb-5" />
+                  <Button type="submit" label={t("loginButton")} icon="pi pi-user" className="w-full" />
               </div>
           </form>
           </div>

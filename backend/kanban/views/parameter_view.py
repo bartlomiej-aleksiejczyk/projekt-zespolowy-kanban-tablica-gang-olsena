@@ -47,7 +47,7 @@ class ParameterViewSet(viewsets.ViewSet):
                     return Response(
                         dict(
                             success=False,
-                            message="Limit mniejszy od aktualnie przydzielonych zadań, usuń przydziały aby ustawić mniejszy limit",
+                            message="apiParameterCurrentLimitLowerThanNumberOfAssignmentsError",
                             data=ParameterSerializer(Parameter.objects.get_by_pk(pk=1)).data
                         )
                     )
@@ -59,7 +59,7 @@ class ParameterViewSet(viewsets.ViewSet):
             return Response(
                 dict(
                     success=True,
-                    message="Parametr został {}.".format(parameter_instance and "zaktualizowany" or "dodany"),
+                    message=(parameter_instance if "apiParameterUpdated" else "apiParameterAdded"),
                     data=ParameterSerializer(Parameter.objects.get_by_pk(pk=1)).data,
                     data1=remaining_helper()
                 )

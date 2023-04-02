@@ -30,7 +30,7 @@ class CardViewSet(viewsets.ViewSet):
             return Response(
                 dict(
                     success=False,
-                    message="Nie można przenieść zadania, gdyż kolumna jest na liście zabronionych",
+                    message="apiColumnOnBlacklist",
                     data=BoardSerializer(Board.objects.all(), many=True).data,
                     data1=remaining_helper(),
                     data2=CardSerializer(Card.objects.all(), many=True).data
@@ -72,7 +72,7 @@ class CardViewSet(viewsets.ViewSet):
         return Response(
             dict(
                 success=True,
-                message="Karta została pomyślnie zaktualizowana",
+                message="apiCardUpdated",
                 data=BoardSerializer(Board.objects.all(), many=True).data,
                 data1=remaining_helper(),
                 data2 = CardSerializer(Card.objects.all(), many=True).data
@@ -104,7 +104,7 @@ class CardViewSet(viewsets.ViewSet):
         return Response(
             dict(
                 success=True,
-                message="Zadanie zostało usunięte.",
+                message="apiCardDeleted",
                 data=BoardSerializer(Board.objects.all(), many=True).data,
                 data1=remaining_helper(),
                 data2=CardSerializer(Card.objects.all(), many=True).data
@@ -125,7 +125,7 @@ class CardViewSet(viewsets.ViewSet):
         return Response(
             dict(
                 success=True,
-                message="Podzadanie zostało {}.".format(card_item_instance and "zaktualizowane" or "dodane"),
+                message=(card_item_instance if "apiCardItemUpdated" else "apiCardItemAdded"),
                 data=CardItemSerializer(CardItem.objects.all(), many=True).data
             )
         )
@@ -139,7 +139,7 @@ class CardViewSet(viewsets.ViewSet):
         return Response(
             dict(
                 success=True,
-                message="Podzadanie zostało usunięte.",
+                message="apiCardItemDeleted",
                 data=CardItemSerializer(CardItem.objects.all(), many=True).data
             )
         )
@@ -152,7 +152,7 @@ class CardViewSet(viewsets.ViewSet):
             return Response(
                 dict(
                     success=False,
-                    message="Ten użytkownik już jest w przypisany do tego zadania",
+                    message="apiSameUserAssignmentError",
                     data=BoardSerializer(Board.objects.all(), many=True).data,
                     data1=remaining_helper()
                 )
@@ -168,7 +168,7 @@ class CardViewSet(viewsets.ViewSet):
         return Response(
             dict(
                 success=True,
-                message="Karta została pomyślnie zaktualizowana",
+                message="apiCardUpdated",
                 data=BoardSerializer(Board.objects.all(), many=True).data,
                 data1=remaining_helper()
             )
