@@ -49,7 +49,7 @@ class RowViewSet(viewsets.ViewSet):
 
     def delete_row(self, request, pk):
         row = Row.objects.get_by_pk(pk=pk, raise_exception=True)
-        if row.id == Row.objects.first().id:
+        if row.id == Row.objects.all().order_by('id').first().id:
             print("test")
             return Response(
                 dict(

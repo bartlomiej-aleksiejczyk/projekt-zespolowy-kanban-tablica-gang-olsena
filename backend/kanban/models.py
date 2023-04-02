@@ -210,13 +210,13 @@ class Row(Dictionary, Timestamp):
     is_collapsed = models.BooleanField(default=False)
 
     class Meta:
-        ordering = ['id']
+        ordering = ['-id']
 
     def get_last_index(self):
-        last_board = Row.objects.all().order_by('-index').first()
+        last_row = Row.objects.all().order_by('-index').first()
 
-        if isinstance(last_board, Row):
-            return last_board.index
+        if isinstance(last_row, Row):
+            return last_row.index
 
         return Row.objects.count()
 
