@@ -1,0 +1,22 @@
+{
+  "Api messages":"SECTION",
+
+
+  "Login.js":"SECTION",
+  "loginErrorMessageSummary":"Błąd",
+  "loginErrorMessage":"Nie wprowadzono nazwy użytkownika",
+  "loginHeader":"Logowanie",
+  "loginDesc": "Witaj, wpisz dane użytkownika:",
+  "loginAccountCreation": "By założyć konto kliknij",
+  "loginAccountCreationLink": "tutaj",
+  "LoginUsername":"Nazwa użytkownika",
+  "LoginPassoword":"Hasło użytkownika:",
+  "LoginUsernameInput":"Wpisz nazwę",
+  "LoginPassowordInput":"wpisz hasło",
+  "LoginButton": "Zaloguj",
+
+  "Kanban.js":"SECTION",
+  "kanbanUploadUserAvatar": "Przeciągnij plik tutaj",
+  "kanbanUserDataChangeDialogAccept": "Akceptuj",
+  "kanbanUserDataChangeDialogReject": "Reject"
+}

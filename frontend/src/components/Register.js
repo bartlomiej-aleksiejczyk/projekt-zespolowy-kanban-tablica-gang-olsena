@@ -5,6 +5,7 @@ import AuthService from "../services/AuthService";
 import styled, {createGlobalStyle} from 'styled-components';
 import {InputText,Checkbox} from 'primereact/inputtext';
 import {Button} from 'primereact/button';
+import LanguageChoose from "./LanguageChoose";
 
 
 const RegisterHeader = styled.h1`
@@ -50,7 +51,11 @@ const TitleRegister= styled.div`
   //height: 200px;
 
 `;
-
+const LanguageDropdown = styled.div`
+  position: absolute;
+  top: 40px;
+  right: 0;
+`;
 
 function Register(props) {
   const { registerUser } = useContext(AuthService);
@@ -80,6 +85,9 @@ function Register(props) {
   return (
       <RegisterPage>
           <GlobalStyle whiteColor/>
+          <LanguageDropdown>
+              <LanguageChoose/>
+          </LanguageDropdown>
           <TitleRegister>
           <RegisterHeader>Rejestracja</RegisterHeader>
           </TitleRegister>

@@ -365,8 +365,7 @@ function Card(props) {
                         {/*(props.cardsChoice.find(o => o.id === props.backId).restricted_boards)*/}
                     </div>
                     <div className="mt-3 flex justify-content-between align-items-center flex-wrap">
-                        <h3>Lista podzadań
-                            ({Math.round((cardItems.filter((x) => x.is_done).length / cardItems.length) * 100) || 0}%):</h3>
+                        <h3>Lista podzadań {props.data.subtask_done_percentage}% :</h3>
                         {props.childData.length === 0 &&
                         <Button
                             icon="pi pi-plus"

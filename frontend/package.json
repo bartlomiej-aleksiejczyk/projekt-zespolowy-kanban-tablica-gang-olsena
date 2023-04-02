@@ -25,7 +25,11 @@
     "jwt-decode": "^3.1.2",
     "dayjs": "^1.11.7",
     "react-router-dom": "^6.9.0",
-	"string-to-color": "^2.2.2"
+	"string-to-color": "^2.2.2",
+	"react-i18next": "^12.2.0",
+	"i18next-http-backend": "^2.2.0",
+	"i18next-browser-languagedetector": "^7.0.1",
+	"react-world-flags": "^1.5.1"
   },
   "scripts": {
     "start": "WATCHPACK_POLLING=true react-scripts start",

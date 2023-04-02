@@ -5,7 +5,8 @@ import AuthService from "../services/AuthService";
 import styled, {createGlobalStyle} from 'styled-components';
 import {InputText,Checkbox} from 'primereact/inputtext';
 import {Button} from 'primereact/button';
-
+import { useTranslation } from 'react-i18next';
+import LanguageChoose from "./LanguageChoose";
 
 const LoginHeader = styled.h1`
   text-align: center;
@@ -16,6 +17,11 @@ const LoginHeader = styled.h1`
   //justify-content: center;
   padding: 5px;
   color: #ffffff;
+`;
+const LanguageDropdown = styled.div`
+  position: absolute;
+  top: 40px;
+  right: 0;
 `;
 
 const GlobalStyle = createGlobalStyle`
@@ -53,16 +59,17 @@ const TitleLogin = styled.div`
 
 
 function Login(props) {
-  const { loginUser } = useContext(AuthService);
-  const handleSubmit = e => {
+    const { t, i18n } = useTranslation();
+    const { loginUser } = useContext(AuthService);
+    const handleSubmit = e => {
     e.preventDefault();
     const username = e.target.username.value;
     const password = e.target.password.value;
     if (username.length <= 0){
           window.PrimeToast.show({
               severity: 'warn',
-              summary: 'Błąd',
-              detail: "Nie wprowadzono nazwy użytkownika",
+              summary: t("loginErrorMessageSummary"),
+              detail: t("loginErrorMessage"),
               life: 3000
           });
     }else{
@@ -73,22 +80,25 @@ function Login(props) {
   return (
       <LoginPage>
           <GlobalStyle whiteColor/>
+          <LanguageDropdown>
+              <LanguageChoose/>
+          </LanguageDropdown>
           <TitleLogin>
-          <LoginHeader>Logowanie</LoginHeader>
+          <LoginHeader>{t("loginHeader")}</LoginHeader>
           </TitleLogin>
           <div className="surface-card p-6 shadow-5 border-round w-full lg:w-4">
               <div className="text-center mb-5">
-                  <div className="text-700 text-3xl font-medium mb-3">Witaj, wpisz dane użytkownika:</div>
-                  <span className="text-500 font-large line-height-3">By założyć konto kliknij</span>
-                  <Link to="/register" className="font-medium no-underline ml-2 text-blue-500 cursor-pointer">tutaj </Link>
+                  <div className="text-700 text-3xl font-medium mb-3">{t("loginHeader")}</div>
+                  <span className="text-500 font-large line-height-3">{t("loginAccountCreation")}</span>
+                  <Link to="/register" className="font-medium no-underline ml-2 text-blue-500 cursor-pointer">{t("loginAccountCreationLink")} </Link>
               </div>
           <form onSubmit={handleSubmit}>
               <div>
-                  <label htmlFor="username" className="block text-900 font-large mb-3">Nazwa użytkownika:</label>
-                  <InputText id="username" type="text" placeholder="Wpisz nazwę" className="w-full mb-3" />
-                  <label htmlFor="password" className="block text-900 font-large mb-3">Hasło użytkownika:</label>
-                  <InputText  type="password" id="password" placeholder="wpisz hasło" className="w-full mb-5" />
-                  <Button type="submit" label="Zaloguj" icon="pi pi-user" className="w-full" />
+                  <label htmlFor="username" className="block text-900 font-large mb-3">{t("LoginUsername")}:</label>
+                  <InputText id="username" type="text" placeholder={t("LoginUsernameInput")} className="w-full mb-3" />
+                  <label htmlFor="password" className="block text-900 font-large mb-3">{t("LoginPassoword")}</label>
+                  <InputText  type="password" id="password" placeholder={t("LoginPassowordInput")} className="w-full mb-5" />
+                  <Button type="submit" label={t("LoginButton")} icon="pi pi-user" className="w-full" />
               </div>
           </form>
           </div>

@@ -1,0 +1,19 @@
+{
+  "Api messages":"SECTION",
+
+
+  "Login.js":"SECTION",
+  "loginErrorMessageSummary":"Error",
+  "loginErrorMessage":"Username not entered",
+  "loginHeader":"Login page",
+  "loginDesc": "Hello, enter your login credentials:",
+  "loginAccountCreation": "To register a new account click",
+  "loginAccountCreationLink": " here",
+  "LoginUsername":"Username",
+  "LoginPassoword":"Password:",
+  "LoginUsernameInput":"Enter password",
+  "LoginPassowordInput":"Enter password",
+  "LoginButton": "Log in",
+
+  "Main.js":"SECTION"
+}

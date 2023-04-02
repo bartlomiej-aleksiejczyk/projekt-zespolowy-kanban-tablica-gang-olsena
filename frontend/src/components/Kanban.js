@@ -19,7 +19,11 @@ import {InputNumber} from 'primereact/inputnumber';
 import Card from "./Card";
 import UserAvatar from "./UserAvatar";
 import { FileUpload } from 'primereact/fileupload';
-
+import { useTranslation } from 'react-i18next';
+import LanguageChoose from "./LanguageChoose";
+import { withTranslation } from 'react-i18next';
+import { Translation } from 'react-i18next';
+import i18n from "i18next";
 
 const GlobalStyle = createGlobalStyle`
   body {
@@ -95,18 +99,20 @@ const UploadContainer = styled.h3`
 
 const WholeWebpage = styled.div`
 `;
-const emptyTemplate = () => {
-    return (
-        <div className="flex align-items-center flex-column">
-            <i className="pi pi-image mt-3 p-5" style={{ fontSize: '5em', borderRadius: '50%', backgroundColor: 'var(--surface-b)', color: 'var(--surface-d)' }}></i>
-            <span style={{ fontSize: '1.2em', color: 'var(--text-color-secondary)' }} className="my-5">
-                    Przeciągnij plik tutaj
-                </span>
-        </div>
-    );
-};
+
 
 function Kanban() {
+    const { t, i18n } = useTranslation();
+    const emptyTemplate = (t) => {
+        return (
+            <div className="flex align-items-center flex-column">
+                <i className="pi pi-image mt-3 p-5" style={{ fontSize: '5em', borderRadius: '50%', backgroundColor: 'var(--surface-b)', color: 'var(--surface-d)' }}></i>
+                <span style={{ fontSize: '1.2em', color: 'var(--text-color-secondary)' }} className="my-5">
+                    {t("kanbanUploadUserAvatar")}
+                </span>
+            </div>
+        );
+    };
     const [boards, setBoards] = useState([]);
     const apiService = useUserService();
     let {user, logoutUser} = useContext(AuthService);
@@ -135,8 +141,8 @@ function Kanban() {
     // }
     const footerContent = (
         <div>
-            <Button label="Odrzuć" icon="pi pi-times" onClick={() => setVisible(false)} className="p-button-text" />
-            <Button label="Akceptuj" icon="pi pi-check" onClick={() => setVisible(false)} autoFocus />
+            <Button label={t("kanbanUserDataChangeDialogReject")} icon="pi pi-times" onClick={() => setVisible(false)} className="p-button-text" />
+            <Button label={t("kanbanUserDataChangeDialogAccept")} icon="pi pi-check" onClick={() => setVisible(false)} autoFocus />
         </div>
     );
     const handleInputChangeLimit = (e) => {
@@ -299,7 +305,8 @@ function Kanban() {
                     position: "absolute",
                     top     : "40px",
                     right   : "0",
-                    zIndex  : "1"
+                    zIndex  : "1",
+                    verticalAlign : "middle",
                 }}>
                     <ConfirmDialog visible={visible2}
                                    onHide={() => setVisible2(false)}
@@ -350,7 +357,7 @@ function Kanban() {
                                         cancelLabel={"Anuluj"}
                                         uploadLabel={"Prześlij plik"}
                                         chooseLabel={"Wybierz plik"}
-                                        emptyTemplate={emptyTemplate}
+                                        emptyTemplate={emptyTemplate(t)}
                                         invalidFileSizeMessageDetail={"Maksymalny rozmiar pliku wynosi 1MB"}
                                         invalidFileSizeMessageSummary={"Nieprawidłowy rozmiar pliku. "}
                                         mode={"advanced"}
@@ -360,6 +367,7 @@ function Kanban() {
                         </EditUserMenu>
                     </Dialog>
                     <div className="inline mr-3">
+                        <LanguageChoose/>
                         <Button style={{
                             boxShadow: "0px 1px 7px rgba(0, 0, 0, 0.1), 0px 4px 5px -2px rgba(0, 0, 0, 0.12), 0px 10px 15px -5px rgba(0, 0, 0, 0.2)"
                         }}
