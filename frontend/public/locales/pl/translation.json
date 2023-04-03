@@ -101,7 +101,9 @@
   "cardRemoveHeader": "Potwierdzenie usunięcia",
   "cardRemoveDialogMessage": "Czy na pewno chcesz usunąć zadanie?",
   "cardRemoveUserAssignmentDialog": "Czy na pewno chcesz przypisanie użytkownika?",
-  "cardHasAParent": "Ma rodzica: "
+  "cardHasAParent": "Ma rodzica: ",
+  "cardFinished": "Zrobione",
+  "cardNotFinished": "Niezrobione"
 
 
 }

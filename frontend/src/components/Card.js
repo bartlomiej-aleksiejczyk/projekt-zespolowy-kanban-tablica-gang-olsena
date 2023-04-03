@@ -26,6 +26,7 @@ import {Dialog} from 'primereact/dialog';
 import { useTranslation } from 'react-i18next';
 import LanguageChoose from "./LanguageChoose";
 import board from "./Board";
+import { Accordion, AccordionTab } from 'primereact/accordion';
 
 const CardStyle = styled.div`
   box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.03), 0px 0px 2px rgba(0, 0, 0, 0.06), 0px 2px 6px rgba(0, 0, 0, 0.12);
@@ -104,6 +105,11 @@ const ButtonContainer = styled.div`
   margin-top: 17px;
 
 `;
+const TopButtonContainer = styled.div`
+  display:flex;
+  flex-direction: row;
+  flex-wrap: nowrap;
+`;
 const Description = styled.div`
   flex-direction: column;
   max-width: 210px;
@@ -181,7 +187,6 @@ const DroppableDiv = styled.div`
   flex-direction: column;
   overflow: auto;
 `;
-
 function Card(props) {
     const { t, i18n } = useTranslation();
     const [visible2, setVisible2] = useState(false);
@@ -206,8 +211,16 @@ function Card(props) {
     const [cardItems, setCardItems] = useState(props.data?.item_data);
     const [users, setUsers] = useState('');
     const [restrictedBoards, setRestrictedBoards] = useState(props.restrictedBoardsData);
-
+    const [bug, setBug] = useState(props.hasBug);
+    const [itemCollapse, setItemCollapse] = useState(true)
+    const [childrenCollapse, setChildrenCollapse] = useState(true)
     const apiService = useUserService();
+    const handleItemCollapse = () => {
+        setItemCollapse(!itemCollapse)
+    }
+    const handleChildrenCollapse = () => {
+        setChildrenCollapse(!childrenCollapse)
+    }
     const handleLock = (value) => {
         setLock(value)
         apiService.updateCard(props.board, {
@@ -218,6 +231,17 @@ function Card(props) {
             },
             () => {setLock(props.locked)}
         );
+    }
+    const handleBugCheck  = () => {
+        apiService.updateCard(props.board, {
+            "id"       : props.backId,
+            "has_bug": !(bug)
+        }).then((response_data) => {
+            CommonService.toastCallback(response_data, props.setBoards);
+            if (response_data.success){
+                setBug(!bug)
+            }
+        });
     }
     const handleUnlock = (e) => {
         setLock(e.value)
@@ -257,6 +281,7 @@ function Card(props) {
             "items"            : cardItems,
             "parent_card"      : parentAux,
             "restricted_boards": restrictedBoards,
+            "has_bug" : bug
         }).then((response_data) => {
             CommonService.toastCallback(response_data, props.setBoards, props.setRemaining, props.setCardsChoice, setRestrictedBoards);
             setVisible1(false);
@@ -371,8 +396,7 @@ function Card(props) {
                         {/*(props.cardsChoice.find(o => o.id === props.backId).restricted_boards)*/}
                     </div>
                     <div className="mt-3 flex justify-content-between align-items-center flex-wrap">
-                        <h3>Lista podzadań {props.data.subtask_done_percentage}% :</h3>
-                        {props.childData.length === 0 &&
+                        <h3>{t("cardItemChecklist")} {props.data.subtask_done_percentage}% :</h3>
                         <Button
                             icon="pi pi-plus"
                             size="lg"
@@ -384,9 +408,8 @@ function Card(props) {
                                 //Poniższe dodano, zeby nie walił errorami
                                 setCardItems([...cardItems]);
                             }}/>
-                        }
                     </div>
-                    {(cardItems.length > 0) && (props.childData.length === 0) ? (
+                    {(cardItems.length > 0) ? (
                         <div>
                             {cardItems.map((card_item, index) => {
                                 return (
@@ -419,35 +442,27 @@ function Card(props) {
                         </div>
                     ) : (
                         <div className="text-center">
-                            {(props.childData.length === 0) &&
                             <div>{t("cardNoData")}</div>
-                            }
                         </div>
                     )}
                     {(props.childData.length > 0) &&
-                    <div>
-                        {props.childData.map((childCard, index) => {
-                            return (
-                                <div key={childCard.id} className="flex align-items-center mt-3">
-                                    <Checkbox inputId={childCard.id} name="card_item"
-                                              value={childCard.is_card_completed}
-                                              disabled={childCard.has_items}
-                                              onChange={(e) => {
-                                                  // setCardItems([...cardItems]);
-                                                  apiService.updateCard(childCard.board, {
-                                                      "id"               : childCard.id,
-                                                      "is_card_completed": !e.value,
-                                                  }).then((response_data) => {
-                                                      CommonService.toastCallback(response_data, props.setBoards);
-                                                  });
-                                              }}
-                                              checked={childCard.is_card_completed}/>
-                                    <span style={{marginLeft: "4px"}}>{childCard.description}</span>
+                        <div>
+                        <h3>{t("cardChildrenChecklist")} </h3>
+                                <div>
+                                {props.childData.map((childCard, index) => {
+                                    return (
+                                        <div key={childCard.id} className="flex align-items-center mt-3">
+                                            <Checkbox inputId={childCard.id} name="card_item"
+                                                      value={childCard.is_card_finished}
+                                                      disabled={true}
+                                                      checked={childCard.is_card_finished}/>
+                                            <span style={{marginLeft: "4px"}}>{childCard.description}</span>
 
-                                </div>
-                            );
-                        })}
-                    </div>
+                                        </div>
+                                    );
+                                })}
+                            </div>
+                        </div>
                     }
                 </Dialog>
             </EditMenu>
@@ -508,6 +523,21 @@ function Card(props) {
                                                      className="w-full md:w-20rem"/>
                                     </RestrictedAndLabel>
                                 </RestrictedBoardsBar>}
+                                <TopButtonContainer>
+                                        {props.isCardDone ?
+                                            <Button label={t("cardFinished")} icon="pi pi-check" severity="success" />
+                                            : <Button label={t("cardNotFinished")} icon="pi pi-empty" disabled="false"/>
+                                        }
+                                    <ToggleButton
+                                        onLabel="Bug"
+                                        offLabel=" "
+                                        value={props.hasBug}
+                                        onChange={(e) => {handleBugCheck()}}
+                                        checked={props.hasBug}
+                                        onIcon="pi pi-wrench"
+                                        offIcon="pi pi-wrench"
+                                        />
+                                </TopButtonContainer>
                                 <Description
                                     className='tasks-container'>
                                     <ContentEditable
@@ -517,56 +547,74 @@ function Card(props) {
                                         disabled={false}
                                         onBlur={handleInputChange}/>
                                 </Description>
-                                {(cardItems.length > 0) && (props.childData.length === 0) && (
-                                    <div>
-                                        {cardItems.map((card_item, index) => {
-                                            return (
-                                                <div key={card_item.id} className="flex align-items-center mt-3">
-                                                    <Checkbox inputId={card_item.id} name="card_item"
-                                                              value={card_item.is_done}
-                                                              onChange={(e) => {
-                                                                  cardItems[index].is_done = !e.value;
-                                                                  // setCardItems([...cardItems]);
-                                                                  apiService.updateCard(props.board, {
-                                                                      "id"   : props.backId,
-                                                                      "items": cardItems
-                                                                  }).then((response_data) => {
-                                                                      CommonService.toastCallback(response_data, props.setBoards);
-                                                                  });
-                                                              }}
-                                                              checked={card_item.is_done}/>
-                                                    <span style={{marginLeft: "4px"}}>{card_item.name}</span>
 
-                                                </div>
-                                            );
-                                        })}
-                                    </div>
-                                )}
-                                {(props.childData.length > 0) &&
-                                <div>
-                                    {props.childData.map((childCard, index) => {
-                                        return (
-                                            <div key={childCard.id} className="flex align-items-center mt-3">
-                                                <Checkbox inputId={childCard.id} name="card_item"
-                                                          value={childCard.is_card_completed}
-                                                          disabled={childCard.has_items}
-                                                          onChange={(e) => {
-                                                              // setCardItems([...cardItems]);
-                                                              apiService.updateCard(childCard.board, {
-                                                                  "id"               : childCard.id,
-                                                                  "is_card_completed": !e.value,
-                                                              }).then((response_data) => {
-                                                                  CommonService.toastCallback(response_data, props.setBoards);
-                                                              });
-                                                          }}
-                                                          checked={childCard.is_card_completed}/>
-                                                <span style={{marginLeft: "4px"}}>{childCard.description}</span>
-
+                                    {(cardItems.length > 0)&& (
+                                        <div>
+                                        <ToggleButton style={{width: "200px", marginLeft: "10px", marginTop: "10px", height: "20px"}}
+                                                      onLabel={"Podzadania"} offLabel={"Podzadania"} onIcon="pi pi-minus" offIcon="pi pi-plus"
+                                                      checked={itemCollapse}
+                                                      onChange={() => handleItemCollapse()}/>
+                                    {(itemCollapse===true)&&(
+                                            <div>
+                                                {cardItems.map((card_item, index) => {
+                                                    return (
+                                                        <div key={card_item.id} className="flex align-items-center mt-3">
+                                                            <Checkbox inputId={card_item.id} name="card_item"
+                                                                      value={card_item.is_done}
+                                                                      onChange={(e) => {
+                                                                          cardItems[index].is_done = !e.value;
+                                                                          // setCardItems([...cardItems]);
+                                                                          apiService.updateCard(props.board, {
+                                                                              "id"   : props.backId,
+                                                                              "items": cardItems
+                                                                          }).then((response_data) => {
+                                                                              CommonService.toastCallback(response_data, props.setBoards);
+                                                                          });
+                                                                      }}
+                                                                      checked={card_item.is_done}/>
+                                                            <span style={{marginLeft: "4px"}}>{card_item.name}</span>
+                                                        </div>
+                                                    );
+                                                })}
                                             </div>
-                                        );
-                                    })}
-                                </div>
-                                }
+                                    )}
+                                        </div>
+                                    )}
+                                {(props.childData.length > 0) &&
+                                    <div>
+                                    <ToggleButton style={{width: "200px", marginLeft: "10px", marginTop: "10px", height: "20px"}}
+                                              onLabel={"Dzieci: "} offLabel={"Dzieci: "} onIcon="pi pi-minus" offIcon="pi pi-plus"
+                                              checked={childrenCollapse}
+                                              onChange={() => handleChildrenCollapse()}/>
+                                        {(childrenCollapse === true) &&
+                                            <div>
+                                                {props.childData.map((childCard, index) => {
+                                                    return (
+                                                        <div key={childCard.id}
+                                                             className="flex align-items-center mt-3">
+                                                            <Checkbox inputId={childCard.id} name="card_item"
+                                                                      value={childCard.is_card_completed}
+                                                                      disabled={childCard.has_items}
+                                                                      onChange={(e) => {
+                                                                          // setCardItems([...cardItems]);
+                                                                          apiService.updateCard(childCard.board, {
+                                                                              "id": childCard.id,
+                                                                              "is_card_completed": !e.value,
+                                                                          }).then((response_data) => {
+                                                                              CommonService.toastCallback(response_data, props.setBoards);
+                                                                          });
+                                                                      }}
+                                                                      checked={childCard.is_card_finished}/>
+                                                            <span
+                                                                style={{marginLeft: "4px"}}>{childCard.description}</span>
+
+                                                        </div>
+                                                    );
+                                                })}
+                                            </div>
+                                        }
+                                    </div>
+                                    }
                                 <ProgressAndButtons>
 
                                     <ButtonContainer>

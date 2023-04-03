@@ -101,5 +101,7 @@
   "cardRemoveHeader": "Delete confirmation",
   "cardRemoveDialogMessage": "Are you sure you want to delete this task?",
   "cardRemoveUserAssignmentDialog": "Are you sure you want to assign this user?",
-  "cardHasAParent": "Has a parent: "
+  "cardHasAParent": "Has a parent: ",
+  "cardFinished": "Done",
+  "cardNotFinished": "Not done"
 }

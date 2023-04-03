@@ -110,13 +110,15 @@ class Card(Timestamp):
     index = models.PositiveSmallIntegerField(default=0)
     is_locked = models.BooleanField(default=False)
     is_card_completed = models.BooleanField(default=False)
-
+    is_card_finished = models.BooleanField(default=False)
+    has_bug = models.BooleanField(default=False)
     def save(self,*args, **kwargs):
         items = CardItem.objects.filter(card_id=self.id)
         print(items )
         if items:
             all_completed = not items.filter(is_done=False).exists()
             self.is_card_completed = all_completed
+        self.is_card_finished = (self.board == Board.objects.all().order_by('-index').first())
         super(Card, self).save(*args, **kwargs)
 
     board = models.ForeignKey(

@@ -26,6 +26,22 @@ class Migration(migrations.Migration):
             username="admin", password="pbkdf2_sha256$390000$7E5b9Oni9XtoyEvDg6JGEU$tuytruGRxNIheIqLqUxzmkj2kKskeAt0+MAvhPrMFHY=", is_staff=True, is_superuser=True, is_active=True,
             avatar="http://localhost:8000/media/91153.png"
         )
+        board_model = apps.get_model('kanban', 'Board')
+        board_model.objects.create(
+            name="Initial column 1",
+            id=1,
+            index=0,
+        )
+        board_model.objects.create(
+            name="Initial column 2",
+            id=2,
+            index=1,
+        )
+        row_model = apps.get_model('kanban', 'Row')
+        row_model.objects.create(
+            name="Initial row",
+            id=1,
+        )
 
     operations = [
 

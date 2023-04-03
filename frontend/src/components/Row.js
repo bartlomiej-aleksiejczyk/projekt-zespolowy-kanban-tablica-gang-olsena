@@ -193,6 +193,9 @@ function Row(props) {
                                           description={card.description}
                                           indexDrag={indexDrag}
                                           data={card}
+                                          isCardCompleted={card.is_card_completed}
+                                          isCardDone={card.is_card_finished}
+                                          hasBug={card.has_bug}
                                           name={card.name}
                                           board={card.board}
                                           row={card.row}
