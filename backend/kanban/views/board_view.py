@@ -101,6 +101,7 @@ class BoardViewSet(viewsets.ViewSet):
 
                 )
             )
+
         if card_id:
             card_instance = Card.objects.get_by_pk(pk=card_id)
             index = card_instance.index

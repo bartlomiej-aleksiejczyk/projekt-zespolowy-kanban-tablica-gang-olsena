@@ -25,7 +25,18 @@ class CardViewSet(viewsets.ViewSet):
         card = Card.objects.get_by_pk(pk=pk)
         restricted_boards=list(Card.objects.filter(id=pk).values_list('restricted_boards',flat=True))
         board_new = request.data.get('board')
+        print((Card.objects.filter(parent_card_id=pk, is_card_finished=False).exists()))
+        if (Card.objects.filter(parent_card_id=pk, is_card_finished=False).exists()) and Board.objects.get_by_pk(pk=board_new) ==Board.objects.all().order_by('-index').first():
+            return Response(
+                dict(
+                    success=False,
+                    message="apiChildrenNotFinished",
+                    data=BoardSerializer(Board.objects.all(), many=True).data,
+                    data1=remaining_helper(),
+                    data2=CardSerializer(Card.objects.all(), many=True).data
 
+                )
+            )
         if board_new in restricted_boards:
             return Response(
                 dict(

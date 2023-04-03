@@ -130,6 +130,8 @@ function Kanban() {
     const [users, setUsers] = useState('');
     const [remaining, setRemaining] = useState([]);
     const [cardsChoice, setCardsChoice] = useState([]);
+    const [notCompletedAlert, setNotCompletedAlert] = useState(false);
+    const [bugAlert, setBugAlert] = useState(false);
 
     // const renderFooter = (visible4) => {
     //     return (
