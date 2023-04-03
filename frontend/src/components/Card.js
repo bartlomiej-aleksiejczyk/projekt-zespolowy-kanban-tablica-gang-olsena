@@ -212,8 +212,8 @@ function Card(props) {
     const [users, setUsers] = useState('');
     const [restrictedBoards, setRestrictedBoards] = useState(props.restrictedBoardsData);
     const [bug, setBug] = useState(props.hasBug);
-    const [itemCollapse, setItemCollapse] = useState(true)
-    const [childrenCollapse, setChildrenCollapse] = useState(true)
+    const [itemCollapse, setItemCollapse] = useState(false)
+    const [childrenCollapse, setChildrenCollapse] = useState(false)
     const apiService = useUserService();
     const handleItemCollapse = () => {
         setItemCollapse(!itemCollapse)
@@ -594,16 +594,7 @@ function Card(props) {
                                                              className="flex align-items-center mt-3">
                                                             <Checkbox inputId={childCard.id} name="card_item"
                                                                       value={childCard.is_card_completed}
-                                                                      disabled={childCard.has_items}
-                                                                      onChange={(e) => {
-                                                                          // setCardItems([...cardItems]);
-                                                                          apiService.updateCard(childCard.board, {
-                                                                              "id": childCard.id,
-                                                                              "is_card_completed": !e.value,
-                                                                          }).then((response_data) => {
-                                                                              CommonService.toastCallback(response_data, props.setBoards);
-                                                                          });
-                                                                      }}
+                                                                      disabled={true}
                                                                       checked={childCard.is_card_finished}/>
                                                             <span
                                                                 style={{marginLeft: "4px"}}>{childCard.description}</span>
@@ -611,7 +602,17 @@ function Card(props) {
                                                         </div>
                                                     );
                                                 })}
+                                                <InsideProgressDiv>
+                                                    {/*{}%*/}
+                                                    <ProgressBar value={props.data.children_done_percentage} style={{
+                                                        height: '16px',
+                                                        width : "100%",
+                                                        color : "black"
+                                                    }}
+                                                    color="green"></ProgressBar>
+                                                </InsideProgressDiv>
                                             </div>
+
                                         }
                                     </div>
                                     }
@@ -702,8 +703,7 @@ function Card(props) {
                                         </Avatars>
                                     </ButtonContainer>
                                     <ProgressDiv>
-
-                                        {(props.data.item_data.length > 0 && (props.childData.length === 0)) && (
+                                        {(props.data.item_data.length > 0  && (
                                             <InsideProgressDiv>
                                                 {/*{}%*/}
                                                 <ProgressBar value={props.data.subtask_done_percentage} style={{
@@ -712,17 +712,7 @@ function Card(props) {
                                                     color : "black"
                                                 }}></ProgressBar>
                                             </InsideProgressDiv>
-                                        )}
-                                        {props.childData.length > 0 &&
-                                        <InsideProgressDiv>
-                                            {/*{}%*/}
-                                            <ProgressBar value={props.data.subtask_done_percentage} style={{
-                                                height: '16px',
-                                                width : "100%",
-                                                color : "black"
-                                            }}></ProgressBar>
-                                        </InsideProgressDiv>
-                                        }
+                                        ))}
                                     </ProgressDiv>
                                 </ProgressAndButtons>
                                 {/*</div>*/}

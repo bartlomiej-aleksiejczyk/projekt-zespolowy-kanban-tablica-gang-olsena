@@ -41,6 +41,7 @@ class CardSerializer(serializers.ModelSerializer):
     item_data = CardItemSerializer(source='card_item', many=True, read_only=True)
     child_data = CardChildSerializer(source='card_parent_card', many=True, read_only=True)
     subtask_done_percentage = serializers.SerializerMethodField()
+    children_done_percentage = serializers.SerializerMethodField()
     restricted_boards_data = BoardSerializerPartial(source='restricted_boards', many=True, read_only=True)
     parent_name = serializers.SerializerMethodField()
 
@@ -51,18 +52,22 @@ class CardSerializer(serializers.ModelSerializer):
     @staticmethod
     def get_subtask_done_percentage(obj):
         try:
-            if Card.objects.filter(parent_card=obj.id).exists():
-                result = int(
+            result = int(obj.card_item.filter(is_done=True).count() / obj.card_item.count() * 100)
+            return result
+        except:
+            return 0
+    @staticmethod
+    def get_children_done_percentage(obj):
+        try:
+            result = int(
                     Card.objects.filter(
                         parent_card=obj.id,
-                        is_card_completed=True
+                        is_card_finished=True
                     ).count()
                     / Card.objects.filter(
                         parent_card=obj.id
                     ).count() * 100
                 )
-            else:
-                result = int(obj.card_item.filter(is_done=True).count() / obj.card_item.count() * 100)
             return result
         except:
             return 0
