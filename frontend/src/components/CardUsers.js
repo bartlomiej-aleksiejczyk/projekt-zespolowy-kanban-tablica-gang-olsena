@@ -43,8 +43,7 @@ function UserAvatar(props) {
     const acceptAssignEdit = () => {
         let data=props.allUsers
         data.splice(data.indexOf(props.id),1)
-        apiService.updateCard(props.board, {
-            "id"  : props.cardId,
+        apiService.updateSingleCard(props.cardId, {
             "users": data,
         }).then((response_data) => {
             CommonService.toastCallback(response_data, props.setBoards, props.setRemaining);

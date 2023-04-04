@@ -214,6 +214,7 @@ function Card(props) {
     const [bug, setBug] = useState(props.hasBug);
     const [itemCollapse, setItemCollapse] = useState(false)
     const [childrenCollapse, setChildrenCollapse] = useState(false)
+    const [uneditedBoards, setUneditedBoards] = useState(props.boards)
     const apiService = useUserService();
     const handleItemCollapse = () => {
         setItemCollapse(!itemCollapse)
@@ -223,8 +224,7 @@ function Card(props) {
     }
     const handleLock = (value) => {
         setLock(value)
-        apiService.updateCard(props.board, {
-            "id"       : props.backId,
+        apiService.updateSingleCard(props.backId, {
             "is_locked": value
         }).then((response_data) => {
                 CommonService.toastCallback(response_data, props.setBoards);
@@ -233,8 +233,7 @@ function Card(props) {
         );
     }
     const handleBugCheck  = () => {
-        apiService.updateCard(props.board, {
-            "id"       : props.backId,
+        apiService.updateSingleCard(props.backId, {
             "has_bug": !(bug)
         }).then((response_data) => {
             CommonService.toastCallback(response_data, props.setBoards);
@@ -245,16 +244,14 @@ function Card(props) {
     }
     const handleUnlock = (e) => {
         setLock(e.value)
-        apiService.updateCard(props.board, {
-            "id"       : props.backId,
+        apiService.updateSingleCard(props.backId, {
             "is_locked": false
         }).then((response_data) => {
             CommonService.toastCallback(response_data, props.setBoards)
         });
     }
     const handleInputChange = (e) => {
-        apiService.updateCard(props.board, {
-            "id"         : props.backId,
+        apiService.updateSingleCard(props.backId, {
             "description": e.target.innerHTML
         }).then((response_data) => {
             CommonService.toastCallback(response_data, props.setBoards, props.setCardsChoice, props.setCardsChoice)
@@ -287,27 +284,27 @@ function Card(props) {
             setVisible1(false);
         });
     }
-//Ta funkcja też do poprawy, prymitywnie "naprawia" ona problem że można modyfikować checkpointy a potem odrzucić,
-// jednak jakieś modyfikację zostają, ale problem polega
-    //że nie jest async więć zbyt szybko aktualizuje się chya
-    const rejectEditCard = () => {
+
+    async function rejectEditCard(){
         apiService.getBoards().then((response_data) => {
-            props.setBoards(response_data.data);
-            setCardItems(props.data.item_data)
-        });
-        setValue1(props.color);
-        setLock(props.locked);
-        setVisible1(false);
-        setRestrictedBoards(props.restrictedBoardsData);
-        setCardItems(props.data?.item_data);
-        setParent(props.parentCard);
+            props.setBoards(response_data.data, ()=> {
+                setCardItems(props.data?.card_items)
+            });
+            console.log("fidfdsijffdiogfgdgfd")
+            setValue1(props.color);
+            setLock(props.locked);
+            //Nalezy to kiedyś zrobić inaczej
+
+            setVisible1(false);
+            setRestrictedBoards(props.restrictedBoardsData);
+            setParent(props.parentCard);
+        })
     }
     const acceptAssignEdit = () => {
         if(props.boards[0].id in restrictedBoards) {
             setRestrictedBoards([])
         }
-        apiService.updateCard(props.board, {
-            "id"  : props.backId,
+        apiService.updateSingleCard(props.backId, {
             "user": "",
         }).then((response_data) => {
             CommonService.toastCallback(response_data, props.setBoards, props.setRemaining, props.setCardsChoice);
@@ -435,6 +432,7 @@ function Card(props) {
                                                 onClick={() => {
                                                     cardItems.splice(index, 1);
                                                     setCardItems([...cardItems]);
+
                                                 }}/>
                                     </div>
                                 );
@@ -564,8 +562,7 @@ function Card(props) {
                                                                       onChange={(e) => {
                                                                           cardItems[index].is_done = !e.value;
                                                                           // setCardItems([...cardItems]);
-                                                                          apiService.updateCard(props.board, {
-                                                                              "id"   : props.backId,
+                                                                          apiService.updateSingleCard(props.backId, {
                                                                               "items": cardItems
                                                                           }).then((response_data) => {
                                                                               CommonService.toastCallback(response_data, props.setBoards);
@@ -632,7 +629,7 @@ function Card(props) {
                                                        closable={false}
                                                        visible={visible1}
                                                        onHide={() => setVisible1(false)}
-                                                       message={"TEST"}
+                                                       message={editCardDialog}
                                                        header={t("cardEditDialog")}
                                             // icon="pi pi-pencil"
                                                        acceptLabel={t("accept")}

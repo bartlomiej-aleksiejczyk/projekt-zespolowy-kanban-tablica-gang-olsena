@@ -37,6 +37,7 @@
   "apiColumnOnRestrictedListIsFirstError": "Nie można zabrać dostępu do pierwszej kolumny",
   "apiColumnAdded":  "Kolumna została dodana",
   "apiColumnUpdated": "Kolumna została zaktualizowana",
+  "apiChildrenNotFinished": "Karta nie może zostać dodana, wszystkie dzieci nie mają statusu 'skończone'",
 
   "Login.js and Register.js":"SECTION",
   "loginErrorMessage":"Nie wprowadzono nazwy użytkownika",
@@ -77,6 +78,8 @@
   "kanbanButtonLogout": "Wyloguj się",
   "kanbanButtonChangeUserData": "Zmień dane użytkownika",
   "kanbanUserAssignmentLimit": "Limit przypisań:",
+  "kanbanMoveCardNotFinished": "Czy na pewno chcesz zakończyć zadanie, które nie jest skompletowane?",
+  "kanbanMoveCardWithBug": "Czy na pewno chcesz zakończyć zadanie z 'bugiem'?",
 
   "Board.js":"SECTION",
   "BoardNewCard": "Wpisz nazwę zadania:",

@@ -47,7 +47,7 @@ class BoardViewSet(viewsets.ViewSet):
 
             )
         )
-
+#Dla 4.04.2023 metoda ta musi mieć dołączone carditems, inaczej uznaje że wszystkie carditems zostały usunięte
     def update_board_card(self, request, pk):
         data = request.data.copy()
         card_id = data.get('id')
@@ -259,7 +259,7 @@ class BoardViewSet(viewsets.ViewSet):
             card.row = first_row
             card.index = 0
             card.save()
-            card.move(0, first_board, first_row)
+            card.move(0, first_board.id, first_row.id)
         changed_index = board.index
         for board in boards:
             board.index = changed_index

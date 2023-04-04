@@ -286,15 +286,15 @@ function Kanban() {
             boards[boardIndex].row_data[rowIndex].card_data.splice(destination.index, 0, source_card);
             boards[boardIndex].row_data[rowIndex].card_data[destination.index].board = destination_card.id;
             setBoards(boards);
-            console.log(oldBoards)
-
-            if((board.id===lastBoard.id) &&(source_card.has_bug)) {
-                setBugAlert(true)
-                return 0
-            }
-            if((board.id===lastBoard.id) &&(source_card.is_card_completed)){
-                setNotCompletedAlert(true)
-                return 0
+            if((board.id===lastBoard.id) &&(source_card.child_data.length === 0)){
+                if((source_card.has_bug)) {
+                    setBugAlert(true)
+                    return 0
+                }
+                if(((source_card.is_card_completed)&&(source_card.item_data.length > 0))){
+                    setNotCompletedAlert(true)
+                    return 0
+                }
             }
             if(cards.length - 1 < destination.index) {
                 await apiService.moveCard(draggableIde, cards.length, board.id, row.id).then((response_data) => {
@@ -356,8 +356,8 @@ function dragCancel(){
                 }}>
                     <ConfirmDialog visible={notCompletedAlert}
                                    closable={false}
-                                   message={t("moveCardNotFinished")}
-                                   header={t("moveCardNotFinishedHeader")}
+                                   message={t("kanbanMoveCardNotFinished")}
+                                   header={t("warning")}
                                    icon="pi pi-trash"
                                    acceptLabel={t("yes")}
                                    rejectLabel={t("no")}
@@ -366,8 +366,8 @@ function dragCancel(){
                                     setNotCompletedAlert(false)}}/>
                     <ConfirmDialog visible={bugAlert}
                                    closable={false}
-                                   message={t("moveCardWithBug")}
-                                   header={t("moveCardWithBugHeader")}
+                                   message={t("kanbanMoveCardWithBug")}
+                                   header={t("warning")}
                                    icon="pi pi-trash"
                                    acceptLabel={t("yes")}
                                    rejectLabel={t("no")}

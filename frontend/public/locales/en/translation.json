@@ -37,6 +37,8 @@
   "apiColumnOnRestrictedListIsFirstError": "Can't remove access to the first column",
   "apiColumnAdded":  "Column added",
   "apiColumnUpdated": "Column updated",
+  "apiChildrenNotFinished": "Card cannot be moved, all children must have 'finished' status.",
+
 
   "Login.js and Register.js":"SECTION",
   "loginErrorMessage":"Username not entered",
@@ -77,6 +79,8 @@
   "kanbanButtonLogout": "Logout",
   "kanbanButtonChangeUserData": "Change user data",
   "kanbanUserAssignmentLimit": "Assignment limit:",
+  "kanbanMoveCardNotFinished":  "Are you sure you want to finish an incomplete task",
+  "kanbanMoveCardWithBug":"Are you sure you want to finish a task with a bug?",
 
   "Board.js":"SECTION",
   "BoardNewCard": "Enter task name:",
@@ -103,5 +107,8 @@
   "cardRemoveUserAssignmentDialog": "Are you sure you want to assign this user?",
   "cardHasAParent": "Has a parent: ",
   "cardFinished": "Done",
-  "cardNotFinished": "Not done"
+  "cardNotFinished": "Not done",
+  "cardChildrenChecklist": "Card's children checklist:",
+  "cardItemChecklist": "Carditems checklist:"
+
 }
