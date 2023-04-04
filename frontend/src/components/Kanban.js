@@ -132,7 +132,12 @@ function Kanban() {
     const [cardsChoice, setCardsChoice] = useState([]);
     const [notCompletedAlert, setNotCompletedAlert] = useState(false);
     const [bugAlert, setBugAlert] = useState(false);
-
+    const [oldBoards, setOldBoards] = useState(false);
+    const [oldCards, setOldCards] = useState(false);
+    const [oldDestination, setOldDestination] = useState(false);
+    const [oldDraggableIde, setOldDraggableIde] = useState(false);
+    const [oldBoard, setOldBoard] = useState(false);
+    const [oldRow, setOldRow] = useState(false);
     // const renderFooter = (visible4) => {
     //     return (
     //         <div>
@@ -141,6 +146,7 @@ function Kanban() {
     //         </div>
     //     );
     // }
+
     const footerContent = (
         <div>
             <Button label={t("reject")} icon="pi pi-times" onClick={() => setVisible(false)} className="p-button-text" />
@@ -260,18 +266,36 @@ function Kanban() {
             let boardIndex = parseInt(((destination.droppableId)).slice(-1));
             let rowIndex = parseInt((destination.droppableId).slice(0, -1))
             let board = boards[boardIndex];
+            let lastBoard=boards[boards.length - 1];
             let row = (board.row_data)[rowIndex];
             let cards = row.card_data;
             let boardIndexSource = parseInt(((source.droppableId)).slice(-1));
             let rowIndexSource = parseInt((source.droppableId).slice(0, -1))
             let source_card = {...boards[boardIndexSource].row_data[rowIndexSource].card_data[source.index]};
             let destination_card = {...boards[boardIndex]};
+            setOldBoards(structuredClone(boards))
+            console.log(oldBoards)
+            setOldCards(cards);
+            setOldDestination(destination);
+            setOldDraggableIde(draggableIde)
+            setOldBoard(board)
+            setOldRow(row)
+            setOldCards(cards)
+
             boards[boardIndexSource].row_data[rowIndexSource].card_data.splice(source.index, 1);
             boards[boardIndex].row_data[rowIndex].card_data.splice(destination.index, 0, source_card);
             boards[boardIndex].row_data[rowIndex].card_data[destination.index].board = destination_card.id;
             setBoards(boards);
+            console.log(oldBoards)
 
-
+            if((board.id===lastBoard.id) &&(source_card.has_bug)) {
+                setBugAlert(true)
+                return 0
+            }
+            if((board.id===lastBoard.id) &&(source_card.is_card_completed)){
+                setNotCompletedAlert(true)
+                return 0
+            }
             if(cards.length - 1 < destination.index) {
                 await apiService.moveCard(draggableIde, cards.length, board.id, row.id).then((response_data) => {
                     CommonService.toastCallback(response_data, setBoards)
@@ -299,6 +323,26 @@ function Kanban() {
 
         }}
     }
+async function dragDecision(cards,destination,draggableIde,board,row){
+    setNotCompletedAlert(false)
+    setBugAlert(false)
+    if(cards.length - 1 < destination.index) {
+        await apiService.moveCard(draggableIde, cards.length, board.id, row.id).then((response_data) => {
+            CommonService.toastCallback(response_data, setBoards)
+        });
+    } else {
+        await apiService.moveCard(draggableIde, destination.index, board.id, row.id).then((response_data) => {
+            CommonService.toastCallback(response_data, setBoards)
+        });
+    }
+
+}
+function dragCancel(){
+        console.log(oldBoards)
+        setBoards(oldBoards)
+    setNotCompletedAlert(false)
+    setBugAlert(false)
+}
     return (
         <UserServiceProvider>
             <WholeWebpage>
@@ -310,6 +354,26 @@ function Kanban() {
                     zIndex  : "1",
                     verticalAlign : "middle",
                 }}>
+                    <ConfirmDialog visible={notCompletedAlert}
+                                   closable={false}
+                                   message={t("moveCardNotFinished")}
+                                   header={t("moveCardNotFinishedHeader")}
+                                   icon="pi pi-trash"
+                                   acceptLabel={t("yes")}
+                                   rejectLabel={t("no")}
+                                   reject={() => {dragCancel()}}
+                                    accept={() => {dragDecision(oldCards,oldDestination, oldDraggableIde,oldBoard,oldRow)
+                                    setNotCompletedAlert(false)}}/>
+                    <ConfirmDialog visible={bugAlert}
+                                   closable={false}
+                                   message={t("moveCardWithBug")}
+                                   header={t("moveCardWithBugHeader")}
+                                   icon="pi pi-trash"
+                                   acceptLabel={t("yes")}
+                                   rejectLabel={t("no")}
+                                   reject={() => {dragCancel()}}
+                                   accept={() => {dragDecision(oldCards,oldDestination, oldDraggableIde,oldBoard,oldRow)
+                                   setBugAlert(false)}}/>
                     <ConfirmDialog visible={visible2}
                                    onHide={() => setVisible2(false)}
                                    message={`${t("kanbanLogoutConfirmWindowMessage")} ${user.username}?`}

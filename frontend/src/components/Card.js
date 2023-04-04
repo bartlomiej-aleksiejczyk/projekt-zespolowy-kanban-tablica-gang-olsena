@@ -632,11 +632,11 @@ function Card(props) {
                                                        closable={false}
                                                        visible={visible1}
                                                        onHide={() => setVisible1(false)}
-                                                       message={editCardDialog}
-                                                       header="Potwierdzenie edycji"
+                                                       message={"TEST"}
+                                                       header={t("cardEditDialog")}
                                             // icon="pi pi-pencil"
-                                                       acceptLabel="Akceptuj"
-                                                       rejectLabel="Odrzuć"
+                                                       acceptLabel={t("accept")}
+                                                       rejectLabel={t("reject")}
                                                        accept={acceptEditCard}
                                                        reject={rejectEditCard}
                                         />

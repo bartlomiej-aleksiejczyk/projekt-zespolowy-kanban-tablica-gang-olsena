@@ -90,7 +90,7 @@
   "rowRemoveConfirmationHeader": "Potwierdzenie usunięcia",
 
   "Card.js":"SECTION",
-  "cardEditDialog": "Okno edycji postaci",
+  "cardEditDialog": "Okno edycji zadania",
   "cardEditDialogChooseParent": "Wybierz rodzica",
   "cardRestrictColumnDialog": "Wybierz tablicę do wykluczenia",
   "cardLocked": "Blokada",
