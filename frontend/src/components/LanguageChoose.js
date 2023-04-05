@@ -11,7 +11,7 @@ function LanguageChoose () {
     const [selectedLanguage, setSelectedLanguage] = useState(i18n.language);
     const languages = [
         {value: "en", name: "English", img:"us"},
-        {value: "pl", name: "Polski", img:"mc"},
+        {value: "pl", name: "Polski", img:"pl"},
     ]
     const selectedCountryTemplate = (option, props) => {
         if (option) {

@@ -9,7 +9,7 @@ import {ConfirmDialog} from 'primereact/confirmdialog';
 import {InputText} from 'primereact/inputtext';
 import {ToggleButton} from 'primereact/togglebutton';
 import {useUserService} from "../utils/UserServiceContext";
-import { useTranslation } from 'react-i18next';
+import {useTranslation} from 'react-i18next';
 import LanguageChoose from "./LanguageChoose";
 
 const CardsStyle = styled.div`
@@ -23,7 +23,6 @@ const CardsStyle = styled.div`
   min-height: 305px;
   max-height: 305px;
   overflow: auto;
-  background-color:white;
   transition: background-color 0.4s;
   display: inline-flex;
   
@@ -31,23 +30,6 @@ const CardsStyle = styled.div`
   //   props.rowOverflow ? '#800000' : 'white'};
   // color: {props =>
   //   props.rowOverflow ? 'white' : 'inherit'};
-`;
-const RowsStyle = styled.div`
-  //box-shadow: 0px 1px 7px rgba(0, 0, 0, 0.1), 0px 4px 5px -2px rgba(0, 0, 0, 0.12), 0px 10px 15px -5px rgba(0, 0, 0, 0.2);
-  max-width: 790px;
-  min-width: 245px;
-  max-height: 310px;
-  min-height: 310px;
-  zIndex : 1;
-  margin-top: 3px;
-  margin-right: 2px;
-  margin-bottom: 3px;
-  display: flex;
-  flex-wrap: wrap;
-  flex-direction: column;
-  align-items: center;
-
-
 `;
 const RowsStyleExtension = styled.div`
   //box-shadow: 0px 1px 7px rgba(0, 0, 0, 0.1), 0px 4px 5px -2px rgba(0, 0, 0, 0.12), 0px 10px 15px -5px rgba(0, 0, 0, 0.2);
@@ -90,7 +72,29 @@ const RowCollapsable = styled.div`
 `;
 
 function Row(props) {
-    const { t, i18n } = useTranslation();
+    let isBetween = true;
+    if(props.board) {
+        isBetween = props.board.min_card <= props.row.card_data.length && props.board.max_card >= props.row.card_data.length;
+    }
+
+    const RowsStyle = styled.div`
+  //box-shadow: 0px 1px 7px rgba(0, 0, 0, 0.1), 0px 4px 5px -2px rgba(0, 0, 0, 0.12), 0px 10px 15px -5px rgba(0, 0, 0, 0.2);
+  max-width: 790px;
+  min-width: 245px;
+  max-height: 310px;
+  min-height: 310px;
+  zIndex : 1;
+  margin-top: 3px;
+  margin-right: 2px;
+  margin-bottom: 3px;
+  display: flex;
+  flex-wrap: wrap;
+  flex-direction: column;
+  align-items: center;
+  background ${isBetween ? 'white' : 'red'};
+`;
+
+    const {t, i18n} = useTranslation();
     const [value3, setValue3] = useState(props.name);
     const [visible1, setVisible1] = useState(false);
     const [visible2, setVisible2] = useState(false);
@@ -120,7 +124,7 @@ function Row(props) {
     }
     const acceptRowDelete = () => {
         apiService.removeRow((props.backId)).then((response_data) => {
-            CommonService.toastCallback(response_data, props.setBoards,props.setRemaining)
+            CommonService.toastCallback(response_data, props.setBoards, props.setRemaining)
         });
     }
     return (
@@ -143,7 +147,10 @@ function Row(props) {
                             size="lg"
                             rounded
                             text
-                            onClick={() => CommonService.onOpenDialog(setVisible2, [{callback: setValue3, value: props.name}])}/>
+                            onClick={() => CommonService.onOpenDialog(setVisible2, [{
+                                callback: setValue3,
+                                value   : props.name
+                            }])}/>
                     <Button style={{marginLeft: "40px", marginTop: "80px", zIndex: 7, fontSize: "12px", scale: "120%"}}
                             icon="pi pi-trash"
                             size="lg"
@@ -211,7 +218,7 @@ function Row(props) {
                                           cardsChoice={props.cardsChoice}
                                           setCardsChoice={props.setCardsChoice}
                                           callRestrictionUpdate={props.callRestrictionUpdate}
-                                          // setCallRestrictionUpdate={props.setCallRestrictionUpdate}
+                                        // setCallRestrictionUpdate={props.setCallRestrictionUpdate}
                                           parentName={card.parent_name}
                                     />
                                 )}

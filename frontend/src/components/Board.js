@@ -11,7 +11,7 @@ import ApiService from "../services/ApiService";
 import CommonService from "../services/CommonService";
 import Row from "./Row";
 import {useUserService} from "../utils/UserServiceContext";
-import { useTranslation } from 'react-i18next';
+import {useTranslation} from 'react-i18next';
 
 const BoardStyle = styled.div`
   box-shadow: 0px 1px 7px rgba(0, 0, 0, 0.1), 0px 4px 5px -2px rgba(0, 0, 0, 0.12), 0px 10px 15px -5px rgba(0, 0, 0, 0.2);
@@ -30,6 +30,7 @@ const BoardStyle = styled.div`
     props.boardOverflow ? 'white' : 'inherit'};
 
 `;
+
 const Label = styled.label`
   align-items: center;
   font-weight: bold;
@@ -39,6 +40,7 @@ const Label = styled.label`
   margin-bottom: 0px;
 `
 const LabelDummy = styled.label`
+    padding: 16px;
 `
 
 const Title = styled.h2`
@@ -67,12 +69,13 @@ const CardButtons = styled.div`
 `;
 
 function Board(props) {
-    const { t, i18n } = useTranslation();
+    const {t, i18n} = useTranslation();
     const [visible, setVisible] = useState(false);
     const [visible2, setVisible2] = useState(false);
     const [visi, setVisi] = useState(false);
     const [value, setValue] = useState('');
-    const [value2, setValue2] = useState(props.limit);
+    const [minCard, setMinCard] = useState(props.board.min_card);
+    const [maxCard, setMaxCard] = useState(props.board.max_card);
     const [value3, setValue3] = useState(props.name);
     const [callRestrictionUpdate, setCallRestrictionUpdate] = useState(false);
 
@@ -84,9 +87,12 @@ function Board(props) {
             CommonService.toastCallback(response_data, props.setBoards)
         });
     }
-    const handleInputChangeLimit = (e) => {
-        setValue2(e.value);
-        apiService.updateBoard(props.backId, {"max_card": e.value}).then((response_data) => {
+    const handleInputChangeLimit = (min_card, max_card) => {
+        if(min_card === props.board.min_card && max_card === props.board.max_card) return;
+
+        setMinCard(min_card);
+        setMaxCard(max_card);
+        apiService.updateBoard(props.backId, {"min_card": min_card, "max_card": max_card}).then((response_data) => {
             CommonService.toastCallback(response_data, props.setBoards)
         });
     }
@@ -96,14 +102,14 @@ function Board(props) {
         apiService.removeBoard((props.backId)).then((response_data) => {
             CommonService.toastCallback(response_data, props.setBoards, props.setRemaining);
         });
-    setCallRestrictionUpdate(true)
+        setCallRestrictionUpdate(true)
         console.log(callRestrictionUpdate)
     }
 
     const acceptAddCard = () => {
         apiService.newCard(props.backId, value).then((response_data) => {
-            CommonService.toastCallback(response_data, props.setBoards,props.setRemaining,props.setCardsChoice,)
-;
+            CommonService.toastCallback(response_data, props.setBoards, props.setRemaining, props.setCardsChoice,)
+            ;
         });
     }
     const rejectAddCard = () => {
@@ -141,18 +147,27 @@ function Board(props) {
                                          disabled={true}
                                          onBlur={handleInputChangeName}/>
                     </Title>
-                    {false
-                        //(props.is_static)
-                        ? <Label>
-                            Limit: <InputNumber inputId="minmax-buttons" value={value2}
-                                                onValueChange={(e) => handleInputChangeLimit(e)}
+                    {(!props.is_static)
+                        ? <Label className="mx-auto">
+                            Limit:
+                            <InputNumber inputId="minmax-buttons" value={minCard}
+                                         onValueChange={(e) => handleInputChangeLimit(e.value, props.board.max_card)}
+                                         mode="decimal"
+                                         showButtons min={0}
+                                         max={100}
+                                         size="1"
+                                         style={{height: '2em', width: '120px'}}
+                            />
+                            <div>-</div>
+                            <InputNumber inputId="minmax-buttons" value={maxCard}
+                                         onValueChange={(e) => handleInputChangeLimit(props.board.min_card, e.value)}
 
-                                                mode="decimal"
-                                                showButtons min={1}
-                                                max={100}
-                                                size="1"
-                                                style={{height: '2em', width: '100%'}}
-                        />
+                                         mode="decimal"
+                                         showButtons min={minCard}
+                                         max={100}
+                                         size="1"
+                                         style={{height: '2em', width: '120px'}}
+                            />
                         </Label>
                         : <LabelDummy>
                         </LabelDummy>
@@ -173,7 +188,10 @@ function Board(props) {
                                 rounded
                                 text
                                 aria-label="Filter"
-                                onClick={() => CommonService.onOpenDialog(setVisible2, [{callback: setValue3, value: props.name}])}/>
+                                onClick={() => CommonService.onOpenDialog(setVisible2, [{
+                                    callback: setValue3,
+                                    value   : props.name
+                                }])}/>
                         <Button style={{}}
                                 icon="pi pi-plus"
                                 size="lg"
@@ -223,6 +241,8 @@ function Board(props) {
                                  cards={row.card_data}
                                  indexDrag={indexDrag}
                                  name={row.name}
+                                 row={row}
+                                 board={props.board}
                                  users={props.users}
                                  setBoards={props.setBoards}
                                  boards={props.boards}

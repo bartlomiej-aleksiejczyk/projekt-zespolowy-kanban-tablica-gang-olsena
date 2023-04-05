@@ -499,7 +499,6 @@ function dragCancel(){
                                                   boards={boards}
                                                   board={board}
                                                   name={board.name}
-                                                  limit={board.max_card}
                                                   is_static={board.is_static}
                                                   setBoards={setBoards}
                                                   setRemaining={setRemaining}

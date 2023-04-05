@@ -110,7 +110,7 @@
   "cardFinished": "Done",
   "cardNotFinished": "Not done",
   "cardChildrenChecklist": "Card's children checklist:",
-  "cardItemChecklist": "Subtasks checklist:",
+  "cardItemChecklist": "Subtasks checklist",
   "cardCarditems": "Subtasks",
   "cardChildren": "Children"
 
