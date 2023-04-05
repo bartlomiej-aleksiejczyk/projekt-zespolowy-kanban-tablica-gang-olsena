@@ -73,7 +73,7 @@ const RowCollapsable = styled.div`
 
 function Row(props) {
     let isBetween = true;
-    if(props.board) {
+    if(props.board && !props.board.is_static) {
         isBetween = props.board.min_card <= props.row.card_data.length && props.board.max_card >= props.row.card_data.length;
     }
 
