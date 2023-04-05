@@ -16,6 +16,7 @@ import { useTranslation } from 'react-i18next';
 const BoardStyle = styled.div`
   box-shadow: 0px 1px 7px rgba(0, 0, 0, 0.1), 0px 4px 5px -2px rgba(0, 0, 0, 0.12), 0px 10px 15px -5px rgba(0, 0, 0, 0.2);
   min-width: 250px;
+  max-width: 790px;
   margin-right: 6px;
   margin-top: 180px;
   margin-bottom: 45px;

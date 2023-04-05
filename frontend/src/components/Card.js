@@ -30,8 +30,8 @@ import { Accordion, AccordionTab } from 'primereact/accordion';
 
 const CardStyle = styled.div`
   box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.03), 0px 0px 2px rgba(0, 0, 0, 0.06), 0px 2px 6px rgba(0, 0, 0, 0.12);
-  max-width: 228px;
-  min-width: 228px;
+  max-width: 250px;
+  min-width: 250px;
   max-height:290px;
   border: ${props => props.locked ? "2px solid #b7b3ea" : "2px solid #b7b3ea"};
   border-radius: 6px;
@@ -49,6 +49,16 @@ const CardStyle = styled.div`
         ${props => props.locked ? "#D4D6D7 10px" : `${props.color} 10px`},
         ${props => props.locked ? "#D4D6D7 20px" : `${props.color} 20px`}
 );
+`;
+const ScrollSpaceContainer = styled.div`
+  margin-right: 4px;
+  max-width: 225px;
+  min-width: 225px;
+  height: 290px;
+  margin-bottom: 15px;
+  display: flex;
+  flex-direction: column;
+
 `;
 const ChildBar = styled.div`
   display: block;
@@ -89,12 +99,9 @@ const RestrictedAndLabel = styled.div`
   flex-direction: row;
   min-height: 25px;
   max-height: 50px;
-
   background-color: #ff0090;
   border-radius: 7px;
   color: black;
-
-
 `;
 const ButtonContainer = styled.div`
   display:flex;
@@ -107,6 +114,8 @@ const ButtonContainer = styled.div`
 `;
 const TopButtonContainer = styled.div`
   display:flex;
+  justify-content: space-between;
+  
   flex-direction: row;
   flex-wrap: nowrap;
 `;
@@ -177,8 +186,6 @@ const EditMenuText = styled.div`
     align-content: center;
     flex-wrap: nowrap;
       overflow: scroll;
-
-
 `;
 const DroppableDiv = styled.div`
   height:290px ;
@@ -186,6 +193,35 @@ const DroppableDiv = styled.div`
   display: flex;
   flex-direction: column;
   overflow: auto;
+`;
+const ChildrenContainer = styled.div`
+  display: block;
+  border-radius: 7px;
+  padding: 2px;
+  width: 220px;
+  background-color: #c7c7d7;
+  border-width: 2px;
+  border-color: #6866ce;
+  border-style: solid;
+`;
+const EditCardChildren = styled.div`
+  display: block;
+  padding: 7px;
+  margin-top: 10px;
+  border-radius: 7px;
+  background-color: #ffffff;
+  border-width: 2px;
+  border-color: #a2a2af;
+  border-style: solid;
+`;
+const EditCardChild = styled.div`
+  display: block;
+  padding: 7px;
+  border-radius: 7px;
+  background-color: #c7c7d7;
+  border-width: 2px;
+  border-color: #6866ce;
+  border-style: solid;
 `;
 function Card(props) {
     const { t, i18n } = useTranslation();
@@ -208,13 +244,21 @@ function Card(props) {
     ];
     const [editSelectedUser, setEditSelectedUser] = useState(props.data?.user_data);
     const [parent, setParent] = useState(props.parentCard);
-    const [cardItems, setCardItems] = useState(props.data?.item_data);
     const [users, setUsers] = useState('');
     const [restrictedBoards, setRestrictedBoards] = useState(props.restrictedBoardsData);
     const [bug, setBug] = useState(props.hasBug);
     const [itemCollapse, setItemCollapse] = useState(false)
     const [childrenCollapse, setChildrenCollapse] = useState(false)
     const [uneditedBoards, setUneditedBoards] = useState(props.boards)
+    const [cardItems, setCardItems] = useState(props.data?.item_data);
+    React.useEffect(() => {
+        const items = props.itemDataNew;
+        if (items) {
+            setCardItems(items);
+        }
+        console.log("useeff")
+
+    }, [props.itemDataNew]);
     const apiService = useUserService();
     const handleItemCollapse = () => {
         setItemCollapse(!itemCollapse)
@@ -284,22 +328,15 @@ function Card(props) {
             setVisible1(false);
         });
     }
-
     async function rejectEditCard(){
-        apiService.getBoards().then((response_data) => {
-            props.setBoards(response_data.data, ()=> {
-                setCardItems(props.data?.card_items)
-            });
-            console.log("fidfdsijffdiogfgdgfd")
+        apiService.getBoards().then((response_data) => {props.setBoards(response_data.data)});
             setValue1(props.color);
             setLock(props.locked);
-            //Nalezy to kiedyś zrobić inaczej
-
             setVisible1(false);
             setRestrictedBoards(props.restrictedBoardsData);
             setParent(props.parentCard);
-        })
-    }
+        }
+
     const acceptAssignEdit = () => {
         if(props.boards[0].id in restrictedBoards) {
             setRestrictedBoards([])
@@ -318,7 +355,7 @@ function Card(props) {
     //Jest to zły wzorzec, ale nie mam lepszego pomysłu
     React.useEffect(() => {
         setRestrictedBoards(props.restrictedBoardsData);
-    }, [props.restrictedBoardsData])
+    }, [props.restrictedBoardsData]);
     React.useEffect(() => {
         props.setCardsChoice(props.cardsChoice);
     }, [props.cardsChoice])
@@ -390,6 +427,17 @@ function Card(props) {
                                       checked={lock}
                                       onChange={(e) => handleLock(e.value)}
                         />
+                        <ToggleButton
+                            style={{scale:"0.9"}}
+                            onLabel="Bug"
+                            offLabel=" "
+                            value={props.hasBug}
+                            onChange={(e) => {handleBugCheck()}}
+                            checked={props.hasBug}
+                            onIcon="pi pi-wrench"
+                            offIcon="pi pi-wrench"
+                            disabled={props.isCardDone}
+                        />
                         {/*(props.cardsChoice.find(o => o.id === props.backId).restricted_boards)*/}
                     </div>
                     <div className="mt-3 flex justify-content-between align-items-center flex-wrap">
@@ -444,23 +492,23 @@ function Card(props) {
                         </div>
                     )}
                     {(props.childData.length > 0) &&
-                        <div>
+                        <EditCardChildren>
                         <h3>{t("cardChildrenChecklist")} </h3>
                                 <div>
                                 {props.childData.map((childCard, index) => {
                                     return (
-                                        <div key={childCard.id} className="flex align-items-center mt-3">
+                                        <EditCardChild key={childCard.id} className="flex align-items-center mt-3">
                                             <Checkbox inputId={childCard.id} name="card_item"
                                                       value={childCard.is_card_finished}
                                                       disabled={true}
                                                       checked={childCard.is_card_finished}/>
                                             <span style={{marginLeft: "4px"}}>{childCard.description}</span>
 
-                                        </div>
+                                        </EditCardChild>
                                     );
                                 })}
                             </div>
-                        </div>
+                        </EditCardChildren>
                     }
                 </Dialog>
             </EditMenu>
@@ -482,7 +530,7 @@ function Card(props) {
                           ref={provided.innerRef}
                           color={props.color}
                           locked={props.locked}
-                    onDoubleClick={() => props.setCallRestrictionUpdate(true)}
+                    // onDoubleClick={() => props.setCallRestrictionUpdate(true)}
                 >
                     <Droppable
                         droppableId={props.dropId}
@@ -492,8 +540,9 @@ function Card(props) {
                             <DroppableDiv
                                 {...provided.droppableId}
                                 ref={provided.innerRef}>
+                                <ScrollSpaceContainer>
                                 {props.parentCard &&
-                                <ChildBar>
+                                    <ChildBar>
                                     <i className="pi pi-circle-fill"></i>
                                     {t("cardHasAParent")} {(props.parentName ?
                                     (props.parentName[0].length > 9 ? props.parentName[0].substring(0, 9 - 3) + "..." :
@@ -523,10 +572,11 @@ function Card(props) {
                                 </RestrictedBoardsBar>}
                                 <TopButtonContainer>
                                         {props.isCardDone ?
-                                            <Button label={t("cardFinished")} icon="pi pi-check" severity="success" />
-                                            : <Button label={t("cardNotFinished")} icon="pi pi-empty" disabled="false"/>
+                                            <Button style={{scale:"0.9"}} label={t("cardFinished")} icon="pi pi-check" severity="success" />
+                                            : <Button style={{scale:"0.9"}} label={t("cardNotFinished")} icon="pi pi-empty" disabled="false"/>
                                         }
                                     <ToggleButton
+                                        style={{scale:"0.9"}}
                                         onLabel="Bug"
                                         offLabel=" "
                                         value={props.hasBug}
@@ -534,6 +584,7 @@ function Card(props) {
                                         checked={props.hasBug}
                                         onIcon="pi pi-wrench"
                                         offIcon="pi pi-wrench"
+                                        disabled={props.isCardDone}
                                         />
                                 </TopButtonContainer>
                                 <Description
@@ -548,8 +599,8 @@ function Card(props) {
 
                                     {(cardItems.length > 0)&& (
                                         <div>
-                                        <ToggleButton style={{width: "200px", marginLeft: "10px", marginTop: "10px", height: "20px"}}
-                                                      onLabel={"Podzadania"} offLabel={"Podzadania"} onIcon="pi pi-minus" offIcon="pi pi-plus"
+                                        <ToggleButton style={{width: "220px", marginTop: "10px", height: "20px"}}
+                                                      onLabel={t("cardCarditems")} offLabel={t("cardCarditems")} onIcon="pi pi-minus" offIcon="pi pi-plus"
                                                       checked={itemCollapse}
                                                       onChange={() => handleItemCollapse()}/>
                                     {(itemCollapse===true)&&(
@@ -579,12 +630,12 @@ function Card(props) {
                                     )}
                                 {(props.childData.length > 0) &&
                                     <div>
-                                    <ToggleButton style={{width: "200px", marginLeft: "10px", marginTop: "10px", height: "20px"}}
-                                              onLabel={"Dzieci: "} offLabel={"Dzieci: "} onIcon="pi pi-minus" offIcon="pi pi-plus"
+                                        <ToggleButton style={{width: "220px", marginTop: "10px", height: "20px"}}
+                                              onLabel={t("cardChildren")} offLabel={t("cardChildren")} onIcon="pi pi-minus" offIcon="pi pi-plus"
                                               checked={childrenCollapse}
                                               onChange={() => handleChildrenCollapse()}/>
                                         {(childrenCollapse === true) &&
-                                            <div>
+                                            <ChildrenContainer>
                                                 {props.childData.map((childCard, index) => {
                                                     return (
                                                         <div key={childCard.id}
@@ -594,8 +645,7 @@ function Card(props) {
                                                                       disabled={true}
                                                                       checked={childCard.is_card_finished}/>
                                                             <span
-                                                                style={{marginLeft: "4px"}}>{childCard.description}</span>
-
+                                                                style={{marginLeft: "4px"}}>{childCard.description.length > 19 ? childCard.description.substring(0, 19 - 3) + "..." : childCard.description}</span>
                                                         </div>
                                                     );
                                                 })}
@@ -608,7 +658,7 @@ function Card(props) {
                                                     }}
                                                     color="green"></ProgressBar>
                                                 </InsideProgressDiv>
-                                            </div>
+                                            </ChildrenContainer>
 
                                         }
                                     </div>
@@ -648,7 +698,8 @@ function Card(props) {
                                     }, {callback: setCardItems, value: props.data?.item_data}])}
                                             icon="pi pi-pencil"
                                             size="small"
-                                            aria-label="Cancel"/>
+                                            aria-label="Cancel"
+                                            disabled={props.isCardDone}/>
                                         <ToggleButton style={{backgroundColor: '#4F46E5 !important'}}
                                                       onLabel=""
                                                       offLabel=""
@@ -713,6 +764,7 @@ function Card(props) {
                                     </ProgressDiv>
                                 </ProgressAndButtons>
                                 {/*</div>*/}
+                                </ScrollSpaceContainer>
                                 {provided.placeholder}
                             </DroppableDiv>
                         )}

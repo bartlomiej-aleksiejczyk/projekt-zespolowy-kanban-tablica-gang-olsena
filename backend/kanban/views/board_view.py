@@ -13,6 +13,7 @@ class BoardViewSet(viewsets.ViewSet):
     permission_classes = (IsAuthenticated,)
 
     def update_board(self, request, pk=None):
+        print(request)
         data = request.data.copy()
         if Board.objects.all().count() == 0:
             index = int(data.get('index', 0))
@@ -24,6 +25,8 @@ class BoardViewSet(viewsets.ViewSet):
             index = board_instance.index
 
         data['index'] = index
+        print(board_instance)
+        print(data)
         serializer = BoardSerializer(data=data, instance=board_instance, partial=True)
         serializer.is_valid(raise_exception=True)
         serializer.save()
@@ -120,6 +123,19 @@ class BoardViewSet(viewsets.ViewSet):
 
                     )
                 )
+            parent_card = Card.objects.get_by_pk(pk=parent)
+            if parent_card.is_card_finished:
+                return Response(
+                    dict(
+                        success=False,
+                        message="apiBoardCardParentCannotBeFinished",
+                        data=BoardSerializer(Board.objects.all(), many=True).data,
+                        data1=remaining_helper(),
+                        data2=CardSerializer(Card.objects.all(), many=True).data,
+                        data3=restricted_boards_old
+
+                    )
+                )
             if parent and children:
                 return Response(
                     dict(
@@ -132,7 +148,6 @@ class BoardViewSet(viewsets.ViewSet):
 
                     )
                 )
-
         if row_id is None:
             row_id = Row.objects.first().id
         data['board'] = pk
@@ -252,8 +267,7 @@ class BoardViewSet(viewsets.ViewSet):
         ).order_by('index')
 
         first_board = Board.objects.all().order_by('index').first()
-
-        first_row = Row.objects.first()
+        first_row = Row.objects.all().order_by('id').first()
         for card in cards_move:
             card.board = first_board
             card.row = first_row

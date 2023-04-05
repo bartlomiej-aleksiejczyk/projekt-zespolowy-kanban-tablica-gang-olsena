@@ -286,12 +286,12 @@ function Kanban() {
             boards[boardIndex].row_data[rowIndex].card_data.splice(destination.index, 0, source_card);
             boards[boardIndex].row_data[rowIndex].card_data[destination.index].board = destination_card.id;
             setBoards(boards);
-            if((board.id===lastBoard.id) &&(source_card.child_data.length === 0)){
+            if((board.id===lastBoard.id) ){
                 if((source_card.has_bug)) {
                     setBugAlert(true)
                     return 0
                 }
-                if(((source_card.is_card_completed)&&(source_card.item_data.length > 0))){
+                if(((!source_card.is_card_completed)&&(source_card.item_data.length > 0))){
                     setNotCompletedAlert(true)
                     return 0
                 }

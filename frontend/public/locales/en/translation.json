@@ -37,7 +37,8 @@
   "apiColumnOnRestrictedListIsFirstError": "Can't remove access to the first column",
   "apiColumnAdded":  "Column added",
   "apiColumnUpdated": "Column updated",
-  "apiChildrenNotFinished": "Card cannot be moved, all children must have 'finished' status.",
+  "apiChildrenNotFinished": "Task cannot be moved, all children must have 'finished' status",
+  "apiBoardCardParentCannotBeFinished": "Task cannot be child of already done task",
 
 
   "Login.js and Register.js":"SECTION",
@@ -109,6 +110,8 @@
   "cardFinished": "Done",
   "cardNotFinished": "Not done",
   "cardChildrenChecklist": "Card's children checklist:",
-  "cardItemChecklist": "Carditems checklist:"
+  "cardItemChecklist": "Subtasks checklist:",
+  "cardCarditems": "Subtasks",
+  "cardChildren": "Children"
 
 }

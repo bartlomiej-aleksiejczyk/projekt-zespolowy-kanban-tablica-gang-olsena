@@ -19,6 +19,8 @@ class Migration(migrations.Migration):
     def load_initial_data(apps, something):
         parameter_model = apps.get_model('kanban', 'Parameter')
         parameter_model.objects.create(
+            # ustawienie id=1 tutaj może powodować w przyszłośći problemy z dodaniem wartości, bo sequence w postgresql
+            # trochę zwariują i będą problemy jednorazowe z dodaniem marametru
             name="limit", value=2, id=1
         )
         user_model = apps.get_model('kanban', 'User')
@@ -29,18 +31,15 @@ class Migration(migrations.Migration):
         board_model = apps.get_model('kanban', 'Board')
         board_model.objects.create(
             name="Initial column 1",
-            id=1,
             index=0,
         )
         board_model.objects.create(
             name="Initial column 2",
-            id=2,
             index=1,
         )
         row_model = apps.get_model('kanban', 'Row')
         row_model.objects.create(
             name="Initial row",
-            id=1,
         )
 
     operations = [

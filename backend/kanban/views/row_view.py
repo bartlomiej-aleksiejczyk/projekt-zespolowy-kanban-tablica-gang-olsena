@@ -63,13 +63,13 @@ class RowViewSet(viewsets.ViewSet):
         row.deleted_at = datetime.datetime.now()
         row.save()
         first_board = Board.objects.all().order_by('index').first()
-        first_row = Row.objects.first()
+        first_row = Row.objects.all().order_by('id').first()
         for card in cards:
             card.board = first_board
             card.row = first_row
             card.index = 0
             card.save()
-            card.move(0, first_board, first_row)
+            card.move(0, first_board.id, first_row.id)
         return Response(
             dict(
                 success=True,

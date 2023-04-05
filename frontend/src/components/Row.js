@@ -13,7 +13,7 @@ import { useTranslation } from 'react-i18next';
 import LanguageChoose from "./LanguageChoose";
 
 const CardsStyle = styled.div`
-  max-width: 710px;
+  max-width: 770px;
   min-width: 228px;
   margin-top: 3px;
   margin-left: 11.5px;
@@ -34,7 +34,7 @@ const CardsStyle = styled.div`
 `;
 const RowsStyle = styled.div`
   //box-shadow: 0px 1px 7px rgba(0, 0, 0, 0.1), 0px 4px 5px -2px rgba(0, 0, 0, 0.12), 0px 10px 15px -5px rgba(0, 0, 0, 0.2);
-  max-width: 710px;
+  max-width: 790px;
   min-width: 245px;
   max-height: 310px;
   min-height: 310px;
@@ -51,7 +51,7 @@ const RowsStyle = styled.div`
 `;
 const RowsStyleExtension = styled.div`
   //box-shadow: 0px 1px 7px rgba(0, 0, 0, 0.1), 0px 4px 5px -2px rgba(0, 0, 0, 0.12), 0px 10px 15px -5px rgba(0, 0, 0, 0.2);
-  max-width: 720px;
+  max-width: 790px;
   min-width: 250px;
   max-height: 310px;
   min-height: 60px;

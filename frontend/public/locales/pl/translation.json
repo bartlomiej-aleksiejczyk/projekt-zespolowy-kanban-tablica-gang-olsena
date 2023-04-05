@@ -38,6 +38,7 @@
   "apiColumnAdded":  "Kolumna została dodana",
   "apiColumnUpdated": "Kolumna została zaktualizowana",
   "apiChildrenNotFinished": "Karta nie może zostać dodana, wszystkie dzieci nie mają statusu 'skończone'",
+  "apiBoardCardParentCannotBeFinished": "Zadanie nie może być dzieckiem zadania już zakończonego",
 
   "Login.js and Register.js":"SECTION",
   "loginErrorMessage":"Nie wprowadzono nazwy użytkownika",
@@ -106,8 +107,9 @@
   "cardRemoveUserAssignmentDialog": "Czy na pewno chcesz przypisanie użytkownika?",
   "cardHasAParent": "Ma rodzica: ",
   "cardFinished": "Zrobione",
-  "cardNotFinished": "Niezrobione"
-
+  "cardNotFinished": "Niezrobione",
+  "cardCarditems": "Podzadania",
+  "cardChildren": "Dzieci"
 
 }
 
