@@ -1,5 +1,7 @@
+import datetime
+
 from rest_framework import serializers
-from kanban.models import Card, CardItem, Board
+from kanban.models import Card, CardItem, Board, CardMoveTimeline
 from user.serializers import UserSerializer
 
 
@@ -44,10 +46,22 @@ class CardSerializer(serializers.ModelSerializer):
     children_done_percentage = serializers.SerializerMethodField()
     restricted_boards_data = BoardSerializerPartial(source='restricted_boards', many=True, read_only=True)
     parent_name = serializers.SerializerMethodField()
+    move_to_board_at = serializers.SerializerMethodField()
 
     class Meta:
         model = Card
         exclude = ('deleted_at',)
+
+    @staticmethod
+    def get_move_to_board_at(obj):
+        last_card_move = CardMoveTimeline.objects.filter(
+            card=obj
+        ).exclude(board=obj.board).order_by('-id').first()
+
+        if last_card_move:
+            return last_card_move.created_at
+
+        return datetime.datetime.now()
 
     @staticmethod
     def get_subtask_done_percentage(obj):

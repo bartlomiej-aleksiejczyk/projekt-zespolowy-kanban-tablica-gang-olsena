@@ -37,6 +37,7 @@ class Dictionary(models.Model):
 
 class Board(Dictionary, Timestamp):
     index = models.PositiveSmallIntegerField(default=0)
+    min_card = models.PositiveSmallIntegerField(default=None, null=True, blank=True)
     max_card = models.PositiveSmallIntegerField(default=None, null=True, blank=True)
 
     objects = CoreModelManager()
@@ -112,6 +113,7 @@ class Card(Timestamp):
     is_card_completed = models.BooleanField(default=False)
     is_card_finished = models.BooleanField(default=False)
     has_bug = models.BooleanField(default=False)
+
     def save(self,*args, **kwargs):
         items = CardItem.objects.filter(card_id=self.id)
         print(items )
@@ -204,6 +206,11 @@ class Card(Timestamp):
             card.save()
             changed_index += 1
 
+        CardMoveTimeline.objects.create(
+            card=self,
+            board_id=new_board_id,
+            row_id=new_row_id
+        )
         return True, "Wpis został przeniesiony poprawnie."
 
 
@@ -307,3 +314,23 @@ class CardItem(Dictionary, Timestamp):
     is_done = models.BooleanField(default=False)
 
     objects = CoreModelManager()
+
+class CardMoveTimeline(Timestamp):
+    card = models.ForeignKey(
+        'kanban.Card',
+        related_name='card_move_timeline',
+        on_delete=models.DO_NOTHING
+
+    )
+
+    board = models.ForeignKey(
+        'kanban.Board',
+        on_delete=models.DO_NOTHING
+    )
+
+    row = models.ForeignKey(
+        'kanban.Row',
+        on_delete=models.DO_NOTHING
+    )
+
+    created_at = models.DateTimeField(auto_now_add=True)
