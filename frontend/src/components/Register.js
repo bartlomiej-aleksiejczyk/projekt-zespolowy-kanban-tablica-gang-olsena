@@ -5,6 +5,8 @@ import AuthService from "../services/AuthService";
 import styled, {createGlobalStyle} from 'styled-components';
 import {InputText,Checkbox} from 'primereact/inputtext';
 import {Button} from 'primereact/button';
+import { useTranslation } from 'react-i18next';
+import LanguageChoose from "./LanguageChoose";
 
 
 const RegisterHeader = styled.h1`
@@ -50,11 +52,16 @@ const TitleRegister= styled.div`
   //height: 200px;
 
 `;
-
+const LanguageDropdown = styled.div`
+  position: absolute;
+  top: 40px;
+  right: 0;
+`;
 
 function Register(props) {
-  const { registerUser } = useContext(AuthService);
-  const handleSubmit = e => {
+    const { t, i18n } = useTranslation();
+    const { registerUser } = useContext(AuthService);
+    const handleSubmit = e => {
     e.preventDefault();
     const username = e.target.username.value;
     const password = e.target.password.value;
@@ -62,15 +69,15 @@ function Register(props) {
     if (username.length <= 0){
         window.PrimeToast.show({
             severity: 'warn',
-            summary: 'Błąd',
-            detail: "Nie wprowadzono nazwy użytkownika",
+            summary: t("error"),
+            detail: t("registerErrorUsernameNotEntered"),
             life: 3000
         });
     } else if (password!==password2){
         window.PrimeToast.show({
             severity: 'warn',
-            summary: 'Błąd',
-            detail: "Hasła się nie zgadzają",
+            summary: t("error"),
+            detail: t("registerErrorNotMatchingPasswords"),
             life: 3000
         });
     }else{
@@ -80,23 +87,26 @@ function Register(props) {
   return (
       <RegisterPage>
           <GlobalStyle whiteColor/>
+          <LanguageDropdown>
+              <LanguageChoose/>
+          </LanguageDropdown>
           <TitleRegister>
-          <RegisterHeader>Rejestracja</RegisterHeader>
+          <RegisterHeader>{t("registerHeader")}</RegisterHeader>
           </TitleRegister>
           <div className="surface-card p-6 shadow-5 border-round w-full lg:w-4">
               <div className="text-center mb-5">
-                  <span className="text-700 font-large line-height-3">Jeśli posiadasz już konto kliknij</span>
-                  <Link to="/login" className="font-medium no-underline ml-2 text-blue-500 cursor-pointer">tutaj </Link>
+                  <span className="text-700 font-large line-height-3">{t("registerDescription")}</span>
+                  <Link to="/login" className="font-medium no-underline ml-2 text-blue-500 cursor-pointer">{t("loginAccountCreationLink")} </Link>
               </div>
           <form onSubmit={handleSubmit}>
               <div>
-                  <label htmlFor="username" className="block text-900 font-large mb-3">Nazwa użytkownika:</label>
-                  <InputText id="username" type="text" placeholder="Wpisz nazwę" className="w-full mb-3" />
-                  <label htmlFor="password" className="block text-900 font-large mb-3">Hasło:</label>
-                  <InputText  type="password" id="password" placeholder="Wpisz hasło" className="w-full mb-3" />
-                  <label htmlFor="password2" className="block text-900 font-large mb-3">Powtórz hasło:</label>
-                  <InputText  type="password" id="password2" placeholder="Powtórz hasło" className="w-full mb-3" />
-                  <Button type="submit" label="Zarejestruj konto" icon="pi pi-user" className="w-full" />
+                  <label htmlFor="username" className="block text-900 font-large mb-3">{t("loginUsername")}</label>
+                  <InputText id="username" type="text" placeholder={t("loginUsernameInput")} className="w-full mb-3" />
+                  <label htmlFor="password" className="block text-900 font-large mb-3">{t("loginPassoword")}</label>
+                  <InputText  type="password" id="password" placeholder={t("loginPassowordInput")} className="w-full mb-3" />
+                  <label htmlFor="password2" className="block text-900 font-large mb-3">{t("registerRepeatPassword")}</label>
+                  <InputText  type="password" id="password2" placeholder={t("registerRepeatPasswordInput")} className="w-full mb-3" />
+                  <Button type="submit" label={t("registerButton")} icon="pi pi-user" className="w-full" />
               </div>
           </form>
           </div>

@@ -11,6 +11,7 @@ services:
       - POSTGRES_PASSWORD=postgres
       - POSTGRES_USER=postgres
       - POSTGRES_DB=kanban
+      - TZ=Europe/Warsaw
 
     volumes:
       - ./data/db:/var/lib/postgresql/data/
@@ -39,12 +40,14 @@ services:
       - POSTGRES_USER:postgres
       - POSTGRES_PASSWORD=postgres
       - POSTGRES_DB=kanban
+      - TZ=Europe/Warsaw
 
     ports:
       - '8000:8000'
 
     volumes:
       - ./backend:/app/backend
+      - /etc/localtime:/etc/localtime
 
     depends_on:
       - db

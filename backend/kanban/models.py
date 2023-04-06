@@ -1,6 +1,7 @@
 from django.contrib.auth.base_user import BaseUserManager
 from django.contrib.auth.models import AbstractUser
 from django.db import models
+from django.core.files.storage import FileSystemStorage
 
 
 class CoreModelManager(models.Manager):
@@ -36,6 +37,7 @@ class Dictionary(models.Model):
 
 class Board(Dictionary, Timestamp):
     index = models.PositiveSmallIntegerField(default=0)
+    min_card = models.PositiveSmallIntegerField(default=None, null=True, blank=True)
     max_card = models.PositiveSmallIntegerField(default=None, null=True, blank=True)
 
     objects = CoreModelManager()
@@ -61,10 +63,10 @@ class Board(Dictionary, Timestamp):
             return False, "Wprowadzono nieprawidłowy index."
 
         if old_index == 0 \
-            or new_index == 0 \
-            or old_index is None and new_index == self.get_last_index() + 1 \
-            or old_index and new_index == self.get_last_index() \
-            or old_index == self.get_last_index():
+                or new_index == 0 \
+                or old_index is None and new_index == self.get_last_index() + 1 \
+                or old_index and new_index == self.get_last_index() \
+                or old_index == self.get_last_index():
             return False, "Nie możesz przenieść tej tablicy w te miejsce."
 
         if old_index is not None:
@@ -107,6 +109,24 @@ class Board(Dictionary, Timestamp):
 
 class Card(Timestamp):
     index = models.PositiveSmallIntegerField(default=0)
+    is_locked = models.BooleanField(default=False)
+    is_card_completed = models.BooleanField(default=False)
+    is_card_finished = models.BooleanField(default=False)
+    are_children_collapsed=models.BooleanField(default=True)
+    are_carditems_collapsed=models.BooleanField(default=True)
+    has_bug = models.BooleanField(default=False)
+    #Twoje rozwiązanie mi nie działało poprawnie napisalem na szybko swoje
+    are_children_collapsed = models.BooleanField(default=True)
+
+    def save(self,*args, **kwargs):
+        items = CardItem.objects.filter(card_id=self.id)
+        print(items )
+        if items:
+            all_completed = not items.filter(is_done=False).exists()
+            self.is_card_completed = all_completed
+        self.is_card_finished = (self.board == Board.objects.all().order_by('-index').first())
+        super(Card, self).save(*args, **kwargs)
+
     board = models.ForeignKey(
         'kanban.Board',
         related_name='card_board',
@@ -119,14 +139,32 @@ class Card(Timestamp):
         blank=True,
         on_delete=models.DO_NOTHING
     )
+    parent_card = models.ForeignKey(
+        'kanban.Card',
+        related_name='card_parent_card',
+        null=True,
+        blank=True,
+        on_delete=models.DO_NOTHING
+    )
     description = models.TextField()
-
+    color = models.CharField(max_length=7, default="#FFFFFF")
     user = models.ForeignKey(
         'kanban.User',
         related_name='card_user',
         null=True,
         blank=True,
         on_delete=models.DO_NOTHING
+    )
+    users = models.ManyToManyField(
+        'kanban.User',
+        related_name='card_users',
+        blank=True)
+    restricted_boards = models.ManyToManyField(
+        'kanban.Board',
+        related_name='card_board_restricted',
+        blank=True,
+        null = False,
+
     )
 
     objects = CoreModelManager()
@@ -172,6 +210,11 @@ class Card(Timestamp):
             card.save()
             changed_index += 1
 
+        CardMoveTimeline.objects.create(
+            card=self,
+            board_id=new_board_id,
+            row_id=new_row_id
+        )
         return True, "Wpis został przeniesiony poprawnie."
 
 
@@ -183,10 +226,10 @@ class Row(Dictionary, Timestamp):
         ordering = ['-id']
 
     def get_last_index(self):
-        last_board = Row.objects.all().order_by('-index').first()
+        last_row = Row.objects.all().order_by('-index').first()
 
-        if isinstance(last_board, Row):
-            return last_board.index
+        if isinstance(last_row, Row):
+            return last_row.index
 
         return Row.objects.count()
 
@@ -253,6 +296,45 @@ class UserManager(CoreModelManager, BaseUserManager):
 
 
 class User(Timestamp, AbstractUser):
-    avatar = models.ImageField(default=None)
-
+    avatar = models.CharField(default="http://localhost:8000/media/generic-avatar.png", max_length=200)
+    image = models.ImageField(default=None, blank=True, null=True)
     objects = UserManager()
+
+
+class Parameter(Timestamp, Dictionary):
+    value = models.SmallIntegerField(default=0)
+    objects = UserManager()
+
+
+class CardItem(Dictionary, Timestamp):
+    card = models.ForeignKey(
+        'kanban.Card',
+        related_name='card_item',
+        null=False,
+        blank=True,
+        on_delete=models.DO_NOTHING
+
+    )
+    is_done = models.BooleanField(default=False)
+
+    objects = CoreModelManager()
+
+class CardMoveTimeline(Timestamp):
+    card = models.ForeignKey(
+        'kanban.Card',
+        related_name='card_move_timeline',
+        on_delete=models.DO_NOTHING
+
+    )
+
+    board = models.ForeignKey(
+        'kanban.Board',
+        on_delete=models.DO_NOTHING
+    )
+
+    row = models.ForeignKey(
+        'kanban.Row',
+        on_delete=models.DO_NOTHING
+    )
+
+    created_at = models.DateTimeField(auto_now_add=True)

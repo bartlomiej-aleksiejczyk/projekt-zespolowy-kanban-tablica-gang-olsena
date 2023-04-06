@@ -1,12 +1,11 @@
 import datetime
-
 from rest_framework import viewsets
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
-
-from kanban.models import Board, Card
+from kanban.models import Board, Card, CardItem
 from kanban.serializers.board_serializer import BoardSerializer
-from kanban.serializers.card_serializer import CardSerializer
+from kanban.views.helper import remaining_helper
+from kanban.serializers.card_serializer import CardSerializer, CardItemSerializer
 
 
 class CardViewSet(viewsets.ViewSet):
@@ -24,7 +23,31 @@ class CardViewSet(viewsets.ViewSet):
 
     def move_card(self, request, pk):
         card = Card.objects.get_by_pk(pk=pk)
+        restricted_boards=list(Card.objects.filter(id=pk).values_list('restricted_boards',flat=True))
+        board_new = request.data.get('board')
+        board_old = card.board.id
+        if (Card.objects.filter(parent_card_id=pk, is_card_finished=False).exists()) and Board.objects.get_by_pk(pk=board_new) ==Board.objects.all().order_by('-index').first():
+            return Response(
+                dict(
+                    success=False,
+                    message="apiChildrenNotFinished",
+                    data=BoardSerializer(Board.objects.all(), many=True).data,
+                    data1=remaining_helper(),
+                    data2=CardSerializer(Card.objects.all(), many=True).data
 
+                )
+            )
+        if board_new in restricted_boards:
+            return Response(
+                dict(
+                    success=False,
+                    message="apiColumnOnBlacklist",
+                    data=BoardSerializer(Board.objects.all(), many=True).data,
+                    data1=remaining_helper(),
+                    data2=CardSerializer(Card.objects.all(), many=True).data
+
+                )
+            )
         is_success, message = card.move(
             request.data.get('index', card.index),
             request.data.get('board', card.board_id),
@@ -41,7 +64,11 @@ class CardViewSet(viewsets.ViewSet):
                     message=message
                 )
             )
-
+        if board_new:
+            print(board_new)
+            if board_new != board_old:
+                Card.objects.filter(pk=pk).update(updated_at=datetime.datetime.now())
+                print(card.updated_at)
         return Response(
             dict(
                 success=True,
@@ -49,8 +76,30 @@ class CardViewSet(viewsets.ViewSet):
             )
         )
 
+    def update_card(self, request, pk):
+        data = request.data.copy()
+        card_instance = Card.objects.get_by_pk(pk=pk)
+
+        serializer = CardSerializer(data=data, instance=card_instance, partial=True)
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+
+        return Response(
+            dict(
+                success=True,
+                message="apiCardUpdated",
+                data=BoardSerializer(Board.objects.all(), many=True).data,
+                data1=remaining_helper(),
+                data2 = CardSerializer(Card.objects.all(), many=True).data
+        )
+        )
+
     def delete_card(self, request, pk):
         card = Card.objects.get_by_pk(pk=pk, raise_exception=True)
+        children = Card.objects.filter(parent_card=pk)
+        for child in children:
+            child.parent_card = None
+            child.save()
         card.deleted_at = datetime.datetime.now()
         card.save()
 
@@ -70,7 +119,72 @@ class CardViewSet(viewsets.ViewSet):
         return Response(
             dict(
                 success=True,
-                message="Zadanie zostało usunięte.",
-                data=BoardSerializer(Board.objects.all(), many=True).data
+                message="apiCardDeleted",
+                data=BoardSerializer(Board.objects.all(), many=True).data,
+                data1=remaining_helper(),
+                data2=CardSerializer(Card.objects.all(), many=True).data
+            )
+        )
+
+    def update_card_item(self, request, pk=None):
+        data = request.data.copy()
+
+        card_item_instance = None
+        if pk:
+            card_item_instance = CardItem.objects.get_by_pk(pk=pk)
+
+        serializer = CardItemSerializer(data=data, instance=card_item_instance, partial=True)
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+
+        return Response(
+            dict(
+                success=True,
+                message=(card_item_instance and "apiCardItemUpdated" or "apiCardItemAdded"),
+                data=CardItemSerializer(CardItem.objects.all(), many=True).data
+            )
+        )
+
+    def delete_card_item(self, request, pk):
+        card_item = CardItem.objects.get_by_pk(pk=pk, raise_exception=True)
+        card_item.deleted_at = datetime.datetime.now()
+        card_item.save()
+
+
+        return Response(
+            dict(
+                success=True,
+                message="apiCardItemDeleted",
+                data=CardItemSerializer(CardItem.objects.all(), many=True).data
+            )
+        )
+
+    def add_user_card(self, request, pk):
+        card_instance = Card.objects.get_by_pk(pk=pk)
+        new_user = (request.data.get('users'))
+        users = CardSerializer(card_instance).data['users']
+        if new_user in users:
+            return Response(
+                dict(
+                    success=False,
+                    message="apiSameUserAssignmentError",
+                    data=BoardSerializer(Board.objects.all(), many=True).data,
+                    data1=remaining_helper()
+                )
+            )
+        data = dict(request.data)
+        users.append(new_user)
+        data['users'] = users
+
+        serializer = CardSerializer(data=data, instance=card_instance, partial=True)
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+
+        return Response(
+            dict(
+                success=True,
+                message="apiCardUpdated",
+                data=BoardSerializer(Board.objects.all(), many=True).data,
+                data1=remaining_helper()
             )
         )

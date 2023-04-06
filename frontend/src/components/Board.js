@@ -11,21 +11,18 @@ import ApiService from "../services/ApiService";
 import CommonService from "../services/CommonService";
 import Row from "./Row";
 import {useUserService} from "../utils/UserServiceContext";
-
+import {useTranslation} from 'react-i18next';
 
 const BoardStyle = styled.div`
   box-shadow: 0px 1px 7px rgba(0, 0, 0, 0.1), 0px 4px 5px -2px rgba(0, 0, 0, 0.12), 0px 10px 15px -5px rgba(0, 0, 0, 0.2);
-  max-width: 250px;
-  min-width: 250px;
-  zIndex : 1;
+  min-width: ${props=>props.is_static? ("300px"):("250px")}
+  max-width: 790px;
   margin-right: 6px;
   margin-top: 180px;
-  margin-bottom: auto;
+  margin-bottom: 45px;
   border-radius: 6px;
   display: flex;
-  flex-wrap: wrap;
   flex-direction: column;
-  align-items: center;
   transition: background-color 2s ease;
   background-color: ${props =>
     props.boardOverflow ? '#800000' : 'white'};
@@ -33,26 +30,28 @@ const BoardStyle = styled.div`
     props.boardOverflow ? 'white' : 'inherit'};
 
 `;
+
 const Label = styled.label`
   align-items: center;
   font-weight: bold;
+  justify-content: center;
   display: flex;
-  margin-left: 2px;
+  margin-left: 20px;
+  //margin-left: -12%;
+  margin-top: 10px;
   gap: 8px;
-  margin-bottom: -5px;
+  margin-bottom: 0px;
 `
 const LabelDummy = styled.label`
-  margin-top: 13px;
-  margin-bottom: 13px;
+    padding: 21px;
 `
 
 const Title = styled.h2`
   text-align: center;
-  max-width: 205px;
   min-width: 205px;
-  height: 60px;
+  height: 35px;
   padding: 0px;
-  margin-bottom: 20px;
+  margin-bottom: 0px;
   flex-direction: column;
   word-wrap: break-word;
   flex-wrap: wrap;
@@ -60,17 +59,31 @@ const Title = styled.h2`
 `;
 
 const RowStyle = styled.section`
-  
-  align-items: center;
+  width: inherit;
+  display: flex;
+  flex-direction: column;
+  justify-content: start;
 
 `;
 const CardButtons = styled.div`
-  margin-top: 22px;
+  margin-top:5px;
+  margin-left: auto;
+  margin-right: auto;
 
 
 `;
 
 function Board(props) {
+    const {t, i18n} = useTranslation();
+    const [visible, setVisible] = useState(false);
+    const [visible2, setVisible2] = useState(false);
+    const [visi, setVisi] = useState(false);
+    const [value, setValue] = useState('');
+    const [minCard, setMinCard] = useState(props.board.min_card);
+    const [maxCard, setMaxCard] = useState(props.board.max_card);
+    const [value3, setValue3] = useState(props.name);
+    const [callRestrictionUpdate, setCallRestrictionUpdate] = useState(false);
+
     const apiService = useUserService();
 
 
@@ -79,23 +92,29 @@ function Board(props) {
             CommonService.toastCallback(response_data, props.setBoards)
         });
     }
-    const handleInputChangeLimit = (e) => {
-        setValue2(e.value);
-        apiService.updateBoard(props.backId, {"max_card": e.value}).then((response_data) => {
+    const handleInputChangeLimit = (min_card, max_card) => {
+        if(min_card === props.board.min_card && max_card === props.board.max_card) return;
+
+        setMinCard(min_card);
+        setMaxCard(max_card);
+        apiService.updateBoard(props.backId, {"min_card": min_card, "max_card": max_card}).then((response_data) => {
             CommonService.toastCallback(response_data, props.setBoards)
         });
     }
 
     const accept = () => {
+
         apiService.removeBoard((props.backId)).then((response_data) => {
-            CommonService.toastCallback(response_data, props.setBoards)
+            CommonService.toastCallback(response_data, props.setBoards, props.setRemaining);
         });
+        setCallRestrictionUpdate(true)
+        console.log(callRestrictionUpdate)
     }
 
     const acceptAddCard = () => {
         apiService.newCard(props.backId, value).then((response_data) => {
-            CommonService.toastCallback(response_data, props.setBoards)
-            setValue('');
+            CommonService.toastCallback(response_data, props.setBoards, props.setRemaining, props.setCardsChoice,)
+            ;
         });
     }
     const rejectAddCard = () => {
@@ -103,19 +122,19 @@ function Board(props) {
     }
     const acceptEditBoard = () => {
         apiService.updateBoard(props.backId, {"name": value3}).then((response_data) => {
-            CommonService.toastCallback(response_data, props.setBoards)
+            CommonService.toastCallback(response_data, props.setBoards);
+            setCallRestrictionUpdate(true);
+            console.log("props.callRestrictionUpdate");
+            console.log(callRestrictionUpdate)
+
         });
 
     }
     const rejectEditBoard = () => {
         setValue3(props.name);
     }
-    const [visible, setVisible] = useState(false);
-    const [visible2, setVisible2] = useState(false);
-    const [visi, setVisi] = useState(false);
-    const [value, setValue] = useState('');
-    const [value2, setValue2] = useState(props.limit);
-    const [value3, setValue3] = useState(props.name);
+
+
     return (
         <Draggable key={props.backId}
                    draggableId={props.dragId}
@@ -133,27 +152,39 @@ function Board(props) {
                                          disabled={true}
                                          onBlur={handleInputChangeName}/>
                     </Title>
-                    {!(props.is_static)
-                        ? <Label>
-                            Limit: <InputNumber inputId="minmax-buttons" value={value2}
-                                                onValueChange={(e) => handleInputChangeLimit(e)}
-
-                                                mode="decimal"
-                                                showButtons min={1}
-                                                max={100}
-                                                size="1"
-                                                style={{height: '2em', width: '100%'}}
-                        />
+                    {(!props.is_static)
+                        ? <Label className="ml-30">
+                            Limit:
+                            {/*Są tutaj przyciski min z max pomylone do naprawy*/}
+                            <InputNumber inputId="minmax-buttons" value={minCard}
+                                         onValueChange={(e) => handleInputChangeLimit(e.value, props.board.max_card)}
+                                         mode="decimal"
+                                         showButtons
+                                         max={maxCard-1}
+                                         size="1"
+                                         style={{height: '2em', width: '80px',marginRight:'30px'}}
+                                         min={maxCard>1?1:0}
+                            />
+                            <div>:</div>
+                            <InputNumber inputId="minmax-buttons" value={maxCard}
+                                         onValueChange={(e) => handleInputChangeLimit(props.board.min_card, e.value)}
+                                         min={(minCard+1)}
+                                         mode="decimal"
+                                         showButtons
+                                         max={100}
+                                         size="1"
+                                         style={{height: '2em', width: '80',marginRight:'30px'}}
+                            />
                         </Label>
                         : <LabelDummy>
                         </LabelDummy>
                     }
                     <ConfirmDialog visible={visi} onHide={() => setVisi(false)}
                                    message=<InputText value={value} onChange={(e) => setValue(e.target.value)}/>
-                    header="Wpisz zadanie:"
+                    header={t("BoardNewCard")}
                     icon="pi pi-check-square"
-                    acceptLabel="Akceptuj"
-                    rejectLabel="Odrzuć"
+                    acceptLabel={t("accept")}
+                    rejectLabel={t("reject")}
                     accept={acceptAddCard}
                     reject={rejectAddCard}
                     />
@@ -164,7 +195,10 @@ function Board(props) {
                                 rounded
                                 text
                                 aria-label="Filter"
-                                onClick={() => CommonService.onOpenDialog(setVisible2, [{callback: setValue3, value: props.name}])}/>
+                                onClick={() => CommonService.onOpenDialog(setVisible2, [{
+                                    callback: setValue3,
+                                    value   : props.name
+                                }])}/>
                         <Button style={{}}
                                 icon="pi pi-plus"
                                 size="lg"
@@ -174,10 +208,10 @@ function Board(props) {
                                 onClick={() => CommonService.onOpenDialog(setVisi, [{callback: setValue, value: ''}])}/>
                         <ConfirmDialog visible={visible2} onHide={() => setVisible2(false)}
                                        message=<InputText value={value3} onChange={(e) => setValue3(e.target.value)}/>
-                        header="Edytuj kolumnę:"
+                        header={t("BoardEditColumn")}
                         icon="pi pi-pencil"
-                        acceptLabel="Akceptuj"
-                        rejectLabel="Odrzuć"
+                        acceptLabel={t("accept")}
+                        rejectLabel={t("reject")}
                         accept={acceptEditBoard}
                         reject={rejectEditBoard}
                         />
@@ -185,11 +219,11 @@ function Board(props) {
                         <span>
                             <ConfirmDialog visible={visible}
                                            onHide={() => setVisible(false)}
-                                           message="Czy na pewno chcesz usunąć kolumnę?"
-                                           header="Potwierdzenie usunięcia"
+                                           message={t("BoardRemoveConfirmationDetail")}
+                                           header={t("BoardRemoveConfirmation")}
                                            icon="pi pi-trash"
-                                           acceptLabel="Tak"
-                                           rejectLabel="Nie"
+                                           acceptLabel={t("yes")}
+                                           rejectLabel={t("no")}
                                            accept={accept}
                                            reject={() => {}}/>
                             <Button style={{marginLeft: "20px"}}
@@ -212,9 +246,19 @@ function Board(props) {
                                  dragId={(row.id).toString() + "c"}
                                  droppableId={((props.rows).indexOf(row)).toString() + ((props.boards).indexOf(props.board)).toString()}
                                  cards={row.card_data}
-                                 setBoards={props.setBoards}
                                  indexDrag={indexDrag}
-                                 name={row.name}/>
+                                 name={row.name}
+                                 row={row}
+                                 board={props.board}
+                                 users={props.users}
+                                 setBoards={props.setBoards}
+                                 boards={props.boards}
+                                 setRemaining={props.setRemaining}
+                                 cardsChoice={props.cardsChoice}
+                                 setCardsChoice={props.setCardsChoice}
+                                 callRestrictionUpdate={callRestrictionUpdate}
+                                 setCallRestrictionUpdate={setCallRestrictionUpdate}
+                            />
                         )}
                     </RowStyle>
                 </BoardStyle>

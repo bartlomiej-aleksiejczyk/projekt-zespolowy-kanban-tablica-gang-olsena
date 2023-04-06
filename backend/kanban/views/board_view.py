@@ -3,16 +3,17 @@ import datetime
 from rest_framework import viewsets
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
-
-from kanban.models import Board, Card, Row
+from kanban.models import Board, Card, Row, CardItem
 from kanban.serializers.board_serializer import BoardSerializer
 from kanban.serializers.card_serializer import CardSerializer
+from kanban.views.helper import remaining_helper
 
 
 class BoardViewSet(viewsets.ViewSet):
     permission_classes = (IsAuthenticated,)
 
     def update_board(self, request, pk=None):
+        print(request)
         data = request.data.copy()
         if Board.objects.all().count() == 0:
             index = int(data.get('index', 0))
@@ -24,6 +25,8 @@ class BoardViewSet(viewsets.ViewSet):
             index = board_instance.index
 
         data['index'] = index
+        print(board_instance)
+        print(data)
         serializer = BoardSerializer(data=data, instance=board_instance, partial=True)
         serializer.is_valid(raise_exception=True)
         serializer.save()
@@ -42,18 +45,66 @@ class BoardViewSet(viewsets.ViewSet):
         return Response(
             dict(
                 success=True,
-                message="Kolumna została {}.".format(board_instance and "zaktualizowana" or "dodana"),
+                message=(board_instance and "apiColumnUpdated" or "apiColumnAdded"),
                 data=BoardSerializer(Board.objects.all(), many=True).data
+
             )
         )
-
+#Dla 4.04.2023 metoda ta musi mieć dołączone carditems, inaczej uznaje że wszystkie carditems zostały usunięte
     def update_board_card(self, request, pk):
         data = request.data.copy()
         card_id = data.get('id')
+        board_new = data.get('board')
         index = int(data.get('index', 0))
         row_id = data.get('row')
+        parent = data.get('parent_card')
+        restricted_boards = data.get('restricted_boards', [])
+
+        restricted_boards_old =list(Card.objects.filter(id=card_id).values_list('restricted_boards',flat=True))[1:]
+        children = Card.objects.filter(parent_card=card_id)
 
         card_instance = None
+        first_board_id = Board.objects.filter(index=0).first()
+
+        if first_board_id:
+            first_board_id = first_board_id.id
+
+        if first_board_id in restricted_boards:
+            return Response(
+                dict(
+                    success=False,
+                    message="apiColumnOnRestrictedListIsFirstError",
+                    data=BoardSerializer(Board.objects.all(), many=True).data,
+                    data1=remaining_helper(),
+                    data2=CardSerializer(Card.objects.all(), many=True).data,
+                    data3=restricted_boards_old
+                )
+            )
+        if board_new in restricted_boards:
+            return Response(
+                dict(
+                    success=False,
+                    message="apiColumnOnRestrictedListError",
+                    data=BoardSerializer(Board.objects.all(), many=True).data,
+                    data1=remaining_helper(),
+                    data2=CardSerializer(Card.objects.all(), many=True).data,
+                    data3=restricted_boards_old
+
+                )
+            )
+        if pk in restricted_boards:
+            return Response(
+                dict(
+                    success=False,
+                    message="apiColumnOnRestrictedListIsCurrentPositionError",
+                    data=BoardSerializer(Board.objects.all(), many=True).data,
+                    data1=remaining_helper(),
+                    data2=CardSerializer(Card.objects.all(), many=True).data,
+                    data3=restricted_boards_old
+
+                )
+            )
+
         if card_id:
             card_instance = Card.objects.get_by_pk(pk=card_id)
             index = card_instance.index
@@ -61,16 +112,71 @@ class BoardViewSet(viewsets.ViewSet):
             if row_id is None:
                 row_id = card_instance.row_id
 
+
+        if parent:
+            parent_card = Card.objects.get_by_pk(pk=parent)
+            if parent ==card_id:
+                return Response(
+                    dict(
+                        success=False,
+                        message="apiBoardCardSelfParentError",
+                        data=BoardSerializer(Board.objects.all(), many=True).data,
+                        data1=remaining_helper(),
+                        data2=CardSerializer(Card.objects.all(), many=True).data,
+                        data3=restricted_boards_old
+
+                    )
+                )
+            if parent_card.is_card_finished:
+                return Response(
+                    dict(
+                        success=False,
+                        message="apiBoardCardParentCannotBeFinished",
+                        data=BoardSerializer(Board.objects.all(), many=True).data,
+                        data1=remaining_helper(),
+                        data2=CardSerializer(Card.objects.all(), many=True).data,
+                        data3=restricted_boards_old
+
+                    )
+                )
+            if parent and children:
+                return Response(
+                    dict(
+                        success=False,
+                        message="apiBoardCardParentToParentError",
+                        data=BoardSerializer(Board.objects.all(), many=True).data,
+                        data1=remaining_helper(),
+                        data2=CardSerializer(Card.objects.all(), many=True).data,
+                        data3=restricted_boards_old
+
+                    )
+                )
         if row_id is None:
             row_id = Row.objects.first().id
-
-        Board.objects.get_by_pk(pk=pk)
+        if not card_id:
+            data['updated_at'] = datetime.datetime.now()
         data['board'] = pk
         data['index'] = index
         data['row'] = row_id
+
         serializer = CardSerializer(data=data, instance=card_instance, partial=True)
         serializer.is_valid(raise_exception=True)
         serializer.save()
+
+        items = data.get('items', [])
+
+        CardItem.objects.filter(card_id=card_id).exclude(id__in=[item['id'] for item in items if 'id' in item]).update(
+            deleted_at=datetime.datetime.now()
+        )
+        for item in items:
+            CardItem.objects.update_or_create(
+                id=item.get('id', None),
+                defaults=dict(
+                    card_id=item.get('card', card_id),
+                    name=item.get('name', ""),
+                    is_done=item.get('is_done', False)
+                )
+            )
 
         is_success, message = serializer.instance.move(index, pk, row_id)
 
@@ -85,9 +191,13 @@ class BoardViewSet(viewsets.ViewSet):
         return Response(
             dict(
                 success=True,
-                message="Zadanie zostało {}.".format(card_instance and "zaktualizowane" or "dodane"),
-                data=BoardSerializer(Board.objects.all(), many=True).data
-            )
+                message=(card_instance and "apiBoardCardUpdated" or "apiBoardCardAdded"),
+                data=BoardSerializer(Board.objects.all(), many=True).data,
+                data1=remaining_helper(),
+                data2=CardSerializer(Card.objects.all(), many=True).data
+
+
+        )
         )
 
     def get_board(self, request, pk):
@@ -103,7 +213,8 @@ class BoardViewSet(viewsets.ViewSet):
         return Response(
             dict(
                 success=True,
-                data=BoardSerializer(Board.objects.all(), many=True).data
+                data=BoardSerializer(Board.objects.all(), many=True).data,
+                data1=CardSerializer(Card.objects.all(), many=True).data
             )
         )
 
@@ -140,12 +251,16 @@ class BoardViewSet(viewsets.ViewSet):
 
     def delete_board(self, request, pk):
         board = Board.objects.get_by_pk(pk=pk, raise_exception=True)
-
+        cards_move = Card.objects.filter(board_id=pk)
+        cards = (Card.objects.filter(restricted_boards__in=[pk]))
+        for card in cards:
+            card.restricted_boards.remove(pk)
+            card.save()
         if board.is_static:
             return Response(
                 dict(
                     success=False,
-                    message="Nie możesz usunąć tej tablicy."
+                    message="apiColumnDeleteError"
                 )
             )
 
@@ -157,6 +272,17 @@ class BoardViewSet(viewsets.ViewSet):
             deleted_at__isnull=True
         ).order_by('index')
 
+        first_board = Board.objects.all().order_by('index').first()
+        first_row = Row.objects.all().order_by('id').first()
+        for card in cards_move:
+            card.updated_at=datetime.datetime.now()
+            print(card.updated_at)
+            print("card.updated_at")
+            card.board = first_board
+            card.row = first_row
+            card.index = 0
+            card.save()
+            card.move(0, first_board.id, first_row.id)
         changed_index = board.index
         for board in boards:
             board.index = changed_index
@@ -166,7 +292,8 @@ class BoardViewSet(viewsets.ViewSet):
         return Response(
             dict(
                 success=True,
-                message="Kolumna została usunięta.",
-                data=BoardSerializer(Board.objects.all(), many=True).data
+                message="apiColumnDelete",
+                data=BoardSerializer(Board.objects.all(), many=True).data,
+                data1=remaining_helper()
             )
         )

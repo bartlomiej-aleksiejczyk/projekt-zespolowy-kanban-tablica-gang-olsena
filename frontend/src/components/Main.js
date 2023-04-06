@@ -10,9 +10,9 @@ import {UserServiceProvider} from "../utils/UserServiceContext";
 import Kanban from "./Kanban";
 import Register from "./Register";
 
-
 function Main() {
     return (
+
             <Routes>
                         <Route exact path='/' element={<AuthRoute/>}>
                             <Route exact path='/' element={<Kanban/>}/>
