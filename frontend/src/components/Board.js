@@ -15,7 +15,7 @@ import {useTranslation} from 'react-i18next';
 
 const BoardStyle = styled.div`
   box-shadow: 0px 1px 7px rgba(0, 0, 0, 0.1), 0px 4px 5px -2px rgba(0, 0, 0, 0.12), 0px 10px 15px -5px rgba(0, 0, 0, 0.2);
-  min-width: 250px;
+  min-width: ${props=>props.is_static? ("300px"):("250px")}
   max-width: 790px;
   margin-right: 6px;
   margin-top: 180px;
@@ -34,13 +34,16 @@ const BoardStyle = styled.div`
 const Label = styled.label`
   align-items: center;
   font-weight: bold;
+  justify-content: center;
   display: flex;
-  margin-left: 2px;
+  margin-left: 20px;
+  //margin-left: -12%;
+  margin-top: 10px;
   gap: 8px;
   margin-bottom: 0px;
 `
 const LabelDummy = styled.label`
-    padding: 16px;
+    padding: 21px;
 `
 
 const Title = styled.h2`
@@ -63,7 +66,9 @@ const RowStyle = styled.section`
 
 `;
 const CardButtons = styled.div`
-  margin-top:0px;
+  margin-top:5px;
+  margin-left: auto;
+  margin-right: auto;
 
 
 `;
@@ -148,25 +153,27 @@ function Board(props) {
                                          onBlur={handleInputChangeName}/>
                     </Title>
                     {(!props.is_static)
-                        ? <Label className="mx-auto">
+                        ? <Label className="ml-30">
                             Limit:
+                            {/*Są tutaj przyciski min z max pomylone do naprawy*/}
                             <InputNumber inputId="minmax-buttons" value={minCard}
                                          onValueChange={(e) => handleInputChangeLimit(e.value, props.board.max_card)}
                                          mode="decimal"
-                                         showButtons min={0}
-                                         max={100}
+                                         showButtons
+                                         max={maxCard-1}
                                          size="1"
-                                         style={{height: '2em', width: '120px'}}
+                                         style={{height: '2em', width: '80px',marginRight:'30px'}}
+                                         min={maxCard>1?1:0}
                             />
-                            <div>-</div>
+                            <div>:</div>
                             <InputNumber inputId="minmax-buttons" value={maxCard}
                                          onValueChange={(e) => handleInputChangeLimit(props.board.min_card, e.value)}
-
+                                         min={(minCard+1)}
                                          mode="decimal"
-                                         showButtons min={minCard}
+                                         showButtons
                                          max={100}
                                          size="1"
-                                         style={{height: '2em', width: '120px'}}
+                                         style={{height: '2em', width: '80',marginRight:'30px'}}
                             />
                         </Label>
                         : <LabelDummy>

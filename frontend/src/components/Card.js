@@ -59,6 +59,7 @@ const ScrollSpaceContainer = styled.div`
   min-width: 225px;
   height: 290px;
   margin-bottom: 15px;
+  padding-bottom: 5px;
   display: flex;
   flex-direction: column;
 
@@ -191,7 +192,7 @@ const EditMenuText = styled.div`
       overflow: scroll;
 `;
 const DroppableDiv = styled.div`
-  height:290px ;
+  height:278px ;
   width: inherit;
   display: flex;
   flex-direction: column;
@@ -251,8 +252,8 @@ function Card(props) {
     const [users, setUsers] = useState('');
     const [restrictedBoards, setRestrictedBoards] = useState(props.restrictedBoardsData);
     const [bug, setBug] = useState(props.hasBug);
-    const [itemCollapse, setItemCollapse] = useState(false)
-    const [childrenCollapse, setChildrenCollapse] = useState(false)
+    const [itemCollapse, setItemCollapse] = useState(props.areCarditemsCollapsed)
+    const [childrenCollapse, setChildrenCollapse] = useState(props.areChildrenCollapsed)
     const [uneditedBoards, setUneditedBoards] = useState(props.boards)
     const [cardItems, setCardItems] = useState(props.data?.item_data);
     React.useEffect(() => {
@@ -265,10 +266,23 @@ function Card(props) {
     }, [props.itemDataNew]);
     const apiService = useUserService();
     const handleItemCollapse = () => {
-        setItemCollapse(!itemCollapse)
-    }
+        apiService.updateSingleCard(props.backId, {
+            "are_carditems_collapsed": !(itemCollapse)
+        }).then((response_data) => {
+            CommonService.toastCallback(response_data, props.setBoards);
+            if(response_data.success) {
+                setItemCollapse(!itemCollapse)
+            }
+        });    }
     const handleChildrenCollapse = () => {
-        setChildrenCollapse(!childrenCollapse)
+        apiService.updateSingleCard(props.backId, {
+            "are_children_collapsed": !(childrenCollapse)
+        }).then((response_data) => {
+            CommonService.toastCallback(response_data, props.setBoards);
+            if(response_data.success) {
+                setChildrenCollapse(!childrenCollapse)
+            }
+        });
     }
     const handleLock = (value) => {
         setLock(value)
@@ -521,7 +535,7 @@ function Card(props) {
         )
     }
 
-    let moveDiffDays = moment.duration(moment().diff(moment(props.data.move_to_board_at))).asDays();
+    let moveDiffDays = moment.duration(moment().diff(moment(props.updatedAt))).asDays();
 
     let userLabel = props.data.user_data?.username.charAt(0).toUpperCase() + props.data.user_data?.username.charAt(props.data.user_data?.username.length - 1).toUpperCase();
     return (
@@ -625,7 +639,8 @@ function Card(props) {
                                                                           onChange={(e) => {
                                                                               cardItems[index].is_done = !e.value;
                                                                               // setCardItems([...cardItems]);
-                                                                              apiService.updateSingleCard(props.backId, {
+                                                                              apiService.updateCard(props.board, {
+                                                                                  "id":props.backId,
                                                                                   "items": cardItems
                                                                               }).then((response_data) => {
                                                                                   CommonService.toastCallback(response_data, props.setBoards);
@@ -778,11 +793,11 @@ function Card(props) {
                                         </ProgressDiv>
                                     </ProgressAndButtons>
                                     {/*</div>*/}
-                                    <div className="flex justify-content-end">
-                                        <Tag severity={moveDiffDays >= 5 ? 'warning' : 'success'} rounded>
+                                    <div className="flex justify-content-end ">
+                                        <Tag severity={(moveDiffDays >= 5 && !props.isCardDone) ? 'danger' : 'success'} rounded>
                                             <TimeAgo
-                                                datetime={props.data.move_to_board_at}
-                                                locale='pl'
+                                                datetime={props.updatedAt}
+                                                locale={t("cardTimeLocale")}
                                             /></Tag>
                                     </div>
                                 </ScrollSpaceContainer>

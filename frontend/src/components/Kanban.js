@@ -39,7 +39,6 @@ const AssignmentLimitText = styled.h3`
   padding: 15px;
   margin-top: 20px;
 `;
-
 const InputContainer = styled.div`
   display: flex;
   justify-content: center;
@@ -59,7 +58,7 @@ const BoardOfBoards = styled.div`
 `;
 const FreeUsersBoard = styled.div`
   position: relative;
-  margin-top: 170px;
+  margin-top: 215px;
   margin-left: 25px;
   width:200px;
   top: 100%;
@@ -131,6 +130,7 @@ function Kanban() {
     const [remaining, setRemaining] = useState([]);
     const [cardsChoice, setCardsChoice] = useState([]);
     const [notCompletedAlert, setNotCompletedAlert] = useState(false);
+    const [notCompletedBugAlert, setNotCompletedBugAlert] = useState(false);
     const [bugAlert, setBugAlert] = useState(false);
     const [oldBoards, setOldBoards] = useState(false);
     const [oldCards, setOldCards] = useState(false);
@@ -287,6 +287,10 @@ function Kanban() {
             boards[boardIndex].row_data[rowIndex].card_data[destination.index].board = destination_card.id;
             setBoards(boards);
             if((board.id===lastBoard.id) ){
+                if(((!source_card.is_card_completed)&&(source_card.item_data.length > 0))&&(source_card.has_bug)){
+                    setNotCompletedBugAlert(true)
+                    return 0
+                }
                 if((source_card.has_bug)) {
                     setBugAlert(true)
                     return 0
@@ -326,6 +330,7 @@ function Kanban() {
 async function dragDecision(cards,destination,draggableIde,board,row){
     setNotCompletedAlert(false)
     setBugAlert(false)
+    setNotCompletedBugAlert(false)
     if(cards.length - 1 < destination.index) {
         await apiService.moveCard(draggableIde, cards.length, board.id, row.id).then((response_data) => {
             CommonService.toastCallback(response_data, setBoards)
@@ -341,6 +346,7 @@ function dragCancel(){
         console.log(oldBoards)
         setBoards(oldBoards)
     setNotCompletedAlert(false)
+    setNotCompletedBugAlert(false)
     setBugAlert(false)
 }
     return (
@@ -354,6 +360,16 @@ function dragCancel(){
                     zIndex  : "1",
                     verticalAlign : "middle",
                 }}>
+                    <ConfirmDialog visible={notCompletedBugAlert}
+                                   closable={false}
+                                   message={t("kanbanMoveCardNotFinishedBug")}
+                                   header={t("warning")}
+                                   icon="pi pi-trash"
+                                   acceptLabel={t("yes")}
+                                   rejectLabel={t("no")}
+                                   reject={() => {dragCancel()}}
+                                   accept={() => {dragDecision(oldCards,oldDestination, oldDraggableIde,oldBoard,oldRow)
+                                       setNotCompletedBugAlert(false)}}/>
                     <ConfirmDialog visible={notCompletedAlert}
                                    closable={false}
                                    message={t("kanbanMoveCardNotFinished")}

@@ -25,7 +25,7 @@ class CardViewSet(viewsets.ViewSet):
         card = Card.objects.get_by_pk(pk=pk)
         restricted_boards=list(Card.objects.filter(id=pk).values_list('restricted_boards',flat=True))
         board_new = request.data.get('board')
-        print((Card.objects.filter(parent_card_id=pk, is_card_finished=False).exists()))
+        board_old = card.board.id
         if (Card.objects.filter(parent_card_id=pk, is_card_finished=False).exists()) and Board.objects.get_by_pk(pk=board_new) ==Board.objects.all().order_by('-index').first():
             return Response(
                 dict(
@@ -64,7 +64,11 @@ class CardViewSet(viewsets.ViewSet):
                     message=message
                 )
             )
-
+        if board_new:
+            print(board_new)
+            if board_new != board_old:
+                Card.objects.filter(pk=pk).update(updated_at=datetime.datetime.now())
+                print(card.updated_at)
         return Response(
             dict(
                 success=True,

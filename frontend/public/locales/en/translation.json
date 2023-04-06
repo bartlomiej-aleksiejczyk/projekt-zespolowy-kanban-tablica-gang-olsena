@@ -82,6 +82,7 @@
   "kanbanUserAssignmentLimit": "Assignment limit:",
   "kanbanMoveCardNotFinished":  "Are you sure you want to finish an incomplete task",
   "kanbanMoveCardWithBug":"Are you sure you want to finish a task with a bug?",
+  "kanbanMoveCardNotFinishedBug":"Are you sure you want to finish an incomplete task with a bug?",
 
   "Board.js":"SECTION",
   "BoardNewCard": "Enter task name:",
@@ -112,6 +113,7 @@
   "cardChildrenChecklist": "Card's children checklist:",
   "cardItemChecklist": "Subtasks checklist",
   "cardCarditems": "Subtasks",
-  "cardChildren": "Children"
+  "cardChildren": "Children",
+  "cardTimeLocale": "en"
 
 }

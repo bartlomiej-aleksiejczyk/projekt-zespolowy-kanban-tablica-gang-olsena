@@ -65,6 +65,10 @@ class RowViewSet(viewsets.ViewSet):
         first_board = Board.objects.all().order_by('index').first()
         first_row = Row.objects.all().order_by('id').first()
         for card in cards:
+            #przesunięcie karty w czasie
+            if first_board != card.board:
+                    card.updated_at=datetime.datetime.now()
+            # przesunięcie karty w czasie- koniec
             card.board = first_board
             card.row = first_row
             card.index = 0

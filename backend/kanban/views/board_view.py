@@ -111,6 +111,10 @@ class BoardViewSet(viewsets.ViewSet):
 
             if row_id is None:
                 row_id = card_instance.row_id
+
+
+        if parent:
+            parent_card = Card.objects.get_by_pk(pk=parent)
             if parent ==card_id:
                 return Response(
                     dict(
@@ -123,7 +127,6 @@ class BoardViewSet(viewsets.ViewSet):
 
                     )
                 )
-            parent_card = Card.objects.get_by_pk(pk=parent)
             if parent_card.is_card_finished:
                 return Response(
                     dict(
@@ -150,9 +153,12 @@ class BoardViewSet(viewsets.ViewSet):
                 )
         if row_id is None:
             row_id = Row.objects.first().id
+        if not card_id:
+            data['updated_at'] = datetime.datetime.now()
         data['board'] = pk
         data['index'] = index
         data['row'] = row_id
+
         serializer = CardSerializer(data=data, instance=card_instance, partial=True)
         serializer.is_valid(raise_exception=True)
         serializer.save()
@@ -269,6 +275,9 @@ class BoardViewSet(viewsets.ViewSet):
         first_board = Board.objects.all().order_by('index').first()
         first_row = Row.objects.all().order_by('id').first()
         for card in cards_move:
+            card.updated_at=datetime.datetime.now()
+            print(card.updated_at)
+            print("card.updated_at")
             card.board = first_board
             card.row = first_row
             card.index = 0

@@ -23,7 +23,6 @@ const CardsStyle = styled.div`
   min-height: 305px;
   max-height: 305px;
   overflow: auto;
-  transition: background-color 0.4s;
   display: inline-flex;
   
   // background-color: {props =>
@@ -70,14 +69,7 @@ const RowCollapsable = styled.div`
   background-color: white;
   margin-top: 3px;
 `;
-
-function Row(props) {
-    let isBetween = true;
-    if(props.board && !props.board.is_static) {
-        isBetween = props.board.min_card <= props.row.card_data.length && props.board.max_card >= props.row.card_data.length;
-    }
-
-    const RowsStyle = styled.div`
+const RowsStyle = styled.div`
   //box-shadow: 0px 1px 7px rgba(0, 0, 0, 0.1), 0px 4px 5px -2px rgba(0, 0, 0, 0.12), 0px 10px 15px -5px rgba(0, 0, 0, 0.2);
   max-width: 790px;
   min-width: 245px;
@@ -91,8 +83,22 @@ function Row(props) {
   flex-wrap: wrap;
   flex-direction: column;
   align-items: center;
-  background ${isBetween ? 'white' : 'red'};
+  transition: background-color 0.4s;
+  background-color: ${props =>props.rowOverflowBothEnds ? '#800000' : 'white'};
+/*
+  background {isBetween ? 'white' : 'red'};
+*/
+  //background-color: {props =>
+  //     props.rowOverflow ? '#800000' : 'white'};
 `;
+
+function Row(props) {
+    // let isBetween = true;
+    // if(props.board && !props.board.is_static) {
+    //     isBetween = props.board.min_card <= props.row.card_data.length && props.board.max_card >= props.row.card_data.length;
+    // }
+
+
 
     const {t, i18n} = useTranslation();
     const [value3, setValue3] = useState(props.name);
@@ -159,7 +165,12 @@ function Row(props) {
                             onClick={() => setVisible1(true)}/>
                 </RowSideCollapsable>
                 }
-                <RowsStyle>
+                <RowsStyle rowOverflowBothEnds={
+                    ((props.board && !props.board.is_static) &&
+                        ((props.board.min_card > (props.row.card_data.length)&& (props.board.min_card != null)) ||
+                        ((props.board.max_card < props.row.card_data.length)&& (props.board.max_card != null))))
+                }>
+
                     <ConfirmDialog visible={visible2}
                                    onHide={() => setVisible2(false)}
                                    message=<InputText value={value3} onChange={(e) => setValue3(e.target.value)}/>
@@ -182,11 +193,12 @@ function Row(props) {
                     <Droppable droppableId={props.droppableId}
                                type="card"
                                direction="horizontal"
-
                     >
                         {(provided) => (
                             <CardsStyle
-                                rowOverflow={(props.limit < (props.cards).length) && (props.limit != null)}
+                                rowOverflow={(props.limit < (props.cards).length) && (props.limit != null)
+                            }
+
                                 ref={provided.innerRef}
                                 {...provided.droppableId}>
                                 {(props.cards).map((card, indexDrag) =>
@@ -218,6 +230,9 @@ function Row(props) {
                                           cardsChoice={props.cardsChoice}
                                           setCardsChoice={props.setCardsChoice}
                                           callRestrictionUpdate={props.callRestrictionUpdate}
+                                          areChildrenCollapsed={card.are_children_collapsed}
+                                          areCarditemsCollapsed={card.are_carditems_collapsed}
+                                          updatedAt={card.updated_at}
                                         // setCallRestrictionUpdate={props.setCallRestrictionUpdate}
                                           parentName={card.parent_name}
                                     />

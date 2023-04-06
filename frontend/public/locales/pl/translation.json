@@ -81,6 +81,7 @@
   "kanbanUserAssignmentLimit": "Limit przypisań:",
   "kanbanMoveCardNotFinished": "Czy na pewno chcesz zakończyć zadanie, które nie jest skompletowane?",
   "kanbanMoveCardWithBug": "Czy na pewno chcesz zakończyć zadanie z 'bugiem'?",
+  "kanbanMoveCardNotFinishedBug":"Czy na pewno chcesz zakończyć zadanie, które nie jest skompletowane i ma buga?",
 
   "Board.js":"SECTION",
   "BoardNewCard": "Wpisz nazwę zadania:",
@@ -110,7 +111,8 @@
   "cardNotFinished": "Niezrobione",
   "cardItemChecklist": "Lista podzadań",
   "cardCarditems": "Podzadania",
-  "cardChildren": "Dzieci"
+  "cardChildren": "Dzieci",
+  "cardTimeLocale": "pl"
 }
 
 

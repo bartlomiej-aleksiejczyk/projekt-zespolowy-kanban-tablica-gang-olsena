@@ -112,7 +112,11 @@ class Card(Timestamp):
     is_locked = models.BooleanField(default=False)
     is_card_completed = models.BooleanField(default=False)
     is_card_finished = models.BooleanField(default=False)
+    are_children_collapsed=models.BooleanField(default=True)
+    are_carditems_collapsed=models.BooleanField(default=True)
     has_bug = models.BooleanField(default=False)
+    #Twoje rozwiązanie mi nie działało poprawnie napisalem na szybko swoje
+    are_children_collapsed = models.BooleanField(default=True)
 
     def save(self,*args, **kwargs):
         items = CardItem.objects.filter(card_id=self.id)
