@@ -24,7 +24,7 @@ function App() {
 
     return (
         <Router>
-            <Suspense fallback={<Loading />}>
+            <Suspense fallback={<Loading />} children={Main}>
             <Toast ref={toast} position="bottom-right"/>
             <AuthProvider>
                 <Main/>

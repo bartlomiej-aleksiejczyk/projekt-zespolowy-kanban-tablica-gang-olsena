@@ -1,4 +1,4 @@
-import React, {useState, useEffect} from 'react'
+import React, {useState, useEffect, useRef} from 'react'
 import styled from "styled-components";
 import {Draggable, Droppable} from "react-beautiful-dnd";
 import ContentEditable from 'react-contenteditable';
@@ -20,6 +20,7 @@ import {Badge} from 'primereact/badge';
 import {Checkbox} from 'primereact/checkbox';
 import {ProgressBar} from 'primereact/progressbar';
 import {MultiSelect} from 'primereact/multiselect'
+import { Menu } from 'primereact/menu';
 import CardUsers from "./CardUsers";
 import {v4 as uuidv4} from 'uuid';
 import {Dialog} from 'primereact/dialog';
@@ -30,17 +31,19 @@ import {Accordion, AccordionTab} from 'primereact/accordion';
 import {Tag} from 'primereact/tag';
 import TimeAgo from 'timeago-react';
 import moment from 'moment';
+import CardMenu from "./Menus/CardMenu";
 
 const CardStyle = styled.div`
   box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.03), 0px 0px 2px rgba(0, 0, 0, 0.06), 0px 2px 6px rgba(0, 0, 0, 0.12);
-  max-width: 250px;
-  min-width: 250px;
-  max-height:290px;
+  font-size: 10px;
+  max-width: 150px;
+  min-width: 150px;
+  max-height:174px;
   border: ${props => props.locked ? "2px solid #b7b3ea" : "2px solid #b7b3ea"};
-  border-radius: 6px;
-  padding: 4px;
-  margin-top: 3px;
-  margin-left: 5px;
+  border-radius: 2px;
+  padding: 2px;
+  margin-top: 2px;
+  margin-left: 3px;
   overflow: hidden;
   -webkit-filter: ${props => props.locked ? "grayscale(0.7)" : ""} ;
   //Ta metoda to druciarstwo o wiele lepiej jest tuaj https://stackoverflow.com/questions/61635321/props-conditional-rendering-using-styled-components
@@ -48,63 +51,63 @@ const CardStyle = styled.div`
   background: repeating-linear-gradient(
           315deg,
         ${props => props.color},
-        ${props => `${props.color} 10px`},
-        ${props => props.locked ? "#D4D6D7 10px" : `${props.color} 10px`},
-        ${props => props.locked ? "#D4D6D7 20px" : `${props.color} 20px`}
+        ${props => `${props.color} 6px`},
+        ${props => props.locked ? "#D4D6D7 6px" : `${props.color} 6px`},
+        ${props => props.locked ? "#D4D6D7 12px" : `${props.color} 12px`}
 );
 `;
 const ScrollSpaceContainer = styled.div`
-  margin-right: 4px;
-  max-width: 225px;
-  min-width: 225px;
-  height: 290px;
-  margin-bottom: 15px;
-  padding-bottom: 5px;
+  margin-right: 2px;
+  max-width: 135px;
+  min-width: 135px;
+  height: 174px;
+  margin-bottom: 9px;
+  padding-bottom: 2px;
   display: flex;
   flex-direction: column;
 
 `;
 const ChildBar = styled.div`
   display: block;
-  min-height: 30px;
-  border-radius: 7px;
-  padding: 2px;
+  min-height: 18px;
+  border-radius: 4px;
+  padding: 1px;
   background-color: #b0fcea;
   border-width: 1px;
-  margin-left: 3px;
-  margin-right: 3px;
-  margin-bottom: 3px;
+  margin-left: 2px;
+  margin-right: 2px;
+  margin-bottom: 2px;
   border-color: #77EECFFF;
   border-style: solid;
 `;
 const ParentBar = styled.div`
   display: block;
-  min-height: 30px;
-  border-radius: 7px;
-  padding: 2px;
+  min-height: 18px;
+  border-radius: 4px;
+  padding: 1px;
   background-color: #b0fcea;
   border-width: 1px;
-  margin-left: 3px;
-  margin-right: 3px;
-  margin-bottom: 3px;
+  margin-left: 2px;
+  margin-right: 2px;
+  margin-bottom: 2px;
   border-color: #77EECFFF;
   border-style: solid;
 `;
 const RestrictedBoardsBar = styled.div`
   display: block;
-  min-height: 25px;
-  margin-bottom: 20px;
-  margin-left: 3px;
-  margin-right: 3px;
+  min-height: 15px;
+  margin-bottom: 12px;
+  margin-left: 2px;
+  margin-right: 2px;
 
 `;
 const RestrictedAndLabel = styled.div`
   display: flex;
   flex-direction: row;
-  min-height: 25px;
-  max-height: 50px;
+  min-height: 15px;
+  max-height: 30px;
   background-color: #ff0090;
-  border-radius: 7px;
+  border-radius: 4px;
   color: black;
 `;
 const ButtonContainer = styled.div`
@@ -112,52 +115,51 @@ const ButtonContainer = styled.div`
   flex-direction: row;
   flex-wrap: nowrap;
   justify-content: space-between;
-  margin-bottom: -25px;
-  margin-top: 17px;
+  margin-bottom: -15px;
+  margin-top: 10px;
 
 `;
 const TopButtonContainer = styled.div`
   display:flex;
   justify-content: space-between;
-  
+  align-items: center;
   flex-direction: row;
   flex-wrap: nowrap;
 `;
 const Description = styled.div`
   flex-direction: column;
-  max-width: 210px;
-  min-width: 210px;
+  max-width: 126px;
+  min-width: 126px;
   word-wrap: break-word;
   flex-wrap: wrap;
-  margin-top: 6px;
-  padding-left: 8px;
-  padding-right:8px;
+  margin-top: 4px;
+  padding-left: 5px;
+  padding-right:5px;
 `;
 const UserChoiceBar = styled.div`
-  margin-top: -15px;
+  margin-top: -9px;
   display: flex;
   flex-direction: row;
   word-wrap: break-word;
 `;
 const AvatarImage = styled.div`
-  min-width: 40px;
-  min-height: 40px;
+  min-width: 24px;
+  min-height: 24px;
   display: inline-block;
 `;
 const ProgressDiv = styled.div`
-  min-width: 30px;
-  display: inline-block;
+  min-width: 18px;
+  display: flex;
 `;
 const InsideProgressDiv = styled.div`
   display: flex;
   width: 100%;
   flex-basis: 100%;
-  margin-top: 9px;
+  margin-top: 5px;
 `;
 const Avatars = styled.div`
-  height: 70px;
-  width: 130px;
-  margin-left: -24px;
+  height: 42px;
+  width: 78px;
   display: inline-flex;
   flex-direction: row;
   overflow: auto;
@@ -168,13 +170,13 @@ const ProgressAndButtons = styled.div`
     margin-top: auto;
     display: flex;
     flex-direction: column;
-    margin-bottom: 10px;
+    margin-bottom: 6px;
   
 `;
 const EditMenu = styled.div`
     margin-top: auto;
     height: auto;
-    width: 550px;
+    width: 330px;
     display: flex;
     flex-direction: column;
     align-items: self-start;
@@ -192,7 +194,7 @@ const EditMenuText = styled.div`
       overflow: scroll;
 `;
 const DroppableDiv = styled.div`
-  height:278px ;
+  height:167px ;
   width: inherit;
   display: flex;
   flex-direction: column;
@@ -200,40 +202,47 @@ const DroppableDiv = styled.div`
 `;
 const ChildrenContainer = styled.div`
   display: block;
-  border-radius: 7px;
-  padding: 2px;
-  width: 220px;
+  border-radius: 4px;
+  padding: 1px;
+  width: 132px;
   background-color: #c7c7d7;
-  border-width: 2px;
+  border-width: 1px;
   border-color: #6866ce;
   border-style: solid;
 `;
 const EditCardChildren = styled.div`
   display: block;
-  padding: 7px;
-  margin-top: 10px;
-  border-radius: 7px;
+  padding: 4px;
+  margin-top: 6px;
+  border-radius: 4px;
   background-color: #ffffff;
-  border-width: 2px;
+  border-width: 1px;
   border-color: #a2a2af;
   border-style: solid;
 `;
 const EditCardChild = styled.div`
   display: block;
-  padding: 7px;
-  border-radius: 7px;
+  padding: 4px;
+  border-radius: 4px;
   background-color: #c7c7d7;
-  border-width: 2px;
+  border-width: 1px;
   border-color: #6866ce;
   border-style: solid;
 `;
-
+const TagContainer = styled.div`
+    display: flex;
+  flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: stretch;
+    
+`;
 function Card(props) {
     const {t, i18n} = useTranslation();
     const [visible2, setVisible2] = useState(false);
     const [visible1, setVisible1] = useState(false);
     const [visible, setVisible] = useState(false);
-    const [value, setValue] = useState('');
+    const [value, setValue] = useState(props.description);
     const [value1, setValue1] = useState(props.color);
     const [lock, setLock] = useState(props.locked);
     const options = [
@@ -249,13 +258,14 @@ function Card(props) {
     ];
     const [editSelectedUser, setEditSelectedUser] = useState(props.data?.user_data);
     const [parent, setParent] = useState(props.parentCard);
-    const [users, setUsers] = useState('');
+    const [users, setUsers] = useState(props.users);
     const [restrictedBoards, setRestrictedBoards] = useState(props.restrictedBoardsData);
     const [bug, setBug] = useState(props.hasBug);
     const [itemCollapse, setItemCollapse] = useState(props.areCarditemsCollapsed)
     const [childrenCollapse, setChildrenCollapse] = useState(props.areChildrenCollapsed)
     const [uneditedBoards, setUneditedBoards] = useState(props.boards)
     const [cardItems, setCardItems] = useState(props.data?.item_data);
+    const editMenu = useRef(null);
     React.useEffect(() => {
         const items = props.itemDataNew;
         if(items) {
@@ -284,7 +294,8 @@ function Card(props) {
             }
         });
     }
-    const handleLock = (value) => {
+    const handleLock = () => {
+        const value = !lock
         setLock(value)
         apiService.updateSingleCard(props.backId, {
             "is_locked": value
@@ -339,6 +350,7 @@ function Card(props) {
             "color"            : value1,
             "items"            : cardItems,
             "parent_card"      : parentAux,
+            "users"            : users,
             "restricted_boards": restrictedBoards,
             "has_bug"          : bug
         }).then((response_data) => {
@@ -346,6 +358,39 @@ function Card(props) {
             setVisible1(false);
         });
     }
+    const items = [
+        {
+            label: 'Options',
+            items: [
+                {
+                    label: t("cardMenuButtonOptionEdit"),
+                    icon: 'pi pi-pencil',
+                    command: () => {setVisible1(true)
+                    }
+                },
+                {
+                    label: t("cardMenuButtonOptionDelete"),
+                    icon: 'pi pi-times',
+                    command: () => {setVisible(true)
+                    }
+                },
+                {
+                    label: t("cardMenuButtonOptionLock"),
+                    icon: 'pi pi-unlock',
+                    command:
+                        (e) => {
+                            handleLock()
+                        }
+                },
+                {
+                    label: t("cardMenuButtonOptionBug"),
+                    icon: 'pi pi-wrench',
+                    command: () => {
+                        handleBugCheck()}
+                }
+            ]
+        }
+    ];
 
     async function rejectEditCard() {
         apiService.getBoards().then((response_data) => {props.setBoards(response_data.data)});
@@ -384,156 +429,8 @@ function Card(props) {
             <Button label={t("accept")} icon="pi pi-check" onClick={acceptEditCard} autoFocus/>
         </div>
     );
-    const editCardDialog = () => {
-        //let usersCp=users.unshift(null)
-        return (
-            <EditMenu>
-                <Dialog header={t("cardEditDialog")}
-                        visible={visible1}
-                        style={{width: '50vw'}}
-                        onHide={() => rejectEditCard}
-                        closable={false}
-                        footer={footerContent}
-                        blockScroll="true"
-                >
-                    <div>
 
-                    </div>
-                    <EditMenuText>
-                        <InputTextarea className="w-full" value={value} onChange={(e) => setValue(e.target.value)}
-                                       rows={1}
-                                       cols={30}/>
-                    </EditMenuText>
-                    <div className="flex">
-                        <Button
-                            onClick={() => setParent(null)}
-                            icon="pi pi-times"
-                            rounded
-                            text
-                            size="small"
-                            severity="danger"
-                            aria-label="Cancel"/>
-                        <UserChoiceBar className="w-6">
 
-                            <Dropdown className="mt-3 w-full" value={parent}
-                                      onChange={(e) => setParent(e.value)} options={(props.cardsChoice)}
-                                      optionLabel="description"
-                                      optionValue="id"
-                                      placeholder={t("cardEditDialogChooseParent")}
-                            />
-                        </UserChoiceBar>
-                        <MultiSelect style={{backgroundColor: "#ff466e !important", color: "black !important"}}
-                                     value={restrictedBoards}
-                                     onChange={(e) => setRestrictedBoards(e.value)}
-                                     options={props.boards}
-                                     optionLabel="name"
-                                     showSelectAll="false"
-                                     placeholder={t("cardRestrictColumnDialog")}
-                                     optionValue="id"
-                                     className="w-6 ml-3"/>
-                    </div>
-                    <div className="card flex flex-row align-items-center gap-3 pt-3 pb-3 pl-2">
-                        <div className="w-6">
-                            <MultiStateCheckbox value={value1} onChange={(e) => setValue1(e.value)} options={options}
-                                                optionValue="value" empty={false}/>
-                            <span className="pl-3">{value1}</span>
-                        </div>
-                        <ToggleButton className="w-6"
-                                      onLabel={t("cardLocked")}
-                                      offLabel={t("cardUnlocked")}
-                                      onIcon="pi pi-lock"
-                                      offIcon="pi pi-lock-open"
-                                      checked={lock}
-                                      onChange={(e) => handleLock(e.value)}
-                        />
-                        <ToggleButton
-                            style={{scale: "0.9"}}
-                            onLabel="Bug"
-                            offLabel=" "
-                            value={props.hasBug}
-                            onChange={(e) => {handleBugCheck()}}
-                            checked={props.hasBug}
-                            onIcon="pi pi-wrench"
-                            offIcon="pi pi-wrench"
-                            disabled={props.isCardDone}
-                        />
-                        {/*(props.cardsChoice.find(o => o.id === props.backId).restricted_boards)*/}
-                    </div>
-                    <div className="mt-3 flex justify-content-between align-items-center flex-wrap">
-                        <h3>{t("cardItemChecklist")} {props.data.subtask_done_percentage}% :</h3>
-                        <Button
-                            icon="pi pi-plus"
-                            size="lg"
-                            rounded
-                            text
-                            aria-label="Filter"
-                            onClick={() => {
-                                cardItems.push({key: uuidv4()});
-                                //Poniższe dodano, zeby nie walił errorami
-                                setCardItems([...cardItems]);
-                            }}/>
-                    </div>
-                    {(cardItems.length > 0) ? (
-                        <div>
-                            {cardItems.map((card_item, index) => {
-                                return (
-                                    <div key={card_item.id} className="flex align-items-center mt-3">
-                                        <Checkbox inputId={card_item.id} name="card_item" value={card_item.is_done}
-                                                  onChange={(e) => {
-                                                      cardItems[index].is_done = !e.value;
-
-                                                      setCardItems([...cardItems]);
-
-                                                  }}
-                                                  checked={card_item.is_done}/>
-                                        <InputText className="ml-3" value={card_item.name} onChange={(e) => {
-                                            cardItems[index].name = e.target.value;
-                                            setCardItems([...cardItems]);
-                                        }}/>
-                                        <Button className="ml-3"
-                                                icon="pi pi-trash"
-                                                size="lg"
-                                                rounded
-                                                text
-                                                aria-label="Filter"
-                                                onClick={() => {
-                                                    cardItems.splice(index, 1);
-                                                    setCardItems([...cardItems]);
-
-                                                }}/>
-                                    </div>
-                                );
-                            })}
-                        </div>
-                    ) : (
-                        <div className="text-center">
-                            <div>{t("cardNoData")}</div>
-                        </div>
-                    )}
-                    {(props.childData.length > 0) &&
-                    <EditCardChildren>
-                        <h3>{t("cardChildrenChecklist")} </h3>
-                        <div>
-                            {props.childData.map((childCard, index) => {
-                                return (
-                                    <EditCardChild key={childCard.id} className="flex align-items-center mt-3">
-                                        <Checkbox inputId={childCard.id} name="card_item"
-                                                  value={childCard.is_card_finished}
-                                                  disabled={true}
-                                                  checked={childCard.is_card_finished}/>
-                                        <span style={{marginLeft: "4px"}}>{childCard.description}</span>
-
-                                    </EditCardChild>
-                                );
-                            })}
-                        </div>
-                    </EditCardChildren>
-                    }
-                </Dialog>
-            </EditMenu>
-
-        )
-    }
 
     let moveDiffDays = moment.duration(moment().diff(moment(props.updatedAt))).asDays();
 
@@ -551,7 +448,7 @@ function Card(props) {
                           ref={provided.innerRef}
                           color={props.color}
                           locked={props.locked}
-                    // onDoubleClick={() => props.setCallRestrictionUpdate(true)}
+                          onDoubleClick={() => setVisible1(true)}
                 >
                     <Droppable
                         droppableId={props.dropId}
@@ -562,55 +459,57 @@ function Card(props) {
                                 {...provided.droppableId}
                                 ref={provided.innerRef}>
                                 <ScrollSpaceContainer>
-                                    {props.parentCard &&
-                                    <ChildBar>
-                                        <i className="pi pi-circle-fill"></i>
-                                        {t("cardHasAParent")} {(props.parentName ?
-                                        (props.parentName[0].length > 9 ? props.parentName[0].substring(0, 9 - 3) + "..." :
-                                            props.parentName[0]) : "")}
-                                    </ChildBar>}
-                                    {props.childData.length > 0 &&
-                                    <ParentBar>
-                                        <i className="pi pi-sitemap"></i>
-                                        {t("cardIsParent")}
-                                    </ParentBar>}
-                                    {props.restrictedBoardsData.length > 0 &&
-                                    <RestrictedBoardsBar>
-                                        <RestrictedAndLabel>
-                                            {/*<i className="pi pi-ban"></i>*/}
-                                            {/*Kolumny: */}
-                                            <MultiSelect id="p-chips-token-label" dropdownIcon="pi pi-ban"
-                                                         filter="Kolumny"
-                                                         value={restrictedBoards}
-                                                         onChange={(e) => setRestrictedBoards(e.value)}
-                                                         options={props.boards}
-                                                         optionLabel="name"
-                                                         showSelectAll="false"
-                                                         disabled="false"
-                                                         placeholder={t("cardRestrictBoard")}
-                                                         optionValue="id"
-                                                         className="w-full md:w-20rem"/>
-                                        </RestrictedAndLabel>
-                                    </RestrictedBoardsBar>}
                                     <TopButtonContainer>
-                                        {props.isCardDone ?
-                                            <Button style={{scale: "0.9"}} label={t("cardFinished")} icon="pi pi-check"
-                                                    severity="success"/>
-                                            : <Button style={{scale: "0.9"}} label={t("cardNotFinished")}
-                                                      icon="pi pi-empty" disabled="false"/>
-                                        }
-                                        <ToggleButton
-                                            style={{scale: "0.9"}}
-                                            onLabel="Bug"
-                                            offLabel=" "
-                                            value={props.hasBug}
-                                            onChange={(e) => {handleBugCheck()}}
-                                            checked={props.hasBug}
-                                            onIcon="pi pi-wrench"
-                                            offIcon="pi pi-wrench"
-                                            disabled={props.isCardDone}
-                                        />
+
+                                        {/*<Button*/}
+                                        {/*    icon="pi pi-bars"*/}
+                                        {/*    round*/}
+                                        {/*    text*/}
+                                        {/*    onClick={(e) => editMenu.current.toggle(e)}*/}
+                                        {/*    rounded*/}
+                                        {/*/>*/}
+                                        <Menu model={items} popup ref={editMenu} />
                                     </TopButtonContainer>
+                                    <TagContainer>
+                                        {props.isCardDone > 0 &&
+                                            <Tag
+                                                value={t("cardFinished")}
+                                                 icon="pi pi-check"
+                                                 severity="success"
+                                                 style={{scale:"80%", fontSize:12,whiteSpace: "nowrap", height:"22px", marginRight:"-10px",marginLeft:"0px" }}
+                                            />
+                                        }
+                                        <Tag
+                                            severity={(moveDiffDays >= 5 && !props.isCardDone) ? 'danger' : 'success'}
+                                             style={{scale:"80%", fontSize:12,whiteSpace: "nowrap", height:"22px", marginRight:"-10px",marginLeft:"0px" }}
+                                        >
+                                            <TimeAgo
+                                                datetime={props.updatedAt}
+                                                locale={t("cardTimeLocale")}
+                                            /></Tag>
+                                        {(props.data.item_data.length > 0 && (
+                                            <Tag
+                                                severity={(props.isCardCompleted) ? 'success' : 'primary'}
+                                                style={{scale:"80%", fontSize:12,whiteSpace: "nowrap", height:"22px", marginRight:"-10px",marginLeft:"0px" }}
+                                                icon="pi pi-check-square">
+                                                {`${(props.data.item_data.filter(obj => obj.is_done === true)).length}/${props.data.item_data.length}`}
+                                            </Tag>))}
+                                        {props.parentCard &&
+                                            <Tag
+                                                 style={{scale:"80%", fontSize:12,whiteSpace: "nowrap", height:"22px", marginRight:"-10px",marginLeft:"0px" }}
+                                                 value={`${t("cardHasAParent") }${(props.parentName ?
+                                        (props.parentName[0].length > 9 ? props.parentName[0].substring(0, 9 - 3) + "..." :
+                                            props.parentName[0]) : "")}`}
+
+                                            />
+                                            }
+                                        {props.childData.length > 0 &&
+                                            <Tag
+                                                value={t("cardIsParent")}
+                                                 style={{scale:"80%", fontSize:12,whiteSpace: "nowrap", height:"22px", marginRight:"-10px",marginLeft:"0px" }}
+                                            />
+                                        }
+                                    </TagContainer>
                                     <Description
                                         className='tasks-container'>
                                         <ContentEditable
@@ -620,10 +519,10 @@ function Card(props) {
                                             disabled={false}
                                             onBlur={handleInputChange}/>
                                     </Description>
-
                                     {(cardItems.length > 0) && (
                                         <div>
-                                            <ToggleButton style={{width: "220px", marginTop: "10px", height: "20px"}}
+                                            <ToggleButton
+                                                style={{width: "132px", marginTop: "6px", height: "12px", fontSize: 12 }}
                                                           onLabel={t("cardCarditems")} offLabel={t("cardCarditems")}
                                                           onIcon="pi pi-minus" offIcon="pi pi-plus"
                                                           checked={itemCollapse}
@@ -633,7 +532,7 @@ function Card(props) {
                                                     {cardItems.map((card_item, index) => {
                                                         return (
                                                             <div key={card_item.id}
-                                                                 className="flex align-items-center mt-3">
+                                                                 className="flex align-items-center ">
                                                                 <Checkbox inputId={card_item.id} name="card_item"
                                                                           value={card_item.is_done}
                                                                           onChange={(e) => {
@@ -646,9 +545,12 @@ function Card(props) {
                                                                                   CommonService.toastCallback(response_data, props.setBoards);
                                                                               });
                                                                           }}
-                                                                          checked={card_item.is_done}/>
-                                                                <span
-                                                                    style={{marginLeft: "4px"}}>{card_item.name}</span>
+                                                                          style={{scale: "0.6"}}
+                                                                          checked={card_item.is_done}
+                                                                />
+                                                                <span style={{marginLeft: "2px"}}>
+                                                                    {card_item.name}
+                                                                </span>
                                                             </div>
                                                         );
                                                     })}
@@ -658,7 +560,8 @@ function Card(props) {
                                     )}
                                     {(props.childData.length > 0) &&
                                     <div>
-                                        <ToggleButton style={{width: "220px", marginTop: "10px", height: "20px"}}
+                                        <ToggleButton
+                                            style={{width: "132px", marginTop: "6px", height: "12px", fontSize: 12 }}
                                                       onLabel={t("cardChildren")} offLabel={t("cardChildren")}
                                                       onIcon="pi pi-minus" offIcon="pi pi-plus"
                                                       checked={childrenCollapse}
@@ -668,20 +571,21 @@ function Card(props) {
                                             {props.childData.map((childCard, index) => {
                                                 return (
                                                     <div key={childCard.id}
-                                                         className="flex align-items-center mt-3">
+                                                         className="flex align-items-center mt-2">
                                                         <Checkbox inputId={childCard.id} name="card_item"
                                                                   value={childCard.is_card_completed}
                                                                   disabled={true}
+                                                                  style={{scale: "0.6"}}
                                                                   checked={childCard.is_card_finished}/>
                                                         <span
-                                                            style={{marginLeft: "4px"}}>{childCard.description.length > 19 ? childCard.description.substring(0, 19 - 3) + "..." : childCard.description}</span>
+                                                            style={{marginLeft: "2px"}}>{childCard.description.length > 19 ? childCard.description.substring(0, 19 - 3) + "..." : childCard.description}</span>
                                                     </div>
                                                 );
                                             })}
                                             <InsideProgressDiv>
                                                 {/*{}%*/}
                                                 <ProgressBar value={props.data.children_done_percentage} style={{
-                                                    height: '16px',
+                                                    height: '10px',
                                                     width : "100%",
                                                     color : "black"
                                                 }}
@@ -692,8 +596,152 @@ function Card(props) {
                                         }
                                     </div>
                                     }
-                                    <ProgressAndButtons>
+                                    <Dialog header={t("cardEditDialog")}
+                                            visible={visible1}
+                                            style={{width: '50vw'}}
+                                            onHide={() => rejectEditCard}
+                                            closable={false}
+                                            footer={footerContent}
+                                            blockScroll="true"
+                                    >
+                                        <div>
+                                        </div>
+                                        <EditMenuText>
+                                            <InputTextarea className="w-full" value={value} onChange={(e) => setValue(e.target.value)}
+                                                           rows={1}
+                                                           cols={30}/>
+                                        </EditMenuText>
+                                        <div className="flex">
+                                            <Button
+                                                onClick={() => setParent(null)}
+                                                icon="pi pi-times"
+                                                rounded
+                                                text
+                                                size="sm"
+                                                severity="danger"
+                                                aria-label="Cancel"/>
+                                            <UserChoiceBar className="w-6">
+                                                <Dropdown className="mt-3 w-full" value={parent}
+                                                          onChange={(e) => setParent(e.value)} options={(props.cardsChoice)}
+                                                          optionLabel="description"
+                                                          optionValue="id"
+                                                          placeholder={t("cardEditDialogChooseParent")}
+                                                />
+                                            </UserChoiceBar>
+                                            <MultiSelect style={{backgroundColor: "#ff466e !important", color: "black !important"}}
+                                                         value={restrictedBoards}
+                                                         onChange={(e) => setRestrictedBoards(e.value)}
+                                                         options={_.uniqWith(props.remaining, _.isEqual)}
+                                                         optionLabel="username"
+                                                         showSelectAll="false"
+                                                         placeholder={t("cardRestrictColumnDialog")}
+                                                         optionValue="id"
+                                                         className="w-6 ml-3"/>
+                                        </div>
+                                        <div className="card flex flex-row align-items-center gap-3 pt-3 pb-3 pl-2">
+                                            <div className="w-6">
+                                                <MultiStateCheckbox value={value1} onChange={(e) => setValue1(e.value)} options={options}
+                                                                    optionValue="value" empty={false}
 
+                                                />
+                                                <span className="pl-3">{value1}</span>
+                                            </div>
+                                            <ToggleButton
+                                                className="w-6"
+                                                onLabel={t("cardLocked")}
+                                                offLabel={t("cardUnlocked")}
+                                                onIcon="pi pi-lock"
+                                                offIcon="pi pi-lock-open"
+                                                checked={lock}
+                                                onChange={(e) => handleLock(e.value)}
+                                            />
+                                            <Button icon="pi pi-trash"
+                                                    style={{width:"70px"}}
+                                                    onClick={() => setVisible(true)}/>
+                                            <ToggleButton
+                                                onLabel="Bug"
+                                                offLabel=" "
+                                                value={props.hasBug}
+                                                onChange={(e) => {handleBugCheck()}}
+                                                checked={props.hasBug}
+                                                onIcon="pi pi-wrench"
+                                                offIcon="pi pi-wrench"
+                                                disabled={props.isCardDone}
+                                                style={{width:"120px"}}
+
+                                            />
+                                            {/*(props.cardsChoice.find(o => o.id === props.backId).restricted_boards)*/}
+                                        </div>
+                                        <div className="mt-3 flex justify-content-between align-items-center flex-wrap">
+                                            <h3>{t("cardItemChecklist")} {props.data.subtask_done_percentage}% :</h3>
+                                            <Button
+                                                icon="pi pi-plus"
+                                                rounded
+                                                text
+                                                aria-label="Filter"
+                                                onClick={() => {
+                                                    cardItems.push({key: uuidv4()});
+                                                    //Poniższe dodano, zeby nie walił errorami
+                                                    setCardItems([...cardItems]);
+                                                }}/>
+                                        </div>
+                                        {(cardItems.length > 0) ? (
+                                            <div>
+                                                {cardItems.map((card_item, index) => {
+                                                    return (
+                                                        <div key={card_item.id} className="flex align-items-center mt-3">
+                                                            <Checkbox inputId={card_item.id} name="card_item" value={card_item.is_done}
+                                                                      onChange={(e) => {
+                                                                          cardItems[index].is_done = !e.value;
+                                                                          setCardItems([...cardItems]);
+                                                                      }}
+                                                                      checked={card_item.is_done}
+                                                            />
+                                                            <InputText className="ml-3" value={card_item.name} onChange={(e) => {
+                                                                cardItems[index].name = e.target.value;
+                                                                setCardItems([...cardItems]);
+                                                            }}/>
+                                                            <Button className="ml-3"
+                                                                    icon="pi pi-trash"
+                                                                    rounded
+                                                                    text
+                                                                    aria-label="Filter"
+                                                                    onClick={() => {
+                                                                        cardItems.splice(index, 1);
+                                                                        setCardItems([...cardItems]);
+
+                                                                    }}/>
+                                                        </div>
+                                                    );
+                                                })}
+                                            </div>
+                                        ) : (
+                                            <div className="text-center">
+                                                <div>{t("cardNoData")}</div>
+                                            </div>
+                                        )}
+                                        {(props.childData.length > 0) &&
+                                            <EditCardChildren>
+                                                <h3>{t("cardChildrenChecklist")} </h3>
+                                                <div>
+                                                    {props.childData.map((childCard, index) => {
+                                                        return (
+                                                            <EditCardChild key={childCard.id} className="flex align-items-center mt-3">
+                                                                <Checkbox inputId={childCard.id} name="card_item"
+                                                                          value={childCard.is_card_finished}
+                                                                          disabled={true}
+                                                                          checked={childCard.is_card_finished}
+                                                                          style={{scale: "0.6"}}
+                                                                />
+                                                                <span style={{marginLeft: "3px"}}>{childCard.description}</span>
+                                                            </EditCardChild>
+                                                        );
+                                                    })}
+                                                </div>
+                                            </EditCardChildren>
+                                        }
+                                    </Dialog>
+                                    <ProgressAndButtons>
                                         <ButtonContainer>
                                             {/*<MultiStateCheckbox*/}
                                             {/*    icon="pi pi-lock"*/}
@@ -703,46 +751,6 @@ function Card(props) {
                                             {/*    onChange={e => handleLock(e.value)}*/}
                                             {/*    optionValue="value"*/}
                                             {/*/>*/}
-
-                                            <ConfirmDialog closeOnEscape={false}
-                                                           closable={false}
-                                                           visible={visible1}
-                                                           onHide={() => setVisible1(false)}
-                                                           message={editCardDialog}
-                                                           header={t("cardEditDialog")}
-                                                // icon="pi pi-pencil"
-                                                           acceptLabel={t("accept")}
-                                                           rejectLabel={t("reject")}
-                                                           accept={acceptEditCard}
-                                                           reject={rejectEditCard}
-                                            />
-                                            <span className="p-buttonset"
-                                                  style={{scale: "0.7", whiteSpace: "nowrap", marginLeft: "-29px"}}>
-                                    <Button className="ml-2" onClick={() => CommonService.onOpenDialog(setVisible1, [{
-                                        callback: setValue,
-                                        value   : props.description
-                                    }, {
-                                        callback: setEditSelectedUser,
-                                        value   : props.data?.user_data
-                                    }, {callback: setCardItems, value: props.data?.item_data}])}
-                                            icon="pi pi-pencil"
-                                            size="small"
-                                            aria-label="Cancel"
-                                            disabled={props.isCardDone}/>
-                                        <ToggleButton style={{backgroundColor: '#4F46E5 !important'}}
-                                                      onLabel=""
-                                                      offLabel=""
-                                                      onIcon="pi pi-lock-open"
-                                                      offIcon="pi pi-lock"
-                                                      size="small"
-                                                      checked={!lock}
-                                                      onChange={(e) => handleLock(!(e.value))}
-                                        />
-                                        <Button onClick={() => (setVisible(true))}
-                                                icon="pi pi-times"
-                                                size="small"
-                                                aria-label="Cancel"/>
-                                    </span>
                                             <ConfirmDialog visible={visible}
                                                            onHide={() => setVisible(false)}
                                                            message={t("cardRemoveDialogMessage")}
@@ -750,6 +758,8 @@ function Card(props) {
                                                            icon="pi pi-trash"
                                                            acceptLabel={t("yes")}
                                                            rejectLabel={t("no")}
+                                                           style={{scale: "0.6"}}
+
                                                            accept={accept}
                                                            reject={reject}/>
                                             <ConfirmDialog visible={visible2}
@@ -757,11 +767,11 @@ function Card(props) {
                                                            message={t("cardRemoveUserAssignmentDialog")}
                                                            header={t("cardRemoveHeader")}
                                                            icon="pi pi-trash"
+                                                           style={{scale: "0.6"}}
                                                            acceptLabel={t("yes")}
                                                            rejectLabel={t("no")}
                                                            accept={acceptAssignEdit}
                                                            reject={rejectAssignEdit}/>
-
                                             <Avatars>
                                                 {(props.data.users_data).map((cardUser) =>
                                                     <CardUsers
@@ -779,27 +789,9 @@ function Card(props) {
                                                 )}
                                             </Avatars>
                                         </ButtonContainer>
-                                        <ProgressDiv>
-                                            {(props.data.item_data.length > 0 && (
-                                                <InsideProgressDiv>
-                                                    {/*{}%*/}
-                                                    <ProgressBar value={props.data.subtask_done_percentage} style={{
-                                                        height: '16px',
-                                                        width : "100%",
-                                                        color : "black"
-                                                    }}></ProgressBar>
-                                                </InsideProgressDiv>
-                                            ))}
-                                        </ProgressDiv>
                                     </ProgressAndButtons>
                                     {/*</div>*/}
-                                    <div className="flex justify-content-end ">
-                                        <Tag severity={(moveDiffDays >= 5 && !props.isCardDone) ? 'danger' : 'success'} rounded>
-                                            <TimeAgo
-                                                datetime={props.updatedAt}
-                                                locale={t("cardTimeLocale")}
-                                            /></Tag>
-                                    </div>
+
                                 </ScrollSpaceContainer>
                                 {provided.placeholder}
                             </DroppableDiv>

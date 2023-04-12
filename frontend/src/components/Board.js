@@ -16,10 +16,10 @@ import {useTranslation} from 'react-i18next';
 const BoardStyle = styled.div`
   box-shadow: 0px 1px 7px rgba(0, 0, 0, 0.1), 0px 4px 5px -2px rgba(0, 0, 0, 0.12), 0px 10px 15px -5px rgba(0, 0, 0, 0.2);
   min-width: ${props=>props.is_static? ("300px"):("250px")}
-  max-width: 790px;
-  margin-right: 6px;
-  margin-top: 180px;
-  margin-bottom: 45px;
+  max-width: 474px;
+  margin-right: 4px;
+  margin-top: 108px;
+  margin-bottom: 27px;
   border-radius: 6px;
   display: flex;
   flex-direction: column;
@@ -36,20 +36,20 @@ const Label = styled.label`
   font-weight: bold;
   justify-content: center;
   display: flex;
-  margin-left: 20px;
+  margin-left: 12px;
   //margin-left: -12%;
-  margin-top: 10px;
-  gap: 8px;
+  margin-top: 6px;
+  gap: 5px;
   margin-bottom: 0px;
 `
 const LabelDummy = styled.label`
-    padding: 21px;
+    padding: 13px;
 `
 
-const Title = styled.h2`
+const Title = styled.h4`
   text-align: center;
-  min-width: 205px;
-  height: 35px;
+  min-width: 131px;
+  height: 21px;
   padding: 0px;
   margin-bottom: 0px;
   flex-direction: column;
@@ -66,7 +66,7 @@ const RowStyle = styled.section`
 
 `;
 const CardButtons = styled.div`
-  margin-top:5px;
+  margin-top:3px;
   margin-left: auto;
   margin-right: auto;
 
@@ -153,7 +153,7 @@ function Board(props) {
                                          onBlur={handleInputChangeName}/>
                     </Title>
                     {(!props.is_static)
-                        ? <Label className="ml-30">
+                        ? <Label>
                             Limit:
                             {/*Są tutaj przyciski min z max pomylone do naprawy*/}
                             <InputNumber inputId="minmax-buttons" value={minCard}
@@ -162,7 +162,7 @@ function Board(props) {
                                          showButtons
                                          max={maxCard-1}
                                          size="1"
-                                         style={{height: '2em', width: '80px',marginRight:'30px'}}
+                                         style={{scale:'60%',marginRight:'8px'}}
                                          min={maxCard>1?1:0}
                             />
                             <div>:</div>
@@ -173,7 +173,7 @@ function Board(props) {
                                          showButtons
                                          max={100}
                                          size="1"
-                                         style={{height: '2em', width: '80',marginRight:'30px'}}
+                                         style={{scale:'60%',marginRight:'8px'}}
                             />
                         </Label>
                         : <LabelDummy>
@@ -191,7 +191,7 @@ function Board(props) {
                     <CardButtons>
                         <Button style={{marginRight: "20px"}}
                                 icon="pi pi-pencil"
-                                size="lg"
+                                size="sm"
                                 rounded
                                 text
                                 aria-label="Filter"
@@ -201,7 +201,7 @@ function Board(props) {
                                 }])}/>
                         <Button style={{}}
                                 icon="pi pi-plus"
-                                size="lg"
+                                size="sm"
                                 rounded
                                 text
                                 aria-label="Filter"
@@ -228,7 +228,7 @@ function Board(props) {
                                            reject={() => {}}/>
                             <Button style={{marginLeft: "20px"}}
                                     icon="pi pi-trash"
-                                    size="lg"
+                                    size="sm"
                                     rounded
                                     text
                                     aria-label="Filter"
@@ -254,6 +254,7 @@ function Board(props) {
                                  setBoards={props.setBoards}
                                  boards={props.boards}
                                  setRemaining={props.setRemaining}
+                                 remaining={props.remaining}
                                  cardsChoice={props.cardsChoice}
                                  setCardsChoice={props.setCardsChoice}
                                  callRestrictionUpdate={callRestrictionUpdate}

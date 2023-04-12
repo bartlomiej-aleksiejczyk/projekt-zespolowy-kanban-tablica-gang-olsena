@@ -9,12 +9,12 @@ const AvatarContainer = styled.div`
   flex-direction: column;
   word-wrap: break-word;
   flex-wrap: wrap;
-  padding-left: 8px;
-  padding-right:8px;
+  padding-left: 5px;
+  padding-right:5px;
 `;
 const AvatarImage = styled.img`
-  width: 40px;
-  height: 40px;
+  width: 24px;
+  height: 24px;
   border-radius: 50%;
 `;
 //To już jest hiper druciarstwo
@@ -42,7 +42,6 @@ function UserAvatar(props) {
                                 ref={provided.innerRef}
                                 style={getStyle(provided.draggableProps.style, snapshot)}
                 >
-                    {props.username}
                     <Tooltip target=".user-avatar"/>
                     <AvatarImage className="user-avatar" src={props.img} data-pr-tooltip={props.username} />
                 <div>

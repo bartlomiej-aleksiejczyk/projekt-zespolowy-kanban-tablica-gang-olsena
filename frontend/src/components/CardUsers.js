@@ -21,15 +21,15 @@ const AvatarContainer = styled.div`
   flex-direction: column;
   word-wrap: break-word;
   flex-wrap: wrap;
-  height: 50px;
-  padding-left: 8px;
-  margin-top: 10px;
-  margin-bottom: 10px;
-  padding-right:2px;
+  height: 30px;
+  padding-left: 5px;
+  margin-top: 6px;
+  margin-bottom: 6px;
+  padding-right:1px;
 `;
 const AvatarImage = styled.img`
-  width: 40px;
-  height: 40px;
+  width: 24px;
+  height: 24px;
   border-radius: 50%;
 `;
 //To już jest hiper druciarstwo
@@ -64,8 +64,8 @@ function UserAvatar(props) {
                     <Avatar className="p-overlay-badge user-avatar"
                             label={props.username}
                             image={props.img}
-                            size="xlarge" shape="circle" style={{width: "40px", height: "40px"}}>
-                        <Badge value="X" style={{scale: "0.9", textAlign: "center"}}
+                            size="sm" shape="circle" style={{width: "24px", height: "24px"}}>
+                        <Badge value="X" style={{scale: "0.54", textAlign: "center"}}
                                onClick={() => (setVisible2(true))}/>
                     </Avatar>
                 </AvatarContainer>

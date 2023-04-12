@@ -24,20 +24,22 @@ import LanguageChoose from "./LanguageChoose";
 import { withTranslation } from 'react-i18next';
 import { Translation } from 'react-i18next';
 import i18n from "i18next";
+import Loading from "./Loading";
 
 const GlobalStyle = createGlobalStyle`
   body {
     box-sizing: border-box;
     font-family: Verdana;
     color: #232323;
-    background-color: #aec5de;
+    background: linear-gradient(169deg, rgb(168, 203, 255) 0%, rgb(173, 200, 204) 41%, rgb(209, 242, 255) 100%);
+    background-attachment: fixed;
     scroll-margin-left: 0;
   }
 `
-const AssignmentLimitText = styled.h3`
+const AssignmentLimitText = styled.h5`
   text-align: center;
-  padding: 15px;
-  margin-top: 20px;
+  padding: 9px;
+  margin-top: 12px;
 `;
 const InputContainer = styled.div`
   display: flex;
@@ -45,22 +47,22 @@ const InputContainer = styled.div`
 `;
 const UserAssignArea = styled.div`
   display: flex;
-  padding: 10px;
+  padding: 6px;
   justify-content: center;
   flex-wrap: wrap;
 `;
 const BoardOfBoards = styled.div`
   display: flex;
-  margin-left:481px;
-  margin-top: -160px;
+  margin-left:289px;
+  margin-top: -96px;
   justify-content: space-around;
   position: absolute;
 `;
 const FreeUsersBoard = styled.div`
   position: relative;
-  margin-top: 215px;
-  margin-left: 25px;
-  width:200px;
+  margin-top: 129px;
+  margin-left: 15px;
+  width:120px;
   top: 100%;
   box-sizing: border-box;
   background-color: white;
@@ -69,11 +71,11 @@ const FreeUsersBoard = styled.div`
 `;
 const Header = styled.h1`
   text-shadow: 3px 3px #4f46e5;
-  margin-left: 35px;
-  margin-top: 35px;
+  margin-left: 21px;
+  margin-top: 21px;
   font-size: 350%;
   text-transform: uppercase;
-  padding: 5px;
+  padding: 3px;
   color: #ffffff;
 `;
 const AvatarMenu = styled.div`
@@ -156,7 +158,6 @@ function Kanban() {
     const handleInputChangeLimit = (e) => {
         if(e.value!==null){
             setValue4(e.value);
-            console.log(e.value)
             apiService.updateParameter( 1,{"value": e.value}).then((response_data) => {
                 CommonService.toastCallback(response_data, setValue4(response_data.data.value),setRemaining)
             });
@@ -208,8 +209,11 @@ function Kanban() {
     }, []);
     useEffect(() => {
         apiService.getBoards().then((response_data) => {
+            console.log(boards===[])
             setBoards(response_data.data)
             setCardsChoice(response_data.data1)
+            console.log(boards===[])
+
 
         });
     }, [apiService]);
@@ -274,7 +278,6 @@ function Kanban() {
             let source_card = {...boards[boardIndexSource].row_data[rowIndexSource].card_data[source.index]};
             let destination_card = {...boards[boardIndex]};
             setOldBoards(structuredClone(boards))
-            console.log(oldBoards)
             setOldCards(cards);
             setOldDestination(destination);
             setOldDraggableIde(draggableIde)
@@ -343,7 +346,6 @@ async function dragDecision(cards,destination,draggableIde,board,row){
 
 }
 function dragCancel(){
-        console.log(oldBoards)
         setBoards(oldBoards)
     setNotCompletedAlert(false)
     setNotCompletedBugAlert(false)
@@ -453,7 +455,7 @@ function dragCancel(){
                         <Button style={{
                             boxShadow: "0px 1px 7px rgba(0, 0, 0, 0.1), 0px 4px 5px -2px rgba(0, 0, 0, 0.12), 0px 10px 15px -5px rgba(0, 0, 0, 0.2)"
                         }}
-                                size="lg"
+                                size="sm"
                                 onClick={() => CommonService.onOpenDialog(setVisible1, [{callback: setValue1, value: ''}])}
                                 label={t("kanbanButtonNewRow")}
                                 icon="pi pi-plus"/>
@@ -462,7 +464,7 @@ function dragCancel(){
                         <Button style={{
                             boxShadow: "0px 1px 7px rgba(0, 0, 0, 0.1), 0px 4px 5px -2px rgba(0, 0, 0, 0.12), 0px 10px 15px -5px rgba(0, 0, 0, 0.2)"
                         }}
-                                size="lg"
+                                size="sm"
                                 onClick={() => CommonService.onOpenDialog(setVisible, [{callback: setValue, value: ''}])}
                                 label={t("kanbanButtonNewColumn")}
                                 icon="pi pi-plus"/>
@@ -471,7 +473,7 @@ function dragCancel(){
 
                         <Button style={{
                             boxShadow: "0px 1px 7px rgba(0, 0, 0, 0.1), 0px 4px 5px -2px rgba(0, 0, 0, 0.12), 0px 10px 15px -5px rgba(0, 0, 0, 0.2)",}}
-                                size="lg"
+                                size="sm"
                                 onClick={() => CommonService.onOpenDialog(setVisible2, [{callback: setValue2, value: ''}])}
                                 //label={`${user.username} | Wyloguj się`}
                                 label={t("kanbanButtonLogout")}
@@ -481,7 +483,7 @@ function dragCancel(){
 
                         <Button style={{
                             boxShadow: "0px 1px 7px rgba(0, 0, 0, 0.1), 0px 4px 5px -2px rgba(0, 0, 0, 0.12), 0px 10px 15px -5px rgba(0, 0, 0, 0.2)",}}
-                                size="lg"
+                                size="sm"
                                 onClick={() => CommonService.onOpenDialog(setVisible3, [{callback: setValue3, value: ''}])}
                                 aria-haspopup
                                 aria-controls="overlay_panel"
@@ -492,7 +494,8 @@ function dragCancel(){
                     </div>
                 </div>
                 <GlobalStyle whiteColor/>
-                <DragDropContext
+                {(boards.length)>0 ?
+                    <DragDropContext
                     onDragEnd={onDragEnd}>
                     <Droppable
                         key="unikalnyKlucz1"
@@ -521,6 +524,7 @@ function dragCancel(){
                                                   index={index}
                                                   users={users}
                                                   cardsChoice={cardsChoice}
+                                                  remaining={remaining}
                                                   setCardsChoice={setCardsChoice}
                                                    />
                                 })}
@@ -546,6 +550,7 @@ function dragCancel(){
                                                 decrementButtonIcon="pi pi-minus"
                                                 allowEmpty={false}
                                                 inputStyle={{textAlign:"center"}}
+                                                style={{scale: "60%"}}
                             />
                         </InputContainer>
                         <Droppable
@@ -574,7 +579,9 @@ function dragCancel(){
                                 )}
                         </Droppable>
                     </FreeUsersBoard>
-                </DragDropContext>
+                </DragDropContext>:
+                    <Loading/>
+                }
             </WholeWebpage>
         </UserServiceProvider>
     )

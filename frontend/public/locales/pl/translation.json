@@ -7,6 +7,7 @@
   "error": "Błąd",
   "warning": "Ostrzeżenie",
   "succes": "Powodzenie",
+  "options": "Opcje",
 
   "Api messages":"SECTION",
   "apiUserAvatarUpdated": "Zaktualizowano awatar",
@@ -109,10 +110,15 @@
   "cardHasAParent": "Ma rodzica: ",
   "cardFinished": "Zrobione",
   "cardNotFinished": "Niezrobione",
+  "cardChildrenChecklist": "Lista dzieci karty:",
   "cardItemChecklist": "Lista podzadań",
   "cardCarditems": "Podzadania",
   "cardChildren": "Dzieci",
-  "cardTimeLocale": "pl"
+  "cardTimeLocale": "pl",
+  "cardMenuButtonOptionEdit": "Edytuj",
+  "cardMenuButtonOptionDelete": "Usuń",
+  "cardMenuButtonOptionLock": "Zmień stan zablokowania",
+  "cardMenuButtonOptionBug": "Zmień stan 'bug'"
 }
 
 

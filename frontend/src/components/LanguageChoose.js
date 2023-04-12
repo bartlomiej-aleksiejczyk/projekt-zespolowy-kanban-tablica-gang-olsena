@@ -48,7 +48,7 @@ function LanguageChoose () {
                       placeholder="Select a language"
                       valueTemplate={selectedCountryTemplate}
                       itemTemplate={countryOptionTemplate}
-                      style={{height:"60px", backgroundColor:"#f9f7ff"}}
+                      style={{height:"40px", backgroundColor:"#f9f7ff"}}
                       className="w-full md:w-14rem align-items-center" />
         </div>
     )

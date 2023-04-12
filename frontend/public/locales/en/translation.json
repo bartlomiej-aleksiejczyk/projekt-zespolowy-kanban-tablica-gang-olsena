@@ -7,6 +7,7 @@
   "error": "Error",
   "warning": "Warning",
   "succes": "Success",
+  "options": "Options",
 
   "Api messages":"SECTION",
   "apiUserAvatarUpdated": "Avatar updated",
@@ -39,7 +40,6 @@
   "apiColumnUpdated": "Column updated",
   "apiChildrenNotFinished": "Task cannot be moved, all children must have 'finished' status",
   "apiBoardCardParentCannotBeFinished": "Task cannot be child of already done task",
-
 
   "Login.js and Register.js":"SECTION",
   "loginErrorMessage":"Username not entered",
@@ -114,6 +114,9 @@
   "cardItemChecklist": "Subtasks checklist",
   "cardCarditems": "Subtasks",
   "cardChildren": "Children",
-  "cardTimeLocale": "en"
-
+  "cardTimeLocale": "en",
+  "cardMenuButtonOptionEdit": "Edit",
+  "cardMenuButtonOptionDelete": "Delete",
+  "cardMenuButtonOptionLock": "Change lock state",
+  "cardMenuButtonOptionBug": "Change bug state"
 }

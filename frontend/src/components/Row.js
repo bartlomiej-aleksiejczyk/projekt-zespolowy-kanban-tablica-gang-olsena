@@ -13,15 +13,15 @@ import {useTranslation} from 'react-i18next';
 import LanguageChoose from "./LanguageChoose";
 
 const CardsStyle = styled.div`
-  max-width: 770px;
-  min-width: 228px;
+  max-width: 473px;
+  min-width: 137px;
   margin-top: 3px;
   margin-left: 11.5px;
   margin-right: auto;
   width: auto;
   margin-bottom: 3px;
-  min-height: 305px;
-  max-height: 305px;
+  min-height: 183px;
+  max-height: 183px;
   overflow: auto;
   display: inline-flex;
   
@@ -32,53 +32,53 @@ const CardsStyle = styled.div`
 `;
 const RowsStyleExtension = styled.div`
   //box-shadow: 0px 1px 7px rgba(0, 0, 0, 0.1), 0px 4px 5px -2px rgba(0, 0, 0, 0.12), 0px 10px 15px -5px rgba(0, 0, 0, 0.2);
-  max-width: 790px;
-  min-width: 250px;
-  max-height: 310px;
-  min-height: 60px;
+  max-width: 474px;
+  min-width: 150px;
+  max-height: 186px;
+  min-height: 36px;
   //border: 3px solid #b7b3ea;
   background-color: #c4c0f1;
-  margin-top: 3px;
+  margin-top: 2px;
 `;
 
 
 const RowSide = styled.div`
   position: absolute;
-  margin-left: -250px;
-  min-width: 246px;
+  margin-left: -150px;
+  min-width: 148px;
   z-index: 10;
 `;
 const RowSideCollapsable = styled.div`
   position: absolute;
-  margin-left: -252px;
-  margin-top: 3px;
-  min-width: 246px;
-  min-height: 235px;
-  max-height: 235px;
+  margin-left: -151px;
+  margin-top: 2px;
+  min-width: 148px;
+  min-height: 141px;
+  max-height: 141px;
   z-index: 8;
-  border-radius: 6px;
+  border-radius: 4px;
   background-color: white;
 
 `;
 const RowCollapsable = styled.div`
   content: "my tooltip";
-  min-width: 250px;
-  max-height: 310px;
-  min-height: 60px;
-  margin-bottom: 3px;
+  min-width: 150px;
+  max-height: 186px;
+  min-height: 186px;
+  margin-bottom: 2px;
   background-color: white;
   margin-top: 3px;
 `;
 const RowsStyle = styled.div`
   //box-shadow: 0px 1px 7px rgba(0, 0, 0, 0.1), 0px 4px 5px -2px rgba(0, 0, 0, 0.12), 0px 10px 15px -5px rgba(0, 0, 0, 0.2);
-  max-width: 790px;
-  min-width: 245px;
-  max-height: 310px;
-  min-height: 310px;
+  max-width: 474px;
+  min-width: 147px;
+  max-height: 186px;
+  min-height: 186px;
   zIndex : 1;
-  margin-top: 3px;
-  margin-right: 2px;
-  margin-bottom: 3px;
+  margin-top: 2px;
+  margin-right: 1px;
+  margin-bottom: 2px;
   display: flex;
   flex-wrap: wrap;
   flex-direction: column;
@@ -138,7 +138,7 @@ function Row(props) {
         <RowsStyleExtension>
             {props.boardIndex === 0 &&
             <RowSide>
-                <ToggleButton style={{width: "227px", marginLeft: "10px", marginTop: "10px"}}
+                <ToggleButton style={{width: "136px", marginLeft: "6px", marginTop: "6px"}}
                               onLabel={props.name} offLabel={props.name} onIcon="pi pi-minus" offIcon="pi pi-plus"
                               checked={!props.isCollapsed}
                               onChange={props.isCollapsed ? () => handleExpand() : () => handleCollapse()}/>
@@ -148,18 +148,18 @@ function Row(props) {
             <RowCollapsable>
                 {props.boardIndex === 0 &&
                 <RowSideCollapsable>
-                    <Button style={{marginLeft: "50px", marginTop: "80px", zIndex: 7, scale: "120%"}}
+                    <Button style={{marginLeft: "30px", marginTop: "48px", zIndex: 7}}
                             icon="pi pi-pencil"
-                            size="lg"
+                            size="sm"
                             rounded
                             text
                             onClick={() => CommonService.onOpenDialog(setVisible2, [{
                                 callback: setValue3,
                                 value   : props.name
                             }])}/>
-                    <Button style={{marginLeft: "40px", marginTop: "80px", zIndex: 7, fontSize: "12px", scale: "120%"}}
+                    <Button style={{marginLeft: "25px", marginTop: "48px", zIndex: 7, fontSize: "12px"}}
                             icon="pi pi-trash"
-                            size="lg"
+                            size="sm"
                             rounded
                             text
                             onClick={() => setVisible1(true)}/>
@@ -213,7 +213,7 @@ function Row(props) {
                                           indexDrag={indexDrag}
                                           data={card}
                                           itemDataNew={card.item_data}
-
+                                          remaining={props.remaining}
                                           isCardCompleted={card.is_card_completed}
                                           isCardDone={card.is_card_finished}
                                           hasBug={card.has_bug}
