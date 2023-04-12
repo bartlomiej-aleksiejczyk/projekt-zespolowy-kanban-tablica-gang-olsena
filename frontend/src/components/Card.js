@@ -256,14 +256,11 @@ function Card(props) {
         {value: false, icon: 'pi pi-lock-open'},
         {value: true, icon: 'pi pi-lock'},
     ];
-    const [editSelectedUser, setEditSelectedUser] = useState(props.data?.user_data);
     const [parent, setParent] = useState(props.parentCard);
     const [users, setUsers] = useState(props.users);
-    const [restrictedBoards, setRestrictedBoards] = useState(props.restrictedBoardsData);
     const [bug, setBug] = useState(props.hasBug);
     const [itemCollapse, setItemCollapse] = useState(props.areCarditemsCollapsed)
     const [childrenCollapse, setChildrenCollapse] = useState(props.areChildrenCollapsed)
-    const [uneditedBoards, setUneditedBoards] = useState(props.boards)
     const [cardItems, setCardItems] = useState(props.data?.item_data);
     const editMenu = useRef(null);
     React.useEffect(() => {
@@ -271,8 +268,6 @@ function Card(props) {
         if(items) {
             setCardItems(items);
         }
-        console.log("useeff")
-
     }, [props.itemDataNew]);
     const apiService = useUserService();
     const handleItemCollapse = () => {
@@ -350,11 +345,9 @@ function Card(props) {
             "color"            : value1,
             "items"            : cardItems,
             "parent_card"      : parentAux,
-            "users"            : users,
-            "restricted_boards": restrictedBoards,
             "has_bug"          : bug
         }).then((response_data) => {
-            CommonService.toastCallback(response_data, props.setBoards, props.setRemaining, props.setCardsChoice, setRestrictedBoards);
+            CommonService.toastCallback(response_data, props.setBoards, props.setRemaining, props.setCardsChoice);
             setVisible1(false);
         });
     }
@@ -397,14 +390,10 @@ function Card(props) {
         setValue1(props.color);
         setLock(props.locked);
         setVisible1(false);
-        setRestrictedBoards(props.restrictedBoardsData);
         setParent(props.parentCard);
     }
 
     const acceptAssignEdit = () => {
-        if(props.boards[0].id in restrictedBoards) {
-            setRestrictedBoards([])
-        }
         apiService.updateSingleCard(props.backId, {
             "user": "",
         }).then((response_data) => {
@@ -417,9 +406,6 @@ function Card(props) {
 
     //Generalnie tak się z tego co wiem nie powinno pisać, use effect jest do synchronizacji z zewnętrznymi rzeczami
     //Jest to zły wzorzec, ale nie mam lepszego pomysłu
-    React.useEffect(() => {
-        setRestrictedBoards(props.restrictedBoardsData);
-    }, [props.restrictedBoardsData]);
     React.useEffect(() => {
         props.setCardsChoice(props.cardsChoice);
     }, [props.cardsChoice])
@@ -480,7 +466,7 @@ function Card(props) {
                                             />
                                         }
                                         <Tag
-                                            severity={(moveDiffDays >= 5 && !props.isCardDone) ? 'danger' : 'success'}
+                                            severity={(moveDiffDays >= 5 && !props.isCardDone) ? 'danger' : 'info'}
                                              style={{scale:"80%", fontSize:12,whiteSpace: "nowrap", height:"22px", marginRight:"-10px",marginLeft:"0px" }}
                                         >
                                             <TimeAgo
@@ -490,13 +476,13 @@ function Card(props) {
                                         {(props.data.item_data.length > 0 && (
                                             <Tag
                                                 severity={(props.isCardCompleted) ? 'success' : 'primary'}
-                                                style={{scale:"80%", fontSize:12,whiteSpace: "nowrap", height:"22px", marginRight:"-10px",marginLeft:"0px" }}
+                                                style={{scale:"80%", fontSize:12,whiteSpace: "nowrap", height:"22px", marginRight:"-8px",marginLeft:"1px" }}
                                                 icon="pi pi-check-square">
                                                 {`${(props.data.item_data.filter(obj => obj.is_done === true)).length}/${props.data.item_data.length}`}
                                             </Tag>))}
                                         {props.parentCard &&
                                             <Tag
-                                                 style={{scale:"80%", fontSize:12,whiteSpace: "nowrap", height:"22px", marginRight:"-10px",marginLeft:"0px" }}
+                                                 style={{scale:"80%", fontSize:12,whiteSpace: "nowrap", height:"22px", marginRight:"-8px",marginLeft:"1px" }}
                                                  value={`${t("cardHasAParent") }${(props.parentName ?
                                         (props.parentName[0].length > 9 ? props.parentName[0].substring(0, 9 - 3) + "..." :
                                             props.parentName[0]) : "")}`}
@@ -506,7 +492,14 @@ function Card(props) {
                                         {props.childData.length > 0 &&
                                             <Tag
                                                 value={t("cardIsParent")}
-                                                 style={{scale:"80%", fontSize:12,whiteSpace: "nowrap", height:"22px", marginRight:"-10px",marginLeft:"0px" }}
+                                                 style={{scale:"80%", fontSize:12,whiteSpace: "nowrap", height:"22px", marginRight:"-8px",marginLeft:"1px" }}
+                                            />
+                                        }
+                                        {bug===true &&
+                                            <Tag
+                                                severity="warning"
+                                                value={"Bug"}
+                                                style={{scale:"80%", fontSize:12,whiteSpace: "nowrap", height:"22px", marginRight:"-8px",marginLeft:"1px" }}
                                             />
                                         }
                                     </TagContainer>
@@ -517,6 +510,7 @@ function Card(props) {
                                             className="Description"
                                             html={props.description}
                                             disabled={false}
+                                            style={{fontSize:13, font:"Verdana", padding:"4px",fontWeight:1000, color:"#3e4349"}}
                                             onBlur={handleInputChange}/>
                                     </Description>
                                     {(cardItems.length > 0) && (
@@ -628,15 +622,6 @@ function Card(props) {
                                                           placeholder={t("cardEditDialogChooseParent")}
                                                 />
                                             </UserChoiceBar>
-                                            <MultiSelect style={{backgroundColor: "#ff466e !important", color: "black !important"}}
-                                                         value={restrictedBoards}
-                                                         onChange={(e) => setRestrictedBoards(e.value)}
-                                                         options={_.uniqWith(props.remaining, _.isEqual)}
-                                                         optionLabel="username"
-                                                         showSelectAll="false"
-                                                         placeholder={t("cardRestrictColumnDialog")}
-                                                         optionValue="id"
-                                                         className="w-6 ml-3"/>
                                         </div>
                                         <div className="card flex flex-row align-items-center gap-3 pt-3 pb-3 pl-2">
                                             <div className="w-6">

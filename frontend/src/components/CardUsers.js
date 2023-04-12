@@ -64,9 +64,9 @@ function UserAvatar(props) {
                     <Avatar className="p-overlay-badge user-avatar"
                             label={props.username}
                             image={props.img}
-                            size="sm" shape="circle" style={{width: "24px", height: "24px"}}>
-                        <Badge value="X" style={{scale: "0.54", textAlign: "center"}}
-                               onClick={() => (setVisible2(true))}/>
+                            size="sm" shape="circle" style={{width: "24px", height: "24px"}}
+                            onClick={() => (setVisible2(true))}
+                    >
                     </Avatar>
                 </AvatarContainer>
     )

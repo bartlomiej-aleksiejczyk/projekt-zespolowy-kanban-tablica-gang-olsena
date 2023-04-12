@@ -11,6 +11,7 @@ import {ToggleButton} from 'primereact/togglebutton';
 import {useUserService} from "../utils/UserServiceContext";
 import {useTranslation} from 'react-i18next';
 import LanguageChoose from "./LanguageChoose";
+import {Tooltip} from 'primereact/tooltip';
 
 const CardsStyle = styled.div`
   max-width: 473px;
@@ -51,10 +52,10 @@ const RowSide = styled.div`
 const RowSideCollapsable = styled.div`
   position: absolute;
   margin-left: -151px;
-  margin-top: 2px;
-  min-width: 148px;
-  min-height: 141px;
-  max-height: 141px;
+  max-width: 149px;
+  min-width: 149px;
+  min-height: 80px;
+  max-height: 80px;
   z-index: 8;
   border-radius: 4px;
   background-color: white;
@@ -84,7 +85,7 @@ const RowsStyle = styled.div`
   flex-direction: column;
   align-items: center;
   transition: background-color 0.4s;
-  background-color: ${props =>props.rowOverflowBothEnds ? '#800000' : 'white'};
+  background-color: ${props =>props.rowOverflowBothEnds ? '#c29e9e' : 'white'};
 /*
   background {isBetween ? 'white' : 'red'};
 */
@@ -136,9 +137,25 @@ function Row(props) {
     return (
 
         <RowsStyleExtension>
+            <Tooltip target={`.row-${props.backId}`} autoHide={false}>
+                <div className="flex align-items-center">
+                    <Button style={{marginRight: "20px"}}
+                            icon="pi pi-pencil"
+                            size="sm"
+                            onClick={() => CommonService.onOpenDialog(setVisible2, [{
+                                callback: setValue3,
+                                value   : props.name
+                            }])}/>
+                    <Button
+                            icon="pi pi-trash"
+                            size="sm"
+                            onClick={() => setVisible1(true)}/>
+                </div>
+            </Tooltip>
             {props.boardIndex === 0 &&
             <RowSide>
-                <ToggleButton style={{width: "136px", marginLeft: "6px", marginTop: "6px"}}
+                <ToggleButton className={`row-${props.backId}`}
+                              style={{width: "136px", marginLeft: "6px", marginTop: "6px",height:"30px"}}
                               onLabel={props.name} offLabel={props.name} onIcon="pi pi-minus" offIcon="pi pi-plus"
                               checked={!props.isCollapsed}
                               onChange={props.isCollapsed ? () => handleExpand() : () => handleCollapse()}/>
@@ -148,21 +165,6 @@ function Row(props) {
             <RowCollapsable>
                 {props.boardIndex === 0 &&
                 <RowSideCollapsable>
-                    <Button style={{marginLeft: "30px", marginTop: "48px", zIndex: 7}}
-                            icon="pi pi-pencil"
-                            size="sm"
-                            rounded
-                            text
-                            onClick={() => CommonService.onOpenDialog(setVisible2, [{
-                                callback: setValue3,
-                                value   : props.name
-                            }])}/>
-                    <Button style={{marginLeft: "25px", marginTop: "48px", zIndex: 7, fontSize: "12px"}}
-                            icon="pi pi-trash"
-                            size="sm"
-                            rounded
-                            text
-                            onClick={() => setVisible1(true)}/>
                 </RowSideCollapsable>
                 }
                 <RowsStyle rowOverflowBothEnds={
@@ -213,7 +215,6 @@ function Row(props) {
                                           indexDrag={indexDrag}
                                           data={card}
                                           itemDataNew={card.item_data}
-                                          remaining={props.remaining}
                                           isCardCompleted={card.is_card_completed}
                                           isCardDone={card.is_card_finished}
                                           hasBug={card.has_bug}
@@ -222,18 +223,15 @@ function Row(props) {
                                           row={card.row}
                                           boards={props.boards}
                                           users={props.users}
-                                          restrictedBoardsData={card.restricted_boards}
                                           parentCard={card.parent_card}
                                           childData={card.child_data}
                                           setBoards={props.setBoards}
                                           setRemaining={props.setRemaining}
                                           cardsChoice={props.cardsChoice}
                                           setCardsChoice={props.setCardsChoice}
-                                          callRestrictionUpdate={props.callRestrictionUpdate}
                                           areChildrenCollapsed={card.are_children_collapsed}
                                           areCarditemsCollapsed={card.are_carditems_collapsed}
                                           updatedAt={card.updated_at}
-                                        // setCallRestrictionUpdate={props.setCallRestrictionUpdate}
                                           parentName={card.parent_name}
                                     />
                                 )}

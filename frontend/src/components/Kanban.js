@@ -60,7 +60,7 @@ const BoardOfBoards = styled.div`
 `;
 const FreeUsersBoard = styled.div`
   position: relative;
-  margin-top: 129px;
+  margin-top: 154px;
   margin-left: 15px;
   width:120px;
   top: 100%;
@@ -359,7 +359,7 @@ function dragCancel(){
                     position: "absolute",
                     top     : "40px",
                     right   : "0",
-                    zIndex  : "1",
+                    zIndex  : "2",
                     verticalAlign : "middle",
                 }}>
                     <ConfirmDialog visible={notCompletedBugAlert}

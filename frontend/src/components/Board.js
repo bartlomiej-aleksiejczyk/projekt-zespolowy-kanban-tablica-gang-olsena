@@ -12,6 +12,8 @@ import CommonService from "../services/CommonService";
 import Row from "./Row";
 import {useUserService} from "../utils/UserServiceContext";
 import {useTranslation} from 'react-i18next';
+import {Tooltip} from 'primereact/tooltip';
+
 
 const BoardStyle = styled.div`
   box-shadow: 0px 1px 7px rgba(0, 0, 0, 0.1), 0px 4px 5px -2px rgba(0, 0, 0, 0.12), 0px 10px 15px -5px rgba(0, 0, 0, 0.2);
@@ -36,22 +38,20 @@ const Label = styled.label`
   font-weight: bold;
   justify-content: center;
   display: flex;
-  margin-left: 12px;
   //margin-left: -12%;
-  margin-top: 6px;
+  color: #3e4349;
   gap: 5px;
-  margin-bottom: 0px;
+  margin-bottom: 10px;
 `
 const LabelDummy = styled.label`
-    padding: 13px;
+    padding: 22px;
 `
-
-const Title = styled.h4`
+const BoardTop = styled.label`
+    height: 100px;
+`
+const Title = styled.h3`
   text-align: center;
-  min-width: 131px;
-  height: 21px;
-  padding: 0px;
-  margin-bottom: 0px;
+  padding: 5px;
   flex-direction: column;
   word-wrap: break-word;
   flex-wrap: wrap;
@@ -82,7 +82,6 @@ function Board(props) {
     const [minCard, setMinCard] = useState(props.board.min_card);
     const [maxCard, setMaxCard] = useState(props.board.max_card);
     const [value3, setValue3] = useState(props.name);
-    const [callRestrictionUpdate, setCallRestrictionUpdate] = useState(false);
 
     const apiService = useUserService();
 
@@ -107,8 +106,6 @@ function Board(props) {
         apiService.removeBoard((props.backId)).then((response_data) => {
             CommonService.toastCallback(response_data, props.setBoards, props.setRemaining);
         });
-        setCallRestrictionUpdate(true)
-        console.log(callRestrictionUpdate)
     }
 
     const acceptAddCard = () => {
@@ -121,17 +118,16 @@ function Board(props) {
         setValue('');
     }
     const acceptEditBoard = () => {
-        apiService.updateBoard(props.backId, {"name": value3}).then((response_data) => {
+        apiService.updateBoard(props.backId, {"name": value3, "min_card": minCard, "max_card": maxCard}).then((response_data) => {
             CommonService.toastCallback(response_data, props.setBoards);
-            setCallRestrictionUpdate(true);
-            console.log("props.callRestrictionUpdate");
-            console.log(callRestrictionUpdate)
 
         });
+
 
     }
     const rejectEditBoard = () => {
         setValue3(props.name);
+
     }
 
 
@@ -145,97 +141,111 @@ function Board(props) {
                     {...provided.dragHandleProps}
                     {...provided.draggableProps}
                     ref={provided.innerRef}>
-                    <Title>
-                        <ContentEditable spellCheck="false"
-                                         className="Title"
-                                         html={props.name}
-                                         disabled={true}
-                                         onBlur={handleInputChangeName}/>
-                    </Title>
-                    {(!props.is_static)
-                        ? <Label>
-                            Limit:
-                            {/*Są tutaj przyciski min z max pomylone do naprawy*/}
-                            <InputNumber inputId="minmax-buttons" value={minCard}
-                                         onValueChange={(e) => handleInputChangeLimit(e.value, props.board.max_card)}
-                                         mode="decimal"
-                                         showButtons
-                                         max={maxCard-1}
-                                         size="1"
-                                         style={{scale:'60%',marginRight:'8px'}}
-                                         min={maxCard>1?1:0}
-                            />
-                            <div>:</div>
-                            <InputNumber inputId="minmax-buttons" value={maxCard}
-                                         onValueChange={(e) => handleInputChangeLimit(props.board.min_card, e.value)}
-                                         min={(minCard+1)}
-                                         mode="decimal"
-                                         showButtons
-                                         max={100}
-                                         size="1"
-                                         style={{scale:'60%',marginRight:'8px'}}
-                            />
-                        </Label>
-                        : <LabelDummy>
-                        </LabelDummy>
-                    }
-                    <ConfirmDialog visible={visi} onHide={() => setVisi(false)}
-                                   message=<InputText value={value} onChange={(e) => setValue(e.target.value)}/>
-                    header={t("BoardNewCard")}
-                    icon="pi pi-check-square"
-                    acceptLabel={t("accept")}
-                    rejectLabel={t("reject")}
-                    accept={acceptAddCard}
-                    reject={rejectAddCard}
-                    />
-                    <CardButtons>
-                        <Button style={{marginRight: "20px"}}
-                                icon="pi pi-pencil"
-                                size="sm"
-                                rounded
-                                text
-                                aria-label="Filter"
-                                onClick={() => CommonService.onOpenDialog(setVisible2, [{
-                                    callback: setValue3,
-                                    value   : props.name
-                                }])}/>
-                        <Button style={{}}
-                                icon="pi pi-plus"
-                                size="sm"
-                                rounded
-                                text
-                                aria-label="Filter"
-                                onClick={() => CommonService.onOpenDialog(setVisi, [{callback: setValue, value: ''}])}/>
-                        <ConfirmDialog visible={visible2} onHide={() => setVisible2(false)}
-                                       message=<InputText value={value3} onChange={(e) => setValue3(e.target.value)}/>
-                        header={t("BoardEditColumn")}
-                        icon="pi pi-pencil"
-                        acceptLabel={t("accept")}
-                        rejectLabel={t("reject")}
-                        accept={acceptEditBoard}
-                        reject={rejectEditBoard}
-                        />
-                        {!props.is_static &&
-                        <span>
-                            <ConfirmDialog visible={visible}
-                                           onHide={() => setVisible(false)}
-                                           message={t("BoardRemoveConfirmationDetail")}
-                                           header={t("BoardRemoveConfirmation")}
-                                           icon="pi pi-trash"
-                                           acceptLabel={t("yes")}
-                                           rejectLabel={t("no")}
-                                           accept={accept}
-                                           reject={() => {}}/>
+                    <Tooltip target={`.board-${props.backId}`} autoHide={false}>
+                        <div className="flex align-items-center">
+                            <Button style={{marginRight: "20px"}}
+                                    icon="pi pi-pencil"
+                                    size="sm"
+                                    aria-label="Filter"
+                                    onClick={() => CommonService.onOpenDialog(setVisible2, [{
+                                        callback: setValue3,
+                                        value   : props.name
+                                    }])}/>
+                            <Button style={{}}
+                                    icon="pi pi-plus"
+                                    size="sm"
+
+                                    aria-label="Filter"
+                                    onClick={() => CommonService.onOpenDialog(setVisi, [{callback: setValue, value: ''}])}/>
                             <Button style={{marginLeft: "20px"}}
                                     icon="pi pi-trash"
                                     size="sm"
-                                    rounded
-                                    text
                                     aria-label="Filter"
                                     onClick={() => setVisible(true)}/>
-                        </span>
+                        </div>
+                    </Tooltip>
+                    <BoardTop className={`board-${props.backId}`}>
+                        <Title>
+                            <ContentEditable spellCheck="false"
+                                             className="Title"
+                                             html={props.name}
+                                             disabled={true}
+                                             onBlur={handleInputChangeName}/>
+                        </Title>
+                        {(!props.is_static)
+                            ? <Label>
+                                Limit:
+                                {` `}
+                                {minCard}
+                                <div>:</div>
+                                {maxCard}
+                            </Label>
+                            : <LabelDummy>
+                            </LabelDummy>
                         }
-                    </CardButtons>
+                        <ConfirmDialog visible={visi} onHide={() => setVisi(false)}
+                                       message=<InputText value={value} onChange={(e) => setValue(e.target.value)}/>
+                        header={t("BoardNewCard")}
+                        icon="pi pi-check-square"
+                        acceptLabel={t("accept")}
+                        rejectLabel={t("reject")}
+                        accept={acceptAddCard}
+                        reject={rejectAddCard}
+                        />
+                        <CardButtons>
+
+                            <ConfirmDialog visible={visible2} onHide={() => setVisible2(false)}
+                                           message={<div className="flex flex-wrap justify-content-center gap-2 mb-2">
+                                               <InputText value={value3}
+                                                               onChange={(e) => setValue3(e.target.value)}/>
+                                           {(!props.is_static)
+                                               ? <Label>
+                                               Limit:
+                                               <InputNumber inputId="minmax-buttons" value={minCard}
+                                               onValueChange={(e) => setMinCard(e.value)}
+                                               mode="decimal"
+                                               showButtons
+                                               max={maxCard?maxCard-1:100}
+                                               size="1"
+                                               style={{height: '2em', width: '80px',marginRight:'30px'}}
+                                               min={maxCard>1?1:0}
+                                               />
+                                               <div>:</div>
+                                               <InputNumber inputId="minmax-buttons" value={maxCard}
+                                               onValueChange={(e) => setMaxCard(e.value)}
+                                               min={(minCard+1)}
+                                               mode="decimal"
+                                               showButtons
+                                               max={100}
+                                               size="1"
+                                               style={{height: '2em', width: '80',marginRight:'30px'}}
+                                               />
+                                               </Label>
+                                               : <LabelDummy>
+                                               </LabelDummy>
+                                           }</div>}
+                            header={t("BoardEditColumn")}
+                            icon="pi pi-pencil"
+                            acceptLabel={t("accept")}
+                            rejectLabel={t("reject")}
+                            accept={acceptEditBoard}
+                            reject={rejectEditBoard}
+                            />
+                            {!props.is_static &&
+                            <span>
+                                <ConfirmDialog visible={visible}
+                                               onHide={() => setVisible(false)}
+                                               message={t("BoardRemoveConfirmationDetail")}
+                                               header={t("BoardRemoveConfirmation")}
+                                               icon="pi pi-trash"
+                                               acceptLabel={t("yes")}
+                                               rejectLabel={t("no")}
+                                               accept={accept}
+                                               reject={() => {}}/>
+                            </span>
+                            }
+                        </CardButtons>
+                    </BoardTop>
                     <RowStyle>
                         {(props.rows).map((row, indexDrag) =>
                             <Row key={row.id}
@@ -254,11 +264,9 @@ function Board(props) {
                                  setBoards={props.setBoards}
                                  boards={props.boards}
                                  setRemaining={props.setRemaining}
-                                 remaining={props.remaining}
                                  cardsChoice={props.cardsChoice}
                                  setCardsChoice={props.setCardsChoice}
-                                 callRestrictionUpdate={callRestrictionUpdate}
-                                 setCallRestrictionUpdate={setCallRestrictionUpdate}
+
                             />
                         )}
                     </RowStyle>

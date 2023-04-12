@@ -106,7 +106,7 @@
   "cardRestrictBoard": "Wybierz tablicę do wykluczenia",
   "cardRemoveHeader": "Potwierdzenie usunięcia",
   "cardRemoveDialogMessage": "Czy na pewno chcesz usunąć zadanie?",
-  "cardRemoveUserAssignmentDialog": "Czy na pewno chcesz przypisanie użytkownika?",
+  "cardRemoveUserAssignmentDialog": "Czy na pewno chcesz usunąć przypisanie użytkownika?",
   "cardHasAParent": "Ma rodzica: ",
   "cardFinished": "Zrobione",
   "cardNotFinished": "Niezrobione",
