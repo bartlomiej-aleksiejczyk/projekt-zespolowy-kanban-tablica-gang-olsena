@@ -42,6 +42,7 @@ const Label = styled.label`
   color: #3e4349;
   gap: 5px;
   margin-bottom: 10px;
+  font-style: oblique
 `
 const LabelDummy = styled.label`
     padding: 22px;
