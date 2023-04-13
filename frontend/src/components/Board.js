@@ -1,4 +1,4 @@
-import React, {useState} from 'react'
+import React, {useState, useRef} from 'react'
 import styled from 'styled-components';
 import {Draggable} from 'react-beautiful-dnd';
 import ContentEditable from 'react-contenteditable';
@@ -13,7 +13,7 @@ import Row from "./Row";
 import {useUserService} from "../utils/UserServiceContext";
 import {useTranslation} from 'react-i18next';
 import {Tooltip} from 'primereact/tooltip';
-
+import { ContextMenu } from 'primereact/contextmenu';
 
 const BoardStyle = styled.div`
   box-shadow: 0px 1px 7px rgba(0, 0, 0, 0.1), 0px 4px 5px -2px rgba(0, 0, 0, 0.12), 0px 10px 15px -5px rgba(0, 0, 0, 0.2);
@@ -83,9 +83,28 @@ function Board(props) {
     const [minCard, setMinCard] = useState(props.board.min_card);
     const [maxCard, setMaxCard] = useState(props.board.max_card);
     const [value3, setValue3] = useState(props.name);
-
     const apiService = useUserService();
-
+    const menu = useRef(null);
+    const items = [
+                {
+                    label: t("BoardAddCard"),
+                    icon: 'pi pi-plus',
+                    command: () => CommonService.onOpenDialog(setVisi, [{callback: setValue, value: ''}])
+                },
+                {
+                    label: t("BoardEditColumnContext"),
+                    icon: 'pi pi-pencil',
+                    command: () => CommonService.onOpenDialog(setVisible2, [{
+                        callback: setValue3,
+                        value   : props.name
+                    }])
+                },
+                {
+                    label: t("BoardRemoveColumn"),
+                    icon: 'pi pi-trash',
+                    command:() => setVisible(true)
+                }
+            ];
 
     const handleInputChangeName = (e) => {
         apiService.updateBoard(props.backId, {"name": e.target.innerHTML}).then((response_data) => {
@@ -142,30 +161,8 @@ function Board(props) {
                     {...provided.dragHandleProps}
                     {...provided.draggableProps}
                     ref={provided.innerRef}>
-                    <Tooltip target={`.board-${props.backId}`} autoHide={false}>
-                        <div className="flex align-items-center">
-                            <Button style={{marginRight: "20px"}}
-                                    icon="pi pi-pencil"
-                                    size="sm"
-                                    aria-label="Filter"
-                                    onClick={() => CommonService.onOpenDialog(setVisible2, [{
-                                        callback: setValue3,
-                                        value   : props.name
-                                    }])}/>
-                            <Button style={{}}
-                                    icon="pi pi-plus"
-                                    size="sm"
-
-                                    aria-label="Filter"
-                                    onClick={() => CommonService.onOpenDialog(setVisi, [{callback: setValue, value: ''}])}/>
-                            <Button style={{marginLeft: "20px"}}
-                                    icon="pi pi-trash"
-                                    size="sm"
-                                    aria-label="Filter"
-                                    onClick={() => setVisible(true)}/>
-                        </div>
-                    </Tooltip>
-                    <BoardTop className={`board-${props.backId}`}>
+                    <ContextMenu model={items} ref={menu} ></ContextMenu>
+                    <BoardTop className={`board-${props.backId}`} onContextMenu={(e) => menu.current.show(e)} >
                         <Title>
                             <ContentEditable spellCheck="false"
                                              className="Title"

@@ -1,4 +1,4 @@
-import React, {useState} from 'react'
+import React, {useState, useRef} from 'react'
 import styled from 'styled-components';
 import {Droppable} from 'react-beautiful-dnd';
 import Card from "./Card";
@@ -12,6 +12,7 @@ import {useUserService} from "../utils/UserServiceContext";
 import {useTranslation} from 'react-i18next';
 import LanguageChoose from "./LanguageChoose";
 import {Tooltip} from 'primereact/tooltip';
+import { ContextMenu } from 'primereact/contextmenu';
 
 const CardsStyle = styled.div`
   max-width: 473px;
@@ -105,8 +106,22 @@ function Row(props) {
     const [visible1, setVisible1] = useState(false);
     const [visible2, setVisible2] = useState(false);
     const apiService = useUserService();
-
-
+    const menu = useRef(null);
+    const items = [
+        {
+            label: t("BoardEditColumnContext"),
+            icon: 'pi pi-pencil',
+            command: () => CommonService.onOpenDialog(setVisible2, [{
+                callback: setValue3,
+                value   : props.name
+            }])
+        },
+        {
+            label: t("BoardRemoveColumn"),
+            icon: 'pi pi-trash',
+            command:() => setVisible1(true)
+        }
+    ];
     const handleCollapse = () => {
         apiService.updateRow(props.backId, {"is_collapsed": true, "index": props.index}).then((response_data) => {
             CommonService.toastCallback(response_data, props.setBoards)
@@ -136,24 +151,11 @@ function Row(props) {
     return (
 
         <RowsStyleExtension>
-            <Tooltip target={`.row-${props.backId}`} autoHide={false}>
-                <div className="flex align-items-center">
-                    <Button style={{marginRight: "20px"}}
-                            icon="pi pi-pencil"
-                            size="sm"
-                            onClick={() => CommonService.onOpenDialog(setVisible2, [{
-                                callback: setValue3,
-                                value   : props.name
-                            }])}/>
-                    <Button
-                            icon="pi pi-trash"
-                            size="sm"
-                            onClick={() => setVisible1(true)}/>
-                </div>
-            </Tooltip>
+            <ContextMenu model={items} ref={menu}></ContextMenu>
             {props.boardIndex === 0 &&
             <RowSide>
                 <ToggleButton className={`row-${props.backId}`}
+                              onContextMenu={(e) => menu.current.show(e)}
                               style={{width: "136px", marginLeft: "4px", marginTop: "6px",height:"30px"}}
                               onLabel={props.name} offLabel={props.name} onIcon="pi pi-minus" offIcon="pi pi-plus"
                               checked={!props.isCollapsed}
@@ -163,7 +165,8 @@ function Row(props) {
             {!props.isCollapsed &&
             <RowCollapsable>
                 {props.boardIndex === 0 &&
-                <RowSideCollapsable>
+                <RowSideCollapsable onContextMenu={(e) => menu.current.show(e)}>
+
                 </RowSideCollapsable>
                 }
                 <RowsStyle rowOverflowBothEnds={

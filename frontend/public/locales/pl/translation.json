@@ -89,8 +89,11 @@
   "Board.js":"SECTION",
   "BoardNewCard": "Wpisz nazwę zadania:",
   "BoardEditColumn": "Edytuj kolumnę:",
-  "BoardRemoveConfirmation": "Potwierdzenei usunięcia",
+  "BoardRemoveConfirmation": "Potwierdzenie usunięcia",
   "BoardRemoveConfirmationDetail": "Czy na pewno chcesz usunąć kolumnę?",
+    "BoardAddCard": "Dodaj nowe zadanie",
+    "BoardRemoveColumn": "Usuń kolumnę",
+    "BoardEditColumnContext": "Edytuj kolumnę",
 
   "Row.js":"SECTION",
   "rowEditHeader": "Edytuj rząd:",
