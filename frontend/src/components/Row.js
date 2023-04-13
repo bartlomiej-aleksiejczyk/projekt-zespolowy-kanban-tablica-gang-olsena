@@ -51,10 +51,10 @@ const RowSide = styled.div`
 const RowSideCollapsable = styled.div`
   position: absolute;
   margin-left: -151px;
-  max-width: 149px;
-  min-width: 149px;
-  min-height: 80px;
-  max-height: 80px;
+  max-width: 145px;
+  min-width: 145px;
+  min-height: 183px;
+  max-height: 183px;
   z-index: 8;
   border-radius: 4px;
   background-color: white;
@@ -84,7 +84,7 @@ const RowsStyle = styled.div`
   flex-direction: column;
   align-items: center;
   transition: background-color 0.4s;
-  background-color: ${props =>props.rowOverflowBothEnds ? '#c29e9e' : 'white'};
+  background-color: ${props =>props.rowOverflowBothEnds ? '#a94848' : 'white'};
 /*
   background {isBetween ? 'white' : 'red'};
 */
@@ -154,7 +154,7 @@ function Row(props) {
             {props.boardIndex === 0 &&
             <RowSide>
                 <ToggleButton className={`row-${props.backId}`}
-                              style={{width: "136px", marginLeft: "6px", marginTop: "6px",height:"30px"}}
+                              style={{width: "136px", marginLeft: "4px", marginTop: "6px",height:"30px"}}
                               onLabel={props.name} offLabel={props.name} onIcon="pi pi-minus" offIcon="pi pi-plus"
                               checked={!props.isCollapsed}
                               onChange={props.isCollapsed ? () => handleExpand() : () => handleCollapse()}/>

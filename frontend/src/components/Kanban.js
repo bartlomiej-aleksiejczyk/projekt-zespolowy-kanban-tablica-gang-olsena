@@ -54,7 +54,7 @@ const UserAssignArea = styled.div`
 `;
 const BoardOfBoards = styled.div`
   display: flex;
-  margin-left:289px;
+  margin-left:295px;
   margin-top: -96px;
   justify-content: space-around;
   position: absolute;
