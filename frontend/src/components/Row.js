@@ -17,7 +17,6 @@ const CardsStyle = styled.div`
   max-width: 473px;
   min-width: 137px;
   margin-top: 3px;
-  margin-left: 11.5px;
   margin-right: auto;
   width: auto;
   margin-bottom: 3px;

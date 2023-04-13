@@ -25,7 +25,8 @@ import { withTranslation } from 'react-i18next';
 import { Translation } from 'react-i18next';
 import i18n from "i18next";
 import Loading from "./Loading";
-
+import { SplitButton } from 'primereact/splitbutton';
+import { Menu } from 'primereact/menu';
 const GlobalStyle = createGlobalStyle`
   body {
     box-sizing: border-box;
@@ -140,6 +141,7 @@ function Kanban() {
     const [oldDraggableIde, setOldDraggableIde] = useState(false);
     const [oldBoard, setOldBoard] = useState(false);
     const [oldRow, setOldRow] = useState(false);
+    const menu = useRef(null);
     // const renderFooter = (visible4) => {
     //     return (
     //         <div>
@@ -196,6 +198,38 @@ function Kanban() {
         setVisible3(false);
         setValue('');
     }
+    const items = [
+        {
+            label: t("user"),
+            items: [
+                {
+                    label: t("kanbanButtonChangeUserData"),
+                    icon: 'pi pi pi-user',
+                    command: () => CommonService.onOpenDialog(setVisible3, [{callback: setValue3, value: ''}])
+                },
+                {
+                    label: t("kanbanButtonLogout"),
+                    icon: 'pi pi-sign-out',
+                    command: () => CommonService.onOpenDialog(setVisible2, [{callback: setValue2, value: ''}])
+                }
+            ]
+        },
+        {
+            label: t("board"),
+            items: [
+                {
+                    label: t("kanbanButtonNewColumn"),
+                    icon: 'pi pi-plus',
+                    command: () => CommonService.onOpenDialog(setVisible, [{callback: setValue, value: ''}])
+                },
+                {
+                    label: t("kanbanButtonNewRow"),
+                    icon: 'pi pi-plus',
+                    command:() => CommonService.onOpenDialog(setVisible1, [{callback: setValue1, value: ''}])
+                }
+            ]
+        }
+    ];
 
     useEffect(() => {
         apiService.getUser(user.id).then(function(response_data) {
@@ -452,47 +486,18 @@ function dragCancel(){
                     </Dialog>
                     <div className="inline mr-3">
                         <LanguageChoose/>
-                        <Button style={{
-                            boxShadow: "0px 1px 7px rgba(0, 0, 0, 0.1), 0px 4px 5px -2px rgba(0, 0, 0, 0.12), 0px 10px 15px -5px rgba(0, 0, 0, 0.2)"
-                        }}
-                                size="sm"
-                                onClick={() => CommonService.onOpenDialog(setVisible1, [{callback: setValue1, value: ''}])}
-                                label={t("kanbanButtonNewRow")}
-                                icon="pi pi-plus"/>
-                    </div>
-                    <div className="inline mr-3">
-                        <Button style={{
-                            boxShadow: "0px 1px 7px rgba(0, 0, 0, 0.1), 0px 4px 5px -2px rgba(0, 0, 0, 0.12), 0px 10px 15px -5px rgba(0, 0, 0, 0.2)"
-                        }}
-                                size="sm"
-                                onClick={() => CommonService.onOpenDialog(setVisible, [{callback: setValue, value: ''}])}
-                                label={t("kanbanButtonNewColumn")}
-                                icon="pi pi-plus"/>
+
                     </div>
                     <div className="inline mr-3">
 
                         <Button style={{
                             boxShadow: "0px 1px 7px rgba(0, 0, 0, 0.1), 0px 4px 5px -2px rgba(0, 0, 0, 0.12), 0px 10px 15px -5px rgba(0, 0, 0, 0.2)",}}
                                 size="sm"
-                                onClick={() => CommonService.onOpenDialog(setVisible2, [{callback: setValue2, value: ''}])}
-                                //label={`${user.username} | Wyloguj się`}
-                                label={t("kanbanButtonLogout")}
-                                icon="pi pi-sign-out"/>
-                    </div>
-                    <div className="inline mr-3">
 
-                        <Button style={{
-                            boxShadow: "0px 1px 7px rgba(0, 0, 0, 0.1), 0px 4px 5px -2px rgba(0, 0, 0, 0.12), 0px 10px 15px -5px rgba(0, 0, 0, 0.2)",}}
-                                size="sm"
-                                onClick={() => CommonService.onOpenDialog(setVisible3, [{callback: setValue3, value: ''}])}
-                                aria-haspopup
-                                aria-controls="overlay_panel"
-                            // onClick={() => CommonService.onOpenDialog(setVisible3, [{callback: setValue3, value: ''}])}
-                            //label={`${user.username} | Wyloguj się`}
-                                label={t("kanbanButtonChangeUserData")}
-                                icon="pi pi pi-user"/>
+                                label={t("options")} icon="pi pi-bars" onClick={(event) => menu.current.toggle(event)}/>
                     </div>
                 </div>
+                <Menu model={items} popup ref={menu} />
                 <GlobalStyle whiteColor/>
                 {(boards.length)>0 ?
                     <DragDropContext

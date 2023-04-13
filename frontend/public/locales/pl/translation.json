@@ -8,6 +8,8 @@
   "warning": "Ostrzeżenie",
   "succes": "Powodzenie",
   "options": "Opcje",
+  "user": "Użytkownik",
+  "board": "Tablica",
 
   "Api messages":"SECTION",
   "apiUserAvatarUpdated": "Zaktualizowano awatar",

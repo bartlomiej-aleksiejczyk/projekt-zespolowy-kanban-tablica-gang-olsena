@@ -8,6 +8,8 @@
   "warning": "Warning",
   "succes": "Success",
   "options": "Options",
+  "user": "User",
+  "board": "Board",
 
   "Api messages":"SECTION",
   "apiUserAvatarUpdated": "Avatar updated",

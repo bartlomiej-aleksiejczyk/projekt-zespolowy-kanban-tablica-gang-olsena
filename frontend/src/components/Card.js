@@ -43,7 +43,8 @@ const CardStyle = styled.div`
   border-radius: 2px;
   padding: 2px;
   margin-top: 2px;
-  margin-left: 3px;
+  margin-left: 4px;
+  margin-right: 4px;
   overflow: hidden;
   -webkit-filter: ${props => props.locked ? "grayscale(0.7)" : ""} ;
   //Ta metoda to druciarstwo o wiele lepiej jest tuaj https://stackoverflow.com/questions/61635321/props-conditional-rendering-using-styled-components

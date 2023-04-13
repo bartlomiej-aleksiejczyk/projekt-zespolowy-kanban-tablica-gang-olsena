@@ -19,10 +19,10 @@ const BoardStyle = styled.div`
   box-shadow: 0px 1px 7px rgba(0, 0, 0, 0.1), 0px 4px 5px -2px rgba(0, 0, 0, 0.12), 0px 10px 15px -5px rgba(0, 0, 0, 0.2);
   min-width: ${props=>props.is_static? ("300px"):("250px")}
   max-width: 474px;
-  margin-right: 4px;
+  margin-right: 9px;
   margin-top: 108px;
   margin-bottom: 27px;
-  border-radius: 6px;
+  border-radius: 10px;
   display: flex;
   flex-direction: column;
   transition: background-color 2s ease;
