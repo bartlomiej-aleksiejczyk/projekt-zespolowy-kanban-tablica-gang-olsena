@@ -99,6 +99,8 @@
   "rowEditHeader": "Edit row:",
   "rowRemoveConfirmationMessage": "Are you sure you want to delete row?",
   "rowRemoveConfirmationHeader": "Confirmation",
+  "rowEdit": "Edit row",
+  "rowRemove": "Remove row",
 
   "Card.js":"SECTION",
   "cardEditDialog": "Edit dialog",

@@ -99,6 +99,8 @@
   "rowEditHeader": "Edytuj rząd:",
   "rowRemoveConfirmationMessage": "Czy na pewno chcesz usunąć rząd?",
   "rowRemoveConfirmationHeader": "Potwierdzenie usunięcia",
+  "rowEdit": "Edytuj rząd",
+  "rowRemove": "Usuń rząd",
 
   "Card.js":"SECTION",
   "cardEditDialog": "Okno edycji zadania",

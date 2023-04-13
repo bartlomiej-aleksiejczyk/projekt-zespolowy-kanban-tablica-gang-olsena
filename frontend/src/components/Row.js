@@ -109,7 +109,7 @@ function Row(props) {
     const menu = useRef(null);
     const items = [
         {
-            label: t("BoardEditColumnContext"),
+            label: t("rowEdit"),
             icon: 'pi pi-pencil',
             command: () => CommonService.onOpenDialog(setVisible2, [{
                 callback: setValue3,
@@ -117,7 +117,7 @@ function Row(props) {
             }])
         },
         {
-            label: t("BoardRemoveColumn"),
+            label: t("rowRemove"),
             icon: 'pi pi-trash',
             command:() => setVisible1(true)
         }
