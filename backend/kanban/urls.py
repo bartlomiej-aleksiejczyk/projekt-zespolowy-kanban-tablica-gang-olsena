@@ -2,6 +2,7 @@ from django.urls import path
 from kanban.views.board_view import BoardViewSet
 from kanban.views.card_view import CardViewSet
 from kanban.views.row_view import RowViewSet
+from kanban.views.card_move_view import TimelineViewSet
 from kanban.views.parameter_view import ParameterViewSet
 
 single_board_viewset = BoardViewSet.as_view(
@@ -87,6 +88,11 @@ user_board_viewset = CardViewSet.as_view(
         post='add_user_card'
     )
 )
+timeline_viewset = TimelineViewSet.as_view(
+    dict(
+        get='get_timeline',
+    )
+)
 
 urlpatterns = [
     # board
@@ -109,4 +115,6 @@ urlpatterns = [
     path('limit/', parameter_limit_viewset),
     path('parameter/<int:pk>/', parameter_viewset),
 
+    # timeline
+    path('timeline/', timeline_viewset),
 ]
