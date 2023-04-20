@@ -478,7 +478,7 @@ function Card(props) {
                                                 onClick={() => setVisible1(true)}/>
                                     </OnHoverButton>
                                     <Tooltip target={`.card-${props.backId}`} autoHide={false}>
-                                        <h4 style={{marginBottom:"5px"}}>{t("cardChildren")}</h4>
+                                        <h4 style={{marginBottom:"0",marginTop:"5px"}}>{t("cardChildren")}:</h4>
                                         <ChildrenContainer>
                                                     {props.childData.map((childCard, index) => {
                                                         return (
