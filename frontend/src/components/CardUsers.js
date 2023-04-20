@@ -21,10 +21,8 @@ const AvatarContainer = styled.div`
   flex-direction: column;
   word-wrap: break-word;
   flex-wrap: wrap;
-  height: 30px;
+  height: 26px;
   padding-left: 5px;
-  margin-top: 6px;
-  margin-bottom: 6px;
   padding-right:1px;
 `;
 const AvatarImage = styled.img`

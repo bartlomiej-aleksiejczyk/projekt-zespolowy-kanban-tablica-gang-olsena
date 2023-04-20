@@ -1,4 +1,4 @@
-import React, {useState} from 'react'
+import React, {useState,useEffect,useRef} from 'react'
 import styled from 'styled-components';
 import {Droppable} from 'react-beautiful-dnd';
 import Card from "./Card";
@@ -14,16 +14,18 @@ import LanguageChoose from "./LanguageChoose";
 import {Tooltip} from 'primereact/tooltip';
 
 const CardsStyle = styled.div`
-  max-width: 473px;
-  min-width: 137px;
+  max-width: 290px;
+  min-width: 290px;
   margin-top: 3px;
   margin-right: auto;
   width: auto;
+  height: min-content;
   margin-bottom: 3px;
-  min-height: 183px;
-  max-height: 183px;
-  overflow: auto;
-  display: inline-flex;
+  min-height: 100px;
+  max-height: 400px;
+  overflow: scroll;
+  display: flex;
+  flex-direction: column;
   
   // background-color: {props =>
   //   props.rowOverflow ? '#800000' : 'white'};
@@ -34,7 +36,7 @@ const RowsStyleExtension = styled.div`
   //box-shadow: 0px 1px 7px rgba(0, 0, 0, 0.1), 0px 4px 5px -2px rgba(0, 0, 0, 0.12), 0px 10px 15px -5px rgba(0, 0, 0, 0.2);
   max-width: 474px;
   min-width: 150px;
-  max-height: 186px;
+  max-height: 400px;
   min-height: 36px;
   //border: 3px solid #b7b3ea;
   background-color: #c4c0f1;
@@ -53,18 +55,21 @@ const RowSideCollapsable = styled.div`
   margin-left: -151px;
   max-width: 145px;
   min-width: 145px;
-  min-height: 183px;
-  max-height: 183px;
+  min-height: 100px;
+  height: ${props=>props.rowHeight};
+  max-height: 250px;
   z-index: 8;
   border-radius: 4px;
   background-color: white;
+  transition: background-color 0.4s, height 0.25s ease-in;;
+
 
 `;
 const RowCollapsable = styled.div`
   content: "my tooltip";
   min-width: 150px;
-  max-height: 186px;
-  min-height: 186px;
+  max-height: 400px;
+  min-height: 100px;
   margin-bottom: 2px;
   background-color: white;
   margin-top: 3px;
@@ -73,8 +78,9 @@ const RowsStyle = styled.div`
   //box-shadow: 0px 1px 7px rgba(0, 0, 0, 0.1), 0px 4px 5px -2px rgba(0, 0, 0, 0.12), 0px 10px 15px -5px rgba(0, 0, 0, 0.2);
   max-width: 474px;
   min-width: 147px;
-  max-height: 186px;
-  min-height: 186px;
+  max-height: 400px;
+  min-height: 100px;
+  height: ${props=>(props.rowHeight)};
   zIndex : 1;
   margin-top: 2px;
   margin-right: 1px;
@@ -83,7 +89,7 @@ const RowsStyle = styled.div`
   flex-wrap: wrap;
   flex-direction: column;
   align-items: center;
-  transition: background-color 0.4s;
+  transition: background-color 0.4s, height 0.25s ease-in;;
   background-color: ${props =>props.rowOverflowBothEnds ? '#a94848' : 'white'};
 /*
   background {isBetween ? 'white' : 'red'};
@@ -133,6 +139,7 @@ function Row(props) {
             CommonService.toastCallback(response_data, props.setBoards, props.setRemaining)
         });
     }
+
     return (
 
         <RowsStyleExtension>
@@ -163,14 +170,21 @@ function Row(props) {
             {!props.isCollapsed &&
             <RowCollapsable>
                 {props.boardIndex === 0 &&
-                <RowSideCollapsable>
+                <RowSideCollapsable
+                    rowHeight={props.rowHeightDict?props.rowHeightDict[props.backId]+"px":null}
+                >
                 </RowSideCollapsable>
                 }
                 <RowsStyle rowOverflowBothEnds={
                     ((props.board && !props.board.is_static) &&
                         ((props.board.min_card > (props.row.card_data.length)&& (props.board.min_card != null)) ||
                         ((props.board.max_card < props.row.card_data.length)&& (props.board.max_card != null))))
-                }>
+                }
+                           rowHeight={props.rowHeightDict?(props.rowHeightDict[props.backId]-4)+"px":null}
+
+                           onClick={()=>console.log(props.rowHeightDict[props.backId])}
+
+                >
 
                     <ConfirmDialog visible={visible2}
                                    onHide={() => setVisible2(false)}
@@ -194,12 +208,14 @@ function Row(props) {
                     <Droppable droppableId={props.droppableId}
                                type="card"
                                direction="horizontal"
+
                     >
                         {(provided) => (
                             <CardsStyle
                                 rowOverflow={(props.limit < (props.cards).length) && (props.limit != null)
-                            }
 
+                            }
+                                className={`heightRow-${props.backId}`}
                                 ref={provided.innerRef}
                                 {...provided.droppableId}>
                                 {(props.cards).map((card, indexDrag) =>

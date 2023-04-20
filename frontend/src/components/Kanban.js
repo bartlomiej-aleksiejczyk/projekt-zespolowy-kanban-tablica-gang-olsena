@@ -27,6 +27,7 @@ import i18n from "i18next";
 import Loading from "./Loading";
 import { SplitButton } from 'primereact/splitbutton';
 import { Menu } from 'primereact/menu';
+import row from "./Row";
 const GlobalStyle = createGlobalStyle`
   body {
     box-sizing: border-box;
@@ -141,7 +142,9 @@ function Kanban() {
     const [oldDraggableIde, setOldDraggableIde] = useState(false);
     const [oldBoard, setOldBoard] = useState(false);
     const [oldRow, setOldRow] = useState(false);
+    const [rowHeightDict,setRowHeightDict] = useState(null)
     const menu = useRef(null);
+    const heightRowsBoards = useRef()
     // const renderFooter = (visible4) => {
     //     return (
     //         <div>
@@ -261,7 +264,30 @@ function Kanban() {
             setRemaining(response_data.data);
         });
     }, []);
+    useEffect(() =>{
+        if (boards[0] !=null)
+        {
+            const heightDict = {}
+            let hightest = 0;
+            for (let i = 0; i < (boards[0].row_data).length; i++) {
+                const rows = document.getElementsByClassName(`heightRow-${boards[0].row_data[i].id}`);
+                console.log(rows)
+                for (let j = 0; j < rows.length; j++) {
+                    const height = rows[j].clientHeight;
+                    console.log(height)
 
+                    if (height > hightest) {
+                        hightest = height;
+                        console.log("hightest")
+                    }
+                }
+                heightDict[boards[0].row_data[i].id] = hightest
+                hightest = 0;
+            }
+            console.log(heightDict)
+            setRowHeightDict(heightDict)
+        }
+    }, [boards])
     function onUpload() {
         apiService.getBoards().then((response_data) => {
             CommonService.toastCallback(response_data, setBoards);
@@ -502,7 +528,9 @@ function dragCancel(){
                 {(boards.length)>0 ?
                     <DragDropContext
                     onDragEnd={onDragEnd}>
-                    <Droppable
+                        <div ref={heightRowsBoards}>
+
+                        <Droppable
                         key="unikalnyKlucz1"
                         droppableId="all-columns"
                         direction="horizontal"
@@ -531,13 +559,16 @@ function dragCancel(){
                                                   cardsChoice={cardsChoice}
                                                   remaining={remaining}
                                                   setCardsChoice={setCardsChoice}
+                                                  rowHeightDict={rowHeightDict}
                                                    />
                                 })}
                                 {provided.placeholder}
                             </BoardOfBoards>
                         )}
                     </Droppable>
-                    <FreeUsersBoard>
+                        </div>
+
+                        <FreeUsersBoard>
                         <AssignmentLimitText>
                             {t("kanbanUserAssignmentLimit")}
                         </AssignmentLimitText>

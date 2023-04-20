@@ -32,20 +32,31 @@ import {Tag} from 'primereact/tag';
 import TimeAgo from 'timeago-react';
 import moment from 'moment';
 import CardMenu from "./Menus/CardMenu";
-
+const OnHoverButton = styled.div`
+  opacity: 0;
+  transition: all 0.2s;
+  z-index: 5;
+  position: absolute;
+  right: 5px;
+`;
 const CardStyle = styled.div`
   box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.03), 0px 0px 2px rgba(0, 0, 0, 0.06), 0px 2px 6px rgba(0, 0, 0, 0.12);
+  &:hover ${OnHoverButton} {
+    opacity: 1;
+    z-index: 5;
+    position: absolute;
+    right: 5px;
+  }
   font-size: 10px;
-  max-width: 150px;
-  min-width: 150px;
-  max-height:174px;
+  max-width: 265px;
+  min-width: 265px;
   border: ${props => props.locked ? "2px solid #b7b3ea" : "2px solid #b7b3ea"};
   border-radius: 2px;
   padding: 2px;
   margin-top: 2px;
+  position: relative;
   margin-left: 4px;
   margin-right: 4px;
-  overflow: hidden;
   -webkit-filter: ${props => props.locked ? "grayscale(0.7)" : ""} ;
   //Ta metoda to druciarstwo o wiele lepiej jest tuaj https://stackoverflow.com/questions/61635321/props-conditional-rendering-using-styled-components
   background-color: ${props => props.color};
@@ -56,17 +67,6 @@ const CardStyle = styled.div`
         ${props => props.locked ? "#D4D6D7 6px" : `${props.color} 6px`},
         ${props => props.locked ? "#D4D6D7 12px" : `${props.color} 12px`}
 );
-`;
-const ScrollSpaceContainer = styled.div`
-  margin-right: 2px;
-  max-width: 135px;
-  min-width: 135px;
-  height: 174px;
-  margin-bottom: 9px;
-  padding-bottom: 2px;
-  display: flex;
-  flex-direction: column;
-
 `;
 const ChildBar = styled.div`
   display: block;
@@ -112,12 +112,13 @@ const RestrictedAndLabel = styled.div`
   color: black;
 `;
 const ButtonContainer = styled.div`
+  height: inherit;
   display:flex;
   flex-direction: row;
   flex-wrap: nowrap;
-  justify-content: space-between;
-  margin-bottom: -15px;
-  margin-top: 10px;
+  justify-content: start;
+  align-items: center;
+  align-content: center;
 
 `;
 const TopButtonContainer = styled.div`
@@ -159,18 +160,21 @@ const InsideProgressDiv = styled.div`
   margin-top: 5px;
 `;
 const Avatars = styled.div`
-  height: 42px;
-  width: 78px;
+  height: 26px;
+  width: 117px;
   display: inline-flex;
-  flex-direction: row;
+  flex-direction: row-reverse;
   overflow: auto;
-  margin-right: -1px;
+  margin-right: 5px;
 
 `;
 const ProgressAndButtons = styled.div`
     margin-top: auto;
     display: flex;
-    flex-direction: column;
+    justify-content: space-between;
+    align-content: center;
+    align-items: center;
+    flex-direction: row;
     margin-bottom: 6px;
   
 `;
@@ -195,11 +199,9 @@ const EditMenuText = styled.div`
       overflow: scroll;
 `;
 const DroppableDiv = styled.div`
-  height:167px ;
   width: inherit;
   display: flex;
   flex-direction: column;
-  overflow: auto;
 `;
 const ChildrenContainer = styled.div`
   display: block;
@@ -236,8 +238,8 @@ const TagContainer = styled.div`
     flex-wrap: wrap;
     justify-content: center;
     align-items: stretch;
-    
 `;
+
 function Card(props) {
     const {t, i18n} = useTranslation();
     const [visible2, setVisible2] = useState(false);
@@ -445,7 +447,11 @@ function Card(props) {
                             <DroppableDiv
                                 {...provided.droppableId}
                                 ref={provided.innerRef}>
-                                <ScrollSpaceContainer>
+                                    <OnHoverButton>
+                                        <Button icon="pi pi-pencil"
+                                                style={{scale:"70%"}}
+                                                onClick={() => setVisible1(true)}/>
+                                    </OnHoverButton>
                                     <TopButtonContainer>
 
                                         {/*<Button*/}
@@ -466,21 +472,6 @@ function Card(props) {
                                                  style={{scale:"80%", fontSize:12,whiteSpace: "nowrap", height:"22px", marginRight:"-10px",marginLeft:"0px" }}
                                             />
                                         }
-                                        <Tag
-                                            severity={(moveDiffDays >= 5 && !props.isCardDone) ? 'danger' : 'info'}
-                                             style={{scale:"80%", fontSize:12,whiteSpace: "nowrap", height:"22px", marginRight:"-10px",marginLeft:"0px" }}
-                                        >
-                                            <TimeAgo
-                                                datetime={props.updatedAt}
-                                                locale={t("cardTimeLocale")}
-                                            /></Tag>
-                                        {(props.data.item_data.length > 0 && (
-                                            <Tag
-                                                severity={(props.isCardCompleted) ? 'success' : 'primary'}
-                                                style={{scale:"80%", fontSize:12,whiteSpace: "nowrap", height:"22px", marginRight:"-8px",marginLeft:"1px" }}
-                                                icon="pi pi-check-square">
-                                                {`${(props.data.item_data.filter(obj => obj.is_done === true)).length}/${props.data.item_data.length}`}
-                                            </Tag>))}
                                         {props.parentCard &&
                                             <Tag
                                                  style={{scale:"80%", fontSize:12,whiteSpace: "nowrap", height:"22px", marginRight:"-8px",marginLeft:"1px" }}
@@ -758,27 +749,42 @@ function Card(props) {
                                                            rejectLabel={t("no")}
                                                            accept={acceptAssignEdit}
                                                            reject={rejectAssignEdit}/>
-                                            <Avatars>
-                                                {(props.data.users_data).map((cardUser) =>
-                                                    <CardUsers
-                                                        setBoards={props.setBoards}
-                                                        setRemaining={props.setRemaining}
-                                                        board={props.board}
-                                                        allUsers={props.data.users}
-                                                        cardId={props.backId}
-                                                        key={cardUser.id}
-                                                        id={cardUser.id}
-                                                        username={cardUser.username}
-                                                        img={cardUser.avatar}
 
-                                                    />
-                                                )}
-                                            </Avatars>
+                                            <Tag
+                                                severity={(moveDiffDays >= 5 && !props.isCardDone) ? 'danger' : 'info'}
+                                                style={{scale:"80%", fontSize:12,whiteSpace: "nowrap", height:"22px", marginRight:"-10px",marginLeft:"0px" }}
+                                            >
+                                                <TimeAgo
+                                                    datetime={props.updatedAt}
+                                                    locale={t("cardTimeLocale")}
+                                                /></Tag>
+                                            {(props.data.item_data.length > 0 && (
+                                                <Tag
+                                                    severity={(props.isCardCompleted) ? 'success' : 'primary'}
+                                                    style={{scale:"80%", fontSize:12,whiteSpace: "nowrap", height:"22px", marginRight:"-8px",marginLeft:"1px" }}
+                                                    icon="pi pi-check-square">
+                                                    {`${(props.data.item_data.filter(obj => obj.is_done === true)).length}/${props.data.item_data.length}`}
+                                                </Tag>))}
                                         </ButtonContainer>
+                                        <Avatars>
+                                            {(props.data.users_data).map((cardUser) =>
+                                                <CardUsers
+                                                    setBoards={props.setBoards}
+                                                    setRemaining={props.setRemaining}
+                                                    board={props.board}
+                                                    allUsers={props.data.users}
+                                                    cardId={props.backId}
+                                                    key={cardUser.id}
+                                                    id={cardUser.id}
+                                                    username={cardUser.username}
+                                                    img={cardUser.avatar}
+
+                                                />
+                                            )}
+                                        </Avatars>
                                     </ProgressAndButtons>
                                     {/*</div>*/}
 
-                                </ScrollSpaceContainer>
                                 {provided.placeholder}
                             </DroppableDiv>
                         )}

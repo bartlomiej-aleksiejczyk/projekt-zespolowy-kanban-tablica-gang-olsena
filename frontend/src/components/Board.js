@@ -267,7 +267,7 @@ function Board(props) {
                                  setRemaining={props.setRemaining}
                                  cardsChoice={props.cardsChoice}
                                  setCardsChoice={props.setCardsChoice}
-
+                                 rowHeightDict={props.rowHeightDict}
                             />
                         )}
                     </RowStyle>
