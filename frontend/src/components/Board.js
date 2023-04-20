@@ -155,14 +155,14 @@ function Board(props) {
                             <Button style={{}}
                                     icon="pi pi-plus"
                                     size="sm"
-
                                     aria-label="Filter"
                                     onClick={() => CommonService.onOpenDialog(setVisi, [{callback: setValue, value: ''}])}/>
+                            {(props.is_static===false)&&
                             <Button style={{marginLeft: "20px"}}
                                     icon="pi pi-trash"
                                     size="sm"
                                     aria-label="Filter"
-                                    onClick={() => setVisible(true)}/>
+                                    onClick={() => setVisible(true)}/>}
                         </div>
                     </Tooltip>
                     <BoardTop className={`board-${props.backId}`}>

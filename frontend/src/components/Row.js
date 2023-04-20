@@ -14,16 +14,18 @@ import LanguageChoose from "./LanguageChoose";
 import {Tooltip} from 'primereact/tooltip';
 
 const CardsStyle = styled.div`
-  max-width: 290px;
-  min-width: 290px;
-  margin-top: 3px;
+  max-width: 280px;
+  min-width: 280px;
+  margin-top: 8px;
+  margin-bottom: 8px;
   margin-right: auto;
+  margin-left: 17px;
   width: auto;
-  height: min-content;
-  margin-bottom: 3px;
+  height: complex;
   min-height: 100px;
   max-height: 400px;
   overflow: scroll;
+  justify-content: center;
   display: flex;
   flex-direction: column;
   
@@ -36,11 +38,13 @@ const RowsStyleExtension = styled.div`
   //box-shadow: 0px 1px 7px rgba(0, 0, 0, 0.1), 0px 4px 5px -2px rgba(0, 0, 0, 0.12), 0px 10px 15px -5px rgba(0, 0, 0, 0.2);
   max-width: 474px;
   min-width: 150px;
-  max-height: 400px;
-  min-height: 36px;
+  min-height: 45px;
+  height: ${props=>props.rowHeight};
   //border: 3px solid #b7b3ea;
   background-color: #c4c0f1;
   margin-top: 2px;
+  transition: height 0.25s ease-in;;
+
 `;
 
 
@@ -57,7 +61,6 @@ const RowSideCollapsable = styled.div`
   min-width: 145px;
   min-height: 100px;
   height: ${props=>props.rowHeight};
-  max-height: 250px;
   z-index: 8;
   border-radius: 4px;
   background-color: white;
@@ -142,7 +145,9 @@ function Row(props) {
 
     return (
 
-        <RowsStyleExtension>
+        <RowsStyleExtension
+            rowHeight={props.rowHeightDict?(props.rowHeightDict[props.backId]+3)+"px":null}
+        >
             <Tooltip target={`.row-${props.backId}`} autoHide={false}>
                 <div className="flex align-items-center">
                     <Button style={{marginRight: "20px"}}
@@ -152,10 +157,11 @@ function Row(props) {
                                 callback: setValue3,
                                 value   : props.name
                             }])}/>
-                    <Button
-                            icon="pi pi-trash"
-                            size="sm"
-                            onClick={() => setVisible1(true)}/>
+                    {(props.backId!==1)&&
+                        <Button
+                        icon="pi pi-trash"
+                        size="sm"
+                        onClick={() => setVisible1(true)}/>}
                 </div>
             </Tooltip>
             {props.boardIndex === 0 &&
@@ -180,7 +186,7 @@ function Row(props) {
                         ((props.board.min_card > (props.row.card_data.length)&& (props.board.min_card != null)) ||
                         ((props.board.max_card < props.row.card_data.length)&& (props.board.max_card != null))))
                 }
-                           rowHeight={props.rowHeightDict?(props.rowHeightDict[props.backId]-4)+"px":null}
+                           rowHeight={props.rowHeightDict?(props.rowHeightDict[props.backId])+"px":null}
 
                            onClick={()=>console.log(props.rowHeightDict[props.backId])}
 
@@ -207,7 +213,7 @@ function Row(props) {
                                    reject={() => {}}/>
                     <Droppable droppableId={props.droppableId}
                                type="card"
-                               direction="horizontal"
+                               direction="vertical"
 
                     >
                         {(provided) => (

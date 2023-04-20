@@ -273,15 +273,14 @@ function Kanban() {
                 const rows = document.getElementsByClassName(`heightRow-${boards[0].row_data[i].id}`);
                 console.log(rows)
                 for (let j = 0; j < rows.length; j++) {
-                    const height = rows[j].clientHeight;
+                    const height = rows[j].scrollHeight+rows[j].scrollTopMax;
                     console.log(height)
-
                     if (height > hightest) {
                         hightest = height;
                         console.log("hightest")
                     }
                 }
-                heightDict[boards[0].row_data[i].id] = hightest
+                heightDict[boards[0].row_data[i].id] = hightest+23
                 hightest = 0;
             }
             console.log(heightDict)

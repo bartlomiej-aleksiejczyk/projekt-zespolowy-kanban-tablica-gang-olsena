@@ -48,12 +48,12 @@ const CardStyle = styled.div`
     right: 5px;
   }
   font-size: 10px;
-  max-width: 265px;
-  min-width: 265px;
+  max-width: 255px;
+  min-width: 255px;
   border: ${props => props.locked ? "2px solid #b7b3ea" : "2px solid #b7b3ea"};
   border-radius: 2px;
   padding: 2px;
-  margin-top: 2px;
+  margin-top: 5px;
   position: relative;
   margin-left: 4px;
   margin-right: 4px;
@@ -80,6 +80,25 @@ const ChildBar = styled.div`
   margin-bottom: 2px;
   border-color: #77EECFFF;
   border-style: solid;
+`;
+const ChildrenButton = styled.div`
+  min-height: 26px;
+  width: 170px;
+  display: flex;
+  justify-content: center;
+  align-content: center;
+  align-items: center;
+  margin-bottom: 10px;
+  margin-top: 7px;
+  border-radius: 4px;
+  background-color: #6366F1;
+  &:hover{background-color:#4F46E5; }
+`;
+const IsParentText = styled.div`
+  font-size: 12px;
+  font-weight: 600;
+  padding: 2px;
+  color: #f3ecec;
 `;
 const ParentBar = styled.div`
   display: block;
@@ -149,6 +168,15 @@ const AvatarImage = styled.div`
   min-height: 24px;
   display: inline-block;
 `;
+
+const ButtonsChildrenItems = styled.div`
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  flex-basis: 100%;
+`;
 const ProgressDiv = styled.div`
   min-width: 18px;
   display: flex;
@@ -208,10 +236,7 @@ const ChildrenContainer = styled.div`
   border-radius: 4px;
   padding: 1px;
   width: 132px;
-  background-color: #c7c7d7;
   border-width: 1px;
-  border-color: #6866ce;
-  border-style: solid;
 `;
 const EditCardChildren = styled.div`
   display: block;
@@ -452,6 +477,34 @@ function Card(props) {
                                                 style={{scale:"70%"}}
                                                 onClick={() => setVisible1(true)}/>
                                     </OnHoverButton>
+                                    <Tooltip target={`.card-${props.backId}`} autoHide={false}>
+                                        <h4 style={{marginBottom:"5px"}}>{t("cardChildren")}</h4>
+                                        <ChildrenContainer>
+                                                    {props.childData.map((childCard, index) => {
+                                                        return (
+                                                            <div key={childCard.id}
+                                                                 className="flex align-items-center mt-2 mb-1">
+                                                                <Checkbox inputId={childCard.id} name="card_item"
+                                                                          value={childCard.is_card_completed}
+                                                                          disabled={true}
+                                                                          style={{scale: "0.6"}}
+                                                                          checked={childCard.is_card_finished}/>
+                                                                <span
+                                                                    style={{marginLeft: "2px"}}>{childCard.description.length > 19 ? childCard.description.substring(0, 19 - 3) + "..." : childCard.description}</span>
+                                                            </div>
+                                                        );
+                                                    })}
+                                                    <InsideProgressDiv>
+                                                        {/*{}%*/}
+                                                        <ProgressBar value={props.data.children_done_percentage} style={{
+                                                            height: '10px',
+                                                            width : "100%",
+                                                            color : "black"
+                                                        }}
+                                                                     color="green"></ProgressBar>
+                                                    </InsideProgressDiv>
+                                                </ChildrenContainer>
+                                    </Tooltip>
                                     <TopButtonContainer>
 
                                         {/*<Button*/}
@@ -481,12 +534,6 @@ function Card(props) {
 
                                             />
                                             }
-                                        {props.childData.length > 0 &&
-                                            <Tag
-                                                value={t("cardIsParent")}
-                                                 style={{scale:"80%", fontSize:12,whiteSpace: "nowrap", height:"22px", marginRight:"-8px",marginLeft:"1px" }}
-                                            />
-                                        }
                                         {bug===true &&
                                             <Tag
                                                 severity="warning"
@@ -505,10 +552,11 @@ function Card(props) {
                                             style={{fontSize:13, font:"Verdana", padding:"4px",fontWeight:1000, color:"#3e4349"}}
                                             onBlur={handleInputChange}/>
                                     </Description>
+                                    <ButtonsChildrenItems>
                                     {(cardItems.length > 0) && (
                                         <div>
                                             <ToggleButton
-                                                style={{width: "132px", marginTop: "6px", height: "12px", fontSize: 12 }}
+                                                style={{width: "132px", marginTop: "6px", height: "10px", fontSize: 12, marginBottom:"7px" }}
                                                           onLabel={t("cardCarditems")} offLabel={t("cardCarditems")}
                                                           onIcon="pi pi-minus" offIcon="pi pi-plus"
                                                           checked={itemCollapse}
@@ -545,43 +593,11 @@ function Card(props) {
                                         </div>
                                     )}
                                     {(props.childData.length > 0) &&
-                                    <div>
-                                        <ToggleButton
-                                            style={{width: "132px", marginTop: "6px", height: "12px", fontSize: 12 }}
-                                                      onLabel={t("cardChildren")} offLabel={t("cardChildren")}
-                                                      onIcon="pi pi-minus" offIcon="pi pi-plus"
-                                                      checked={childrenCollapse}
-                                                      onChange={() => handleChildrenCollapse()}/>
-                                        {(childrenCollapse === true) &&
-                                        <ChildrenContainer>
-                                            {props.childData.map((childCard, index) => {
-                                                return (
-                                                    <div key={childCard.id}
-                                                         className="flex align-items-center mt-2">
-                                                        <Checkbox inputId={childCard.id} name="card_item"
-                                                                  value={childCard.is_card_completed}
-                                                                  disabled={true}
-                                                                  style={{scale: "0.6"}}
-                                                                  checked={childCard.is_card_finished}/>
-                                                        <span
-                                                            style={{marginLeft: "2px"}}>{childCard.description.length > 19 ? childCard.description.substring(0, 19 - 3) + "..." : childCard.description}</span>
-                                                    </div>
-                                                );
-                                            })}
-                                            <InsideProgressDiv>
-                                                {/*{}%*/}
-                                                <ProgressBar value={props.data.children_done_percentage} style={{
-                                                    height: '10px',
-                                                    width : "100%",
-                                                    color : "black"
-                                                }}
-                                                             color="green"></ProgressBar>
-                                            </InsideProgressDiv>
-                                        </ChildrenContainer>
-
-                                        }
-                                    </div>
+                                        <ChildrenButton className={`card-${props.backId}`} >
+                                            <IsParentText>{t("cardIsParent")}</IsParentText>
+                                        </ChildrenButton>
                                     }
+                                    </ButtonsChildrenItems>
                                     <Dialog header={t("cardEditDialog")}
                                             visible={visible1}
                                             style={{width: '50vw'}}
