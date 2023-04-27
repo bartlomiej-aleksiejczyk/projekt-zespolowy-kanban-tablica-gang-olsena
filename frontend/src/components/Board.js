@@ -1,4 +1,4 @@
-import React, {useState} from 'react'
+import React, {useState, useRef} from 'react'
 import styled from 'styled-components';
 import {Draggable} from 'react-beautiful-dnd';
 import ContentEditable from 'react-contenteditable';
@@ -13,12 +13,13 @@ import Row from "./Row";
 import {useUserService} from "../utils/UserServiceContext";
 import {useTranslation} from 'react-i18next';
 import {Tooltip} from 'primereact/tooltip';
+import { Menu } from 'primereact/menu';
 
 
 const BoardStyle = styled.div`
   box-shadow: 0px 1px 7px rgba(0, 0, 0, 0.1), 0px 4px 5px -2px rgba(0, 0, 0, 0.12), 0px 10px 15px -5px rgba(0, 0, 0, 0.2);
-  min-width: ${props=>props.is_static? ("300px"):("250px")}
-  max-width: 474px;
+  min-width: 250px;
+  max-width: 425px;
   margin-right: 6px;
   margin-top: 108px;
   margin-bottom: 27px;
@@ -34,37 +35,48 @@ const BoardStyle = styled.div`
 `;
 
 const Label = styled.label`
-  align-items: center;
-  font-weight: bold;
+  align-items: start;
   justify-content: center;
   display: flex;
+  flex-direction: column;
   //margin-left: -12%;
-  color: #3e4349;
-  gap: 5px;
-  margin-bottom: 10px;
-  font-style: oblique
+  margin-left: 20px;
 `
 const LabelDummy = styled.label`
     padding: 22px;
 `
 const BoardTop = styled.label`
-    height: 100px;
+    height: 110px;
 `
 const Title = styled.h3`
   text-align: center;
-  padding: 5px;
+  margin-left: 20px;
   flex-direction: column;
   word-wrap: break-word;
   flex-wrap: wrap;
   overflow: auto;
 `;
 
+const LimitText = styled.h4`
+  border-radius: 1px;
+  letter-spacing: 2px;
+  margin-top: 0px;
+  font-style: oblique;
+  font-family: 'Trebuchet MS', sans-serif;
+`;
 const RowStyle = styled.section`
   width: inherit;
   display: flex;
   flex-direction: column;
   justify-content: start;
 
+`;
+const TitleAndButton = styled.section`
+  margin-top: 5px;
+  width: inherit;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
 `;
 const CardButtons = styled.div`
   margin-top:3px;
@@ -83,7 +95,7 @@ function Board(props) {
     const [minCard, setMinCard] = useState(props.board.min_card);
     const [maxCard, setMaxCard] = useState(props.board.max_card);
     const [value3, setValue3] = useState(props.name);
-
+    const menu = useRef(null);
     const apiService = useUserService();
 
 
@@ -130,7 +142,51 @@ function Board(props) {
         setValue3(props.name);
 
     }
-
+    let items = [
+        {
+            items: [
+                {
+                    label: t("BoardAddTask"),
+                    icon: 'pi pi-plus',
+                    command: () => CommonService.onOpenDialog(setVisi, [{callback: setValue, value: ''}])
+                },
+                {
+                    label: t("BoardEditColumnMenu"),
+                    icon: 'pi pi-pencil',
+                    command: () => CommonService.onOpenDialog(setVisible2, [{
+                        callback: setValue3,
+                        value: props.name
+                    }])
+                }
+            ]
+        }
+    ];
+    if ((props.is_static===false)) {
+         items = [
+            {
+                items: [
+                    {
+                        label: t("BoardAddTask"),
+                        icon: 'pi pi-plus',
+                        command: () => CommonService.onOpenDialog(setVisi, [{callback: setValue, value: ''}])
+                    },
+                    {
+                        label: t("BoardEditColumnMenu"),
+                        icon: 'pi pi-pencil',
+                        command: () => CommonService.onOpenDialog(setVisible2, [{
+                            callback: setValue3,
+                            value: props.name
+                        }])
+                    },
+                    {
+                        label: t("BoardRemoveColumnMenu"),
+                        icon: 'pi pi-trash',
+                        command: () => setVisible(true)
+                    }
+                ]
+            }
+        ];
+    }
 
     return (
         <Draggable key={props.backId}
@@ -142,44 +198,39 @@ function Board(props) {
                     {...provided.dragHandleProps}
                     {...provided.draggableProps}
                     ref={provided.innerRef}>
-                    <Tooltip target={`.board-${props.backId}`} autoHide={false}>
-                        <div className="flex align-items-center">
-                            <Button style={{marginRight: "20px"}}
-                                    icon="pi pi-pencil"
-                                    size="sm"
-                                    aria-label="Filter"
-                                    onClick={() => CommonService.onOpenDialog(setVisible2, [{
-                                        callback: setValue3,
-                                        value   : props.name
-                                    }])}/>
-                            <Button style={{}}
-                                    icon="pi pi-plus"
-                                    size="sm"
-                                    aria-label="Filter"
-                                    onClick={() => CommonService.onOpenDialog(setVisi, [{callback: setValue, value: ''}])}/>
-                            {(props.is_static===false)&&
-                            <Button style={{marginLeft: "20px"}}
-                                    icon="pi pi-trash"
-                                    size="sm"
-                                    aria-label="Filter"
-                                    onClick={() => setVisible(true)}/>}
+                    <Tooltip target={`.board-${props.backId}`} autoHide={true}>
+                        <div>
+                            {t("BoardLowerLimit")}
+                            {` `}
+                            {(minCard)?(minCard):(t("BoardLimitNone"))}
+                        </div>
+                        <div>
+                            {t("BoardUpperLimit")}
+                            {` `}
+                            {maxCard?(maxCard):(t("BoardLimitNone"))}
                         </div>
                     </Tooltip>
-                    <BoardTop className={`board-${props.backId}`}>
-                        <Title>
+                    <BoardTop >
+
+                        <Menu model={items} popup ref={menu} />
+                        <TitleAndButton>
+                            <Title>
                             <ContentEditable spellCheck="false"
                                              className="Title"
                                              html={props.name}
                                              disabled={true}
                                              onBlur={handleInputChangeName}/>
                         </Title>
+                            <Button style={{ marginLeft:"10px",
+                                boxShadow: "0px 1px 7px rgba(0, 0, 0, 0.1), 0px 4px 5px -2px rgba(0, 0, 0, 0.12), 0px 10px 15px -5px rgba(0, 0, 0, 0.2)"
+                                , alignSelf:"center"
+                                , marginRight:"18px"}}
+                                    size="sm"
+                                    icon="pi pi-bars" onClick={(event) => menu.current.toggle(event)}/>
+                        </TitleAndButton>
                         {(!props.is_static)
-                            ? <Label>
-                                Limit:
-                                {` `}
-                                {minCard}
-                                <div>:</div>
-                                {maxCard}
+                            ? <Label >
+                                <LimitText className={`board-${props.backId}`}> Limit: {minCard}≤x≤{maxCard}</LimitText>
                             </Label>
                             : <LabelDummy>
                             </LabelDummy>

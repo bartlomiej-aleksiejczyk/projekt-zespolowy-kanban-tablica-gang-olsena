@@ -91,6 +91,12 @@
   "BoardEditColumn": "Edytuj kolumnę:",
   "BoardRemoveConfirmation": "Potwierdzenei usunięcia",
   "BoardRemoveConfirmationDetail": "Czy na pewno chcesz usunąć kolumnę?",
+  "BoardEditColumnMenu": "Edytuj kolumnę",
+  "BoardRemoveColumnMenu": "Usuń kolumnę",
+  "BoardAddTask": "Dodaj zadanie",
+  "BoardLowerLimit": "Dolny limit zadań na komórkę:",
+  "BoardUpperLimit": "Górny limit zadań na komórkę:",
+  "BoardLimitNone": "brak",
 
   "Row.js":"SECTION",
   "rowEditHeader": "Edytuj rząd:",

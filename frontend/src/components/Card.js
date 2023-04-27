@@ -12,6 +12,7 @@ import {Avatar} from 'primereact/avatar';
 import CommonService from "../services/CommonService";
 import {useUserService} from "../utils/UserServiceContext";
 import {Dropdown} from 'primereact/dropdown';
+import { Chip } from 'primereact/chip';
 import {Tooltip} from 'primereact/tooltip';
 import stc from 'string-to-color';
 import {MultiStateCheckbox} from 'primereact/multistatecheckbox';
@@ -39,34 +40,74 @@ const OnHoverButton = styled.div`
   position: absolute;
   right: 5px;
 `;
+const CardItemsCard = styled.div`
+  padding: 2px;
+  border-radius: 7px;
+  border: 2px solid transparent ;
+  transition: all 0.2s;
+  margin-top: 5px;
+  margin-bottom: 5px;
+  margin-left: 10px;
+  margin-right: auto;
+  color: #595959;
+`;
+const CardChildren = styled.div`
+  padding: 2px;
+  border-radius: 7px;
+  border: 2px solid transparent ;
+  transition: all 0.2s;
+  margin-top: 5px;
+  margin-bottom: 5px;
+  margin-left: 10px;
+  margin-right: auto;
+  color: #595959;
+`;
 const CardStyle = styled.div`
   box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.03), 0px 0px 2px rgba(0, 0, 0, 0.06), 0px 2px 6px rgba(0, 0, 0, 0.12);
+
   &:hover ${OnHoverButton} {
     opacity: 1;
     z-index: 5;
     position: absolute;
     right: 5px;
   }
+
+  &:hover ${CardItemsCard} {
+    border-radius: 7px;
+    border: 2px solid #595959;
+    margin-top: 5px;
+    margin-bottom: 5px;
+    margin-left: 10px;
+    margin-right: auto;
+    color: #595959;
+  }
+  &:hover ${CardChildren} {
+    border-radius: 7px;
+    border: 2px solid #595959;
+    margin-top: 5px;
+    margin-bottom: 5px;
+    margin-left: 10px;
+    margin-right: auto;
+    color: #595959;
+  }
   font-size: 10px;
-  max-width: 255px;
-  min-width: 255px;
+  max-width: 240px;
+  min-width: 240px;
   border: ${props => props.locked ? "2px solid #b7b3ea" : "2px solid #b7b3ea"};
   border-radius: 2px;
   padding: 2px;
   margin-top: 5px;
   position: relative;
-  margin-left: 4px;
+  margin-left: 1px;
   margin-right: 4px;
-  -webkit-filter: ${props => props.locked ? "grayscale(0.7)" : ""} ;
+  -webkit-filter: ${props => props.locked ? "grayscale(0.7)" : ""};
   //Ta metoda to druciarstwo o wiele lepiej jest tuaj https://stackoverflow.com/questions/61635321/props-conditional-rendering-using-styled-components
   background-color: ${props => props.color};
-  background: repeating-linear-gradient(
-          315deg,
-        ${props => props.color},
-        ${props => `${props.color} 6px`},
-        ${props => props.locked ? "#D4D6D7 6px" : `${props.color} 6px`},
-        ${props => props.locked ? "#D4D6D7 12px" : `${props.color} 12px`}
-);
+  background: repeating-linear-gradient(315deg,
+  ${props => props.color},
+  ${props => `${props.color} 6px`},
+  ${props => props.locked ? "#D4D6D7 6px" : `${props.color} 6px`},
+  ${props => props.locked ? "#D4D6D7 12px" : `${props.color} 12px`});
 `;
 const ChildBar = styled.div`
   display: block;
@@ -113,6 +154,7 @@ const ParentBar = styled.div`
   border-color: #77EECFFF;
   border-style: solid;
 `;
+
 const RestrictedBoardsBar = styled.div`
   display: block;
   min-height: 15px;
@@ -275,10 +317,10 @@ function Card(props) {
     const [lock, setLock] = useState(props.locked);
     const options = [
         {value: '#FFFFFF', style: {backgroundColor: `#FFFFFF`}},
-        {value: '#86e95e', style: {backgroundColor: `#86e95e`}},
-        {value: '#99B3E6', style: {backgroundColor: `#99B3E6`}},
-        {value: '#FFE680', style: {backgroundColor: `#FFE680`}},
-        {value: '#F2B580', style: {backgroundColor: `#F2B580`}},
+        {value: '#cdf8bc', style: {backgroundColor: `#cdf8bc`}},
+        {value: '#ccd8f5', style: {backgroundColor: `#ccd8f5`}},
+        {value: '#f5ebca', style: {backgroundColor: `#f5ebca`}},
+        {value: '#efdcfa', style: {backgroundColor: `#efdcfa`}},
     ];
     const options1 = [
         {value: false, icon: 'pi pi-lock-open'},
@@ -477,6 +519,39 @@ function Card(props) {
                                                 style={{scale:"70%"}}
                                                 onClick={() => setVisible1(true)}/>
                                     </OnHoverButton>
+                                    <Tooltip target={`.cardItems-${props.backId}`} autoHide={false}>
+                                        {(cardItems.length > 0) && (
+                                            <div>
+                                                    <div>
+                                                        {cardItems.map((card_item, index) => {
+                                                            return (
+                                                                <div key={card_item.id}
+                                                                     className="flex align-items-center ">
+                                                                    <Checkbox inputId={card_item.id} name="card_item"
+                                                                              value={card_item.is_done}
+                                                                              onChange={(e) => {
+                                                                                  cardItems[index].is_done = !e.value;
+                                                                                  // setCardItems([...cardItems]);
+                                                                                  apiService.updateCard(props.board, {
+                                                                                      "id":props.backId,
+                                                                                      "items": cardItems
+                                                                                  }).then((response_data) => {
+                                                                                      CommonService.toastCallback(response_data, props.setBoards);
+                                                                                  });
+                                                                              }}
+                                                                              style={{scale: "0.6"}}
+                                                                              checked={card_item.is_done}
+                                                                    />
+                                                                    <span style={{marginLeft: "2px"}}>
+                                                                    {card_item.name}
+                                                                </span>
+                                                                </div>
+                                                            );
+                                                        })}
+                                                    </div>
+                                            </div>
+                                        )}
+                                    </Tooltip>
                                     <Tooltip target={`.card-${props.backId}`} autoHide={false}>
                                         <h4 style={{marginBottom:"0",marginTop:"5px"}}>{t("cardChildren")}:</h4>
                                         <ChildrenContainer>
@@ -497,9 +572,9 @@ function Card(props) {
                                                     <InsideProgressDiv>
                                                         {/*{}%*/}
                                                         <ProgressBar value={props.data.children_done_percentage} style={{
-                                                            height: '10px',
+                                                            height: '13px',
                                                             width : "100%",
-                                                            color : "black"
+                                                            color : "black",
                                                         }}
                                                                      color="green"></ProgressBar>
                                                     </InsideProgressDiv>
@@ -519,6 +594,7 @@ function Card(props) {
                                     <TagContainer>
                                         {props.isCardDone > 0 &&
                                             <Tag
+                                                rounded
                                                 value={t("cardFinished")}
                                                  icon="pi pi-check"
                                                  severity="success"
@@ -527,6 +603,7 @@ function Card(props) {
                                         }
                                         {props.parentCard &&
                                             <Tag
+                                                rounded
                                                  style={{scale:"80%", fontSize:12,whiteSpace: "nowrap", height:"22px", marginRight:"-8px",marginLeft:"1px" }}
                                                  value={`${t("cardHasAParent") }${(props.parentName ?
                                         (props.parentName[0].length > 9 ? props.parentName[0].substring(0, 9 - 3) + "..." :
@@ -536,6 +613,7 @@ function Card(props) {
                                             }
                                         {bug===true &&
                                             <Tag
+                                                rounded
                                                 severity="warning"
                                                 value={"Bug"}
                                                 style={{scale:"80%", fontSize:12,whiteSpace: "nowrap", height:"22px", marginRight:"-8px",marginLeft:"1px" }}
@@ -552,50 +630,17 @@ function Card(props) {
                                             style={{fontSize:13, font:"Verdana", padding:"4px",fontWeight:1000, color:"#3e4349"}}
                                             onBlur={handleInputChange}/>
                                     </Description>
+
                                     <ButtonsChildrenItems>
-                                    {(cardItems.length > 0) && (
-                                        <div>
-                                            <ToggleButton
-                                                style={{width: "132px", marginTop: "6px", height: "10px", fontSize: 12, marginBottom:"7px" }}
-                                                          onLabel={t("cardCarditems")} offLabel={t("cardCarditems")}
-                                                          onIcon="pi pi-minus" offIcon="pi pi-plus"
-                                                          checked={itemCollapse}
-                                                          onChange={() => handleItemCollapse()}/>
-                                            {(itemCollapse === true) && (
-                                                <div>
-                                                    {cardItems.map((card_item, index) => {
-                                                        return (
-                                                            <div key={card_item.id}
-                                                                 className="flex align-items-center ">
-                                                                <Checkbox inputId={card_item.id} name="card_item"
-                                                                          value={card_item.is_done}
-                                                                          onChange={(e) => {
-                                                                              cardItems[index].is_done = !e.value;
-                                                                              // setCardItems([...cardItems]);
-                                                                              apiService.updateCard(props.board, {
-                                                                                  "id":props.backId,
-                                                                                  "items": cardItems
-                                                                              }).then((response_data) => {
-                                                                                  CommonService.toastCallback(response_data, props.setBoards);
-                                                                              });
-                                                                          }}
-                                                                          style={{scale: "0.6"}}
-                                                                          checked={card_item.is_done}
-                                                                />
-                                                                <span style={{marginLeft: "2px"}}>
-                                                                    {card_item.name}
-                                                                </span>
-                                                            </div>
-                                                        );
-                                                    })}
-                                                </div>
-                                            )}
-                                        </div>
-                                    )}
+                                        {(props.data.item_data.length > 0) &&
+                                        <CardItemsCard className={`cardItems-${props.backId}`}>
+                                            <i className="pi pi-check-square"> {t("cardCarditems")} {(props.data.item_data.filter(obj => obj.is_done === true)).length}/{props.data.item_data.length}</i>
+                                        </CardItemsCard>
+                                        }
+
                                     {(props.childData.length > 0) &&
-                                        <ChildrenButton className={`card-${props.backId}`} >
-                                            <IsParentText>{t("cardIsParent")}</IsParentText>
-                                        </ChildrenButton>
+                                        <CardChildren className={`card-${props.backId}`}> <i className="pi pi-circle-fill"> {t("cardIsParent")}</i>
+                                        </CardChildren>
                                     }
                                     </ButtonsChildrenItems>
                                     <Dialog header={t("cardEditDialog")}
@@ -767,6 +812,7 @@ function Card(props) {
                                                            reject={rejectAssignEdit}/>
 
                                             <Tag
+                                                rounded
                                                 severity={(moveDiffDays >= 5 && !props.isCardDone) ? 'danger' : 'info'}
                                                 style={{scale:"80%", fontSize:12,whiteSpace: "nowrap", height:"22px", marginRight:"-10px",marginLeft:"0px" }}
                                             >
@@ -774,13 +820,7 @@ function Card(props) {
                                                     datetime={props.updatedAt}
                                                     locale={t("cardTimeLocale")}
                                                 /></Tag>
-                                            {(props.data.item_data.length > 0 && (
-                                                <Tag
-                                                    severity={(props.isCardCompleted) ? 'success' : 'primary'}
-                                                    style={{scale:"80%", fontSize:12,whiteSpace: "nowrap", height:"22px", marginRight:"-8px",marginLeft:"1px" }}
-                                                    icon="pi pi-check-square">
-                                                    {`${(props.data.item_data.filter(obj => obj.is_done === true)).length}/${props.data.item_data.length}`}
-                                                </Tag>))}
+
                                         </ButtonContainer>
                                         <Avatars>
                                             {(props.data.users_data).map((cardUser) =>

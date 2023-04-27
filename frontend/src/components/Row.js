@@ -14,18 +14,17 @@ import LanguageChoose from "./LanguageChoose";
 import {Tooltip} from 'primereact/tooltip';
 
 const CardsStyle = styled.div`
-  max-width: 280px;
-  min-width: 280px;
+  max-width: 257px;
+  min-width: 257px;
   margin-top: 8px;
   margin-bottom: 8px;
   margin-right: auto;
   margin-left: 17px;
   width: auto;
-  height: complex;
+  height: min-content+23px;
   min-height: 100px;
-  max-height: 400px;
   overflow: scroll;
-  justify-content: center;
+  justify-content: start;
   display: flex;
   flex-direction: column;
   
@@ -44,7 +43,7 @@ const RowsStyleExtension = styled.div`
   background-color: #c4c0f1;
   margin-top: 2px;
   transition: height 0.25s ease-in;;
-
+  
 `;
 
 
@@ -65,13 +64,14 @@ const RowSideCollapsable = styled.div`
   border-radius: 4px;
   background-color: white;
   transition: background-color 0.4s, height 0.25s ease-in;;
-
+  display: flex;
+  justify-content: center;
+  flex-direction: row;
 
 `;
 const RowCollapsable = styled.div`
   content: "my tooltip";
   min-width: 150px;
-  max-height: 400px;
   min-height: 100px;
   margin-bottom: 2px;
   background-color: white;
@@ -81,7 +81,6 @@ const RowsStyle = styled.div`
   //box-shadow: 0px 1px 7px rgba(0, 0, 0, 0.1), 0px 4px 5px -2px rgba(0, 0, 0, 0.12), 0px 10px 15px -5px rgba(0, 0, 0, 0.2);
   max-width: 474px;
   min-width: 147px;
-  max-height: 400px;
   min-height: 100px;
   height: ${props=>(props.rowHeight)};
   zIndex : 1;
@@ -148,27 +147,16 @@ function Row(props) {
         <RowsStyleExtension
             rowHeight={props.rowHeightDict?(props.rowHeightDict[props.backId]+3)+"px":null}
         >
-            <Tooltip target={`.row-${props.backId}`} autoHide={false}>
+            {/*<Tooltip target={`.row-${props.backId}`} autoHide={false}>
                 <div className="flex align-items-center">
-                    <Button style={{marginRight: "20px"}}
-                            icon="pi pi-pencil"
-                            size="sm"
-                            onClick={() => CommonService.onOpenDialog(setVisible2, [{
-                                callback: setValue3,
-                                value   : props.name
-                            }])}/>
-                    {(props.backId!==1)&&
-                        <Button
-                        icon="pi pi-trash"
-                        size="sm"
-                        onClick={() => setVisible1(true)}/>}
+
                 </div>
-            </Tooltip>
+            </Tooltip>*/}
             {props.boardIndex === 0 &&
             <RowSide>
                 <ToggleButton className={`row-${props.backId}`}
                               style={{width: "136px", marginLeft: "4px", marginTop: "6px",height:"30px"}}
-                              onLabel={props.name} offLabel={props.name} onIcon="pi pi-minus" offIcon="pi pi-plus"
+                              onLabel={props.name} offLabel={props.name} onIcon="pi pi-chevron-up" offIcon="pi pi-chevron-down"
                               checked={!props.isCollapsed}
                               onChange={props.isCollapsed ? () => handleExpand() : () => handleCollapse()}/>
             </RowSide>
@@ -179,6 +167,19 @@ function Row(props) {
                 <RowSideCollapsable
                     rowHeight={props.rowHeightDict?props.rowHeightDict[props.backId]+"px":null}
                 >
+                    <Button style={{ marginTop:"45px", marginBottom: "auto",marginRight:"5px", marginLeft:"5px"}}
+                            icon="pi pi-pencil"
+                            size="sm"
+                            onClick={() => CommonService.onOpenDialog(setVisible2, [{
+                                callback: setValue3,
+                                value   : props.name
+                            }])}/>
+                    {(props.backId!==1)&&
+                        <Button style={{ marginTop:"45px", marginBottom: "auto",marginRight:"8px", marginLeft:"8px"}}
+                            icon="pi pi-trash"
+                                outlined
+                            size="sm"
+                            onClick={() => setVisible1(true)}/>}
                 </RowSideCollapsable>
                 }
                 <RowsStyle rowOverflowBothEnds={

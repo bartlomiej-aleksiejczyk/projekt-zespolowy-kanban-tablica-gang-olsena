@@ -2,7 +2,7 @@ import "primereact/resources/themes/lara-light-indigo/theme.css";
 import "primereact/resources/primereact.min.css";
 import "primeicons/primeicons.css";
 import styled, {createGlobalStyle} from 'styled-components';
-import React, {useState, useEffect, useContext, useRef } from 'react';
+import React, {useState, useEffect, useLayoutEffect, useContext, useRef } from 'react';
 import {DragDropContext, Droppable} from 'react-beautiful-dnd';
 import Board from "./Board";
 import {Button} from 'primereact/button';
@@ -36,6 +36,22 @@ const GlobalStyle = createGlobalStyle`
     background: linear-gradient(169deg, rgb(168, 203, 255) 0%, rgb(173, 200, 204) 41%, rgb(209, 242, 255) 100%);
     background-attachment: fixed;
     scroll-margin-left: 0;
+
+    .p-dropdown-panel > .p-dropdown-items-wrapper > .p-dropdown-items {
+      background-color: #e5e6e7;
+    }
+    .p-dropdown-panel > .p-dropdown-items-wrapper > .p-dropdown-items >.p-dropdown-item.p-highlight {
+      background-color: #e5e6e7;
+    }
+    .p-menu > .p-menu-list {
+      background-color: #e5e6e7;
+    }
+    .p-menu > .p-menu-list > .p-submenu-header {
+      background-color: #e5e6e7;
+    }
+    .p-menu.p-menu-overlay  {
+      background-color: #e5e6e7;
+    }
   }
 `
 const AssignmentLimitText = styled.h5`
@@ -62,7 +78,7 @@ const BoardOfBoards = styled.div`
 `;
 const FreeUsersBoard = styled.div`
   position: relative;
-  margin-top: 154px;
+  margin-top: 164px;
   margin-left: 15px;
   width:120px;
   top: 100%;
@@ -264,7 +280,7 @@ function Kanban() {
             setRemaining(response_data.data);
         });
     }, []);
-    useEffect(() =>{
+    useLayoutEffect(() =>{
         if (boards[0] !=null)
         {
             const heightDict = {}
@@ -273,13 +289,17 @@ function Kanban() {
                 const rows = document.getElementsByClassName(`heightRow-${boards[0].row_data[i].id}`);
                 console.log(rows)
                 for (let j = 0; j < rows.length; j++) {
-                    const height = rows[j].scrollHeight+rows[j].scrollTopMax;
+                    let height = 0;
+                    for (const child of rows[j].children) {
+                        height+=(child.offsetHeight+5);
+                    }
                     console.log(height)
                     if (height > hightest) {
                         hightest = height;
                         console.log("hightest")
                     }
                 }
+                if (hightest>400) hightest=400;
                 heightDict[boards[0].row_data[i].id] = hightest+23
                 hightest = 0;
             }

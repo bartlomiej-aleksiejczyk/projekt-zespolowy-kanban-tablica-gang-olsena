@@ -91,6 +91,12 @@
   "BoardEditColumn": "Edit column:",
   "BoardRemoveConfirmation": "Delete confirmation",
   "BoardRemoveConfirmationDetail": "Are you sure you want to remove this column?",
+  "BoardEditColumnMenu": "Edit column",
+  "BoardRemoveColumnMenu": "Remove column",
+  "BoardAddTask": "Add task",
+  "BoardLowerLimit": "Task lower limit per cell:",
+  "BoardUpperLimit": "Task upper limit per cell:",
+  "BoardLimitNone": "none",
 
   "Row.js":"SECTION",
   "rowEditHeader": "Edit row:",

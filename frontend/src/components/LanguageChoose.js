@@ -5,7 +5,20 @@ import i18n from "i18next";
 import Flag from 'react-world-flags'
 import styled from 'styled-components';
 
-
+const Container = styled.div`
+  display: inline;
+  margin-right: 1rem;
+  text-align: center;
+  align-items: center;
+  .p-dropdown > .p-dropdown-items-wrapper > .p-dropdown-items{
+    background-color: #495057;
+  }
+`
+const ContainerItems = styled.div`
+    display: flex;
+    align-items: center;
+    background-color: #495057;
+`
 function LanguageChoose () {
 
     const [selectedLanguage, setSelectedLanguage] = useState(i18n.language);
@@ -35,22 +48,22 @@ function LanguageChoose () {
         );
     };
     return (
-        <div className="inline mr-3 text-center align-items-center">
-            <Dropdown value={selectedLanguage}
-                      onChange={(e) => {
-                          i18n.changeLanguage(e.value).then(
-                                  (e) => {setSelectedLanguage(i18n.language); // -> same as i18next.t
-                                  },
-                              )
-                      }  }
-                      options={languages}
-                      optionLabel="name"
-                      placeholder="Select a language"
-                      valueTemplate={selectedCountryTemplate}
-                      itemTemplate={countryOptionTemplate}
-                      style={{height:"40px", backgroundColor:"#f9f7ff"}}
-                      className="w-full md:w-14rem align-items-center" />
-        </div>
+        <Container>
+                <Dropdown value={selectedLanguage}
+                          onChange={(e) => {
+                              i18n.changeLanguage(e.value).then(
+                                      (e) => {setSelectedLanguage(i18n.language); // -> same as i18next.t
+                                      },
+                                  )
+                          }  }
+                          options={languages}
+                          optionLabel="name"
+                          placeholder="Select a language"
+                          valueTemplate={selectedCountryTemplate}
+                          itemTemplate={countryOptionTemplate}
+                          style={{height:"40px"}}
+                          className="w-full md:w-14rem align-items-center" />
+        </Container>
     )
 }
 
