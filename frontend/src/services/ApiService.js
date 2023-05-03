@@ -90,6 +90,10 @@ class ApiService {
         return this.axios.get(`http://localhost:8000/api/limit/`).then(response => response.data);
     }
 
+    getCardMoveTimeline(pk) {
+    return this.axios.get(`http://localhost:8000/api/card/${pk}/timeline/`).then(response => response.data);
+    }
+
 
 
     loginUser(username, password) {

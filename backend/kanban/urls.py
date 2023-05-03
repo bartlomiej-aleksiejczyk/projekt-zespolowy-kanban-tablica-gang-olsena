@@ -31,6 +31,12 @@ card_move_viewset = CardViewSet.as_view(
     )
 )
 
+card_move_timeline_viewset = CardViewSet.as_view(
+    dict(
+        get='get_card_move_timeline'
+    )
+)
+
 single_card_viewset = CardViewSet.as_view(
     dict(
         get='get_card',
@@ -98,6 +104,7 @@ urlpatterns = [
     path('card/<int:pk>/', single_card_viewset),
     path('card/<int:pk>/', single_card_viewset),
     path('card/<int:pk>/move/', card_move_viewset),
+    path('card/<int:pk>/move/timeline/', card_move_timeline_viewset),
     path('board/<int:pk>/card/', board_card_viewset),
     path('card/<int:pk>/item/', card_item_viewset),
     path('card/item/<int:pk>/', single_card_item_viewset),

@@ -25,6 +25,7 @@ import { withTranslation } from 'react-i18next';
 import { Translation } from 'react-i18next';
 import i18n from "i18next";
 import Loading from "./Loading";
+import BoardChart from "./BoardChart";
 
 const GlobalStyle = createGlobalStyle`
   body {
@@ -579,6 +580,7 @@ function dragCancel(){
                                 )}
                         </Droppable>
                     </FreeUsersBoard>
+                        <BoardChart/>
                 </DragDropContext>:
                     <Loading/>
                 }

@@ -89,3 +89,8 @@ class CardSerializer(serializers.ModelSerializer):
     @staticmethod
     def get_parent_name(obj):
         return Card.objects.filter(id=obj.parent_card_id).values_list('description', flat=True)
+
+class CardMoveTimelineSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = CardMoveTimeline
+        fields = '__all__'

@@ -1,11 +1,15 @@
 import datetime
+from collections import defaultdict
+
+import pandas as pd
+from dateutil.relativedelta import relativedelta
 from rest_framework import viewsets
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
-from kanban.models import Board, Card, CardItem
+from kanban.models import Board, Card, CardItem, CardMoveTimeline
 from kanban.serializers.board_serializer import BoardSerializer
 from kanban.views.helper import remaining_helper
-from kanban.serializers.card_serializer import CardSerializer, CardItemSerializer
+from kanban.serializers.card_serializer import CardSerializer, CardItemSerializer, CardMoveTimelineSerializer
 
 
 class CardViewSet(viewsets.ViewSet):
@@ -186,5 +190,52 @@ class CardViewSet(viewsets.ViewSet):
                 message="apiCardUpdated",
                 data=BoardSerializer(Board.objects.all(), many=True).data,
                 data1=remaining_helper()
+            )
+        )
+
+    def get_card_move_timeline(self, request):
+        current_date = datetime.datetime.today()
+        date_start = request.data.get('date_start', current_date - relativedelta(days=7))
+        date_end = request.data.get('date_end', current_date)
+
+        data = defaultdict(list)
+
+        cards = defaultdict(list)
+        for card in Card.objects.filter(created_at__range=[date_start, date_end]):
+            cards[card.created_at.date()].append(card)
+
+
+        boards = Board.objects.all()
+        for date in pd.date_range(start="2018-09-09", end="2020-02-02"):
+            cards_data = list()
+
+            if date in cards:
+                for card in cards[date]:
+                    card_data = dict(
+                        id=card.id,
+                        name=card.name,
+                        board_data=dict()
+                    )
+
+                    for board in boards:
+                        card_data[board.name] = 0
+
+                        timeline = CardMoveTimeline.objects.filter(card_id=card.id, board_id=board.id)
+
+                        if timeline:
+                            next_status_timeline =
+
+                    cards_data.append(card_data)
+
+            data[date].append(dict(
+                cards=cards_data
+            ))
+
+        return Response(
+            dict(
+                success=True,
+                data=CardMoveTimelineSerializer(
+                    CardMoveTimeline.objects.all()
+                ).data
             )
         )
