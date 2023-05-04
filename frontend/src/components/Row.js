@@ -23,7 +23,7 @@ const CardsStyle = styled.div`
   width: auto;
   height: min-content+23px;
   min-height: 100px;
-  overflow: scroll;
+  overflow: auto;
   justify-content: start;
   display: flex;
   flex-direction: column;
